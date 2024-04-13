@@ -1,0 +1,10 @@
+{
+    "sheet link": "",
+    "records path": "",
+    "use sheets": true,
+    "delete-old-records": false,
+    "detect RSG": true,
+    "track seed": false,
+    "multi instance": true,
+    "generate-labels": false
+}
