@@ -1,0 +1,181 @@
+{
+    "Data": {
+        "WanderingTraderSpawnChance": 25,
+        "BorderCenterZ": 0.0,
+        "Difficulty": 2,
+        "BorderSizeLerpTime": 0,
+        "raining": 0,
+        "Time": 32,
+        "GameType": 1,
+        "ServerBrands": ["fabric"],
+        "BorderCenterX": 0.0,
+        "BorderDamagePerBlock": 0.2,
+        "BorderWarningBlocks": 5.0,
+        "WorldGenSettings": {
+            "bonus_chest": 0,
+            "seed": -7175589266294125951,
+            "generate_features": 1,
+            "dimensions": {
+                "minecraft:overworld": {
+                    "generator": {
+                        "settings": "minecraft:overworld",
+                        "seed": -7175589266294125951,
+                        "biome_source": {
+                            "seed": -7175589266294125951,
+                            "large_biomes": 0,
+                            "type": "minecraft:vanilla_layered"
+                        },
+                        "type": "minecraft:noise"
+                    },
+                    "type": "minecraft:overworld"
+                },
+                "minecraft:the_nether": {
+                    "generator": {
+                        "settings": "minecraft:nether",
+                        "seed": -7175589266294125951,
+                        "biome_source": {
+                            "seed": -7175589266294125951,
+                            "preset": "minecraft:nether",
+                            "type": "minecraft:multi_noise"
+                        },
+                        "type": "minecraft:noise"
+                    },
+                    "type": "minecraft:the_nether"
+                },
+                "minecraft:the_end": {
+                    "generator": {
+                        "settings": "minecraft:end",
+                        "seed": -7175589266294125951,
+                        "biome_source": {
+                            "seed": -7175589266294125951,
+                            "type": "minecraft:the_end"
+                        },
+                        "type": "minecraft:noise"
+                    },
+                    "type": "minecraft:the_end"
+                }
+            }
+        }
+    },
+    "DragonFight": {
+        "Gateways": [8, 7, 10, 13, 9, 5, 1, 4, 17, 14, 2, 11, 0, 16, 15, 6, 3, 18, 19, 12],
+        "DragonKilled": 1,
+        "PreviouslyKilled": 1
+    },
+    "BorderSizeLerpTarget": 60000000.0,
+    "Version": {
+        "Snapshot": 0,
+        "Id": 2567,
+        "Name": "1.16.1"
+    },
+    "DayTime": 32,
+    "initialized": 1,
+    "WasModded": 1,
+    "allowCommands": 1,
+    "WanderingTraderSpawnDelay": 24000,
+    "CustomBossEvents": {},
+    "GameRules": {
+        "doFireTick": "true",
+        "maxCommandChainLength": "65536",
+        "fireDamage": "true",
+        "reducedDebugInfo": "false",
+        "disableElytraMovementCheck": "false",
+        "announceAdvancements": "true",
+        "drowningDamage": "true",
+        "commandBlockOutput": "true",
+        "forgiveDeadPlayers": "true",
+        "doMobSpawning": "true",
+        "maxEntityCramming": "24",
+        "disableRaids": "false",
+        "doWeatherCycle": "true",
+        "doDaylightCycle": "true",
+        "showDeathMessages": "true",
+        "doTileDrops": "true",
+        "universalAnger": "false",
+        "doInsomnia": "true",
+        "doImmediateRespawn": "false",
+        "naturalRegeneration": "true",
+        "doMobLoot": "true",
+        "fallDamage": "true",
+        "keepInventory": "false",
+        "doEntityDrops": "true",
+        "doLimitedCrafting": "false",
+        "mobGriefing": "true",
+        "randomTickSpeed": "3",
+        "spawnRadius": "10",
+        "doTraderSpawning": "true",
+        "logAdminCommands": "true",
+        "spectatorsGenerateChunks": "true",
+        "sendCommandFeedback": "true",
+        "doPatrolSpawning": "true"
+    },
+    "Player": {
+        "Brain": {"memories": {}},
+        "HurtByTimestamp": 0,
+        "SleepTimer": 0,
+        "Attributes": [{"Base": 0.10000000149011612, "Name": "minecraft:generic.movement_speed"}],
+        "Invulnerable": 0,
+        "FallFlying": 0,
+        "PortalCooldown": 0,
+        "AbsorptionAmount": 0.0,
+        "abilities": {"invulnerable": 1, "mayfly": 1, "instabuild": 1, "walkSpeed": 0.10000000149011612, "mayBuild": 1, "flying": 0, "flySpeed": 0.05000000074505806},
+        "FallDistance": 0.22777925431728363,
+        "recipeBook": {
+            "recipes": [],
+            "isBlastingFurnaceFilteringCraftable": 0,
+            "isSmokerGuiOpen": 0,
+            "isFilteringCraftable": 0,
+            "toBeDisplayed": [],
+            "isFurnaceGuiOpen": 0,
+            "isGuiOpen": 0,
+            "isFurnaceFilteringCraftable": 0,
+            "isBlastingFurnaceGuiOpen": 0,
+            "isSmokerFilteringCraftable": 0
+        },
+        "DeathTime": 0,
+        "XpSeed": 0,
+        "XpTotal": 0,
+        "UUID": [-1741582636, 1757692959, -1156837078, -1687979145],
+        "playerGameType": 1,
+        "seenCredits": 0,
+        "Motion": [0.0, -0.15233518685055708, 0.0],
+        "Health": 20.0,
+        "foodSaturationLevel": 5.0,
+        "Air": 300,
+        "OnGround": 0,
+        "Dimension": "minecraft:overworld",
+        "Rotation": [-4.694580078125, 37.586669921875],
+        "XpLevel": 0,
+        "Score": 0,
+        "Pos": [-32.53332892260514, 82.02442408821369, 220.0529908551377],
+        "previousPlayerGameType": -1,
+        "Fire": -20,
+        "XpP": 0.0,
+        "EnderItems": [],
+        "DataVersion": 2567,
+        "foodLevel": 20,
+        "foodExhaustionLevel": 0.0,
+        "HurtTime": 0,
+        "SelectedItemSlot": 0,
+        "Inventory": [],
+        "foodTickTimer": 0
+    },
+    "SpawnY": 87,
+    "rainTime": 173741,
+    "thunderTime": 138157,
+    "SpawnZ": 224,
+    "hardcore": 0,
+    "DifficultyLocked": 0,
+    "SpawnX": -32,
+    "clearWeatherTime": 0,
+    "thundering": 0,
+    "version": 19133,
+    "BorderSafeZone": 5.0,
+    "LastPlayed": 1713051426305,
+    "BorderWarningTime": 15.0,
+    "ScheduledEvents": [],
+    "LevelName": "New World",
+    "BorderSize": 60000000.0,
+    "DataVersion": 2567,
+    "DataPacks": {"Enabled": ["vanilla"], "Disabled": []}
+}

@@ -2,7 +2,7 @@ from watchdog.events import FileSystemEvent, FileSystemEventHandler
 from watchdog.observers import Observer
 import json, os, time, glob
 
-from WorldFile import WorldFile
+from World import WorldFile
 
 with open(os.path.join(os.getcwd(), 'data', 'settings.json')) as f:
     SETTINGS = json.load(f)
@@ -10,36 +10,36 @@ with open(os.path.join(os.getcwd(), 'data', 'settings.json')) as f:
 class FileHandler(FileSystemEventHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.last_event_time = 0
-        self.last_event_path = ""
         self.tracked_paths = []
 
-    def on_created(self, event: FileSystemEvent) -> None:
-        if event.src_path in self.tracked_paths:
+    
+    def on_modified(self, event: FileSystemEvent) -> None:
+        if not event.src_path.endswith('latest_world.json'):
             return
         
+        with open(event.src_path) as f:
+            data = json.load(f)
+        
+        if data['world_path'] in self.tracked_paths:
+            return
+            
         self.tracked_paths.append(event.src_path)
-        
-        print(event.src_path)
-        
-        
-def watch(dir):
-    observer = Observer()
-    event_handler = FileHandler()
-    observer.schedule(event_handler, dir, recursive=False)
-    observer.start()
+        w = WorldFile(event)
 
+            
 if __name__ == '__main__':
-    instances_dir = os.path.join(SETTINGS['mmc_path'], 'instances')
-    saves_dirs = glob.glob(os.path.join(instances_dir, '*', '.minecraft', 'saves'))
-    tracked = []
-    for s in saves_dirs:
-        if s not in tracked:
-            watch(s)
-            tracked.append(s)
 
+    srigt_path = os.path.join(os.path.expanduser("~"),'speedrunigt')
+    
+    obs = Observer()
+    evt_handler = FileHandler()
+    obs.schedule(evt_handler, srigt_path)
+    obs.start()
+    
+    print('Tracking')
     try:
         while True:
             time.sleep(1)
     except KeyboardInterrupt:
+        obs.stop()
         exit(0)
