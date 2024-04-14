@@ -1,4 +1,4 @@
-package me.cylorun.minecraft;
+package me.cylorun.io.minecraft;
 
 import kaptainwutax.mcutils.util.math.Vec3i;
 

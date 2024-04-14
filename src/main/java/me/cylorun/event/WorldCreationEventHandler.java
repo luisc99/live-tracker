@@ -1,15 +1,14 @@
-package me.cylorun.io;
+package me.cylorun.event;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import me.cylorun.io.callbacks.WorldCreationListener;
-import me.cylorun.minecraft.WorldFile;
+import me.cylorun.event.callbacks.WorldCreationListener;
+import me.cylorun.io.minecraft.WorldFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;

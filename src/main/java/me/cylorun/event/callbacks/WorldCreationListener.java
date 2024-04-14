@@ -1,6 +1,6 @@
-package me.cylorun.io.callbacks;
+package me.cylorun.event.callbacks;
 
-import me.cylorun.minecraft.WorldFile;
+import me.cylorun.io.minecraft.WorldFile;
 
 public interface WorldCreationListener {
     void onNewWorld(WorldFile world);
