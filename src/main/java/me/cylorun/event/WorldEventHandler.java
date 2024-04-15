@@ -5,13 +5,10 @@ import me.cylorun.io.minecraft.WorldFile;
 import me.cylorun.utils.ExceptionUtil;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class WorldEventHandler extends Thread {
     private final int DELAY_MS = 5000;
@@ -30,6 +27,21 @@ public class WorldEventHandler extends Thread {
         this.start();
     }
 
+
+    public void setFile(WorldFile file) {
+        this.file = file;
+    }
+
+    public void addListener(WorldEventListener wel) {
+        this.listeners.add(wel);
+    }
+
+    public void notifyListeners(SpeedrunEvent e) {
+        for (WorldEventListener wel : this.listeners) {
+            wel.onNewEvent(e);
+        }
+    }
+
     private void loadOld() {
         BufferedReader reader = null;
         try {
@@ -43,18 +55,28 @@ public class WorldEventHandler extends Thread {
         }
     }
 
-    public void setFile(WorldFile file) {
-        this.file = file;
-    }
-
-    public void addListener(WorldEventListener wel) {
-        this.listeners.add(wel);
-    }
-
-    public void notifyListeners() {
-        for (WorldEventListener wel : this.listeners) {
-            wel.onNewEvent(this.latestEvent);
+    private boolean hasChanges(List<SpeedrunEvent> list) {
+        if (this.events.size() != list.size()){
+            return true;
         }
+        for (int i = 0; i < this.events.size(); i++) {
+            if (!this.events.get(i).equals(list.get(i))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private List<SpeedrunEvent> getChanges(List<SpeedrunEvent> newEvents) { // returns events that havent already been added
+        List<SpeedrunEvent> changes = new ArrayList<>();
+        for (int i = 0; i < newEvents.size(); i++) {
+            if (this.events.size() - 1 < i) {
+                changes.add(newEvents.get(i));
+            } else if (!this.events.get(i).equals(newEvents.get(i))) {
+                changes.add(newEvents.get(i));
+            }
+        }
+        return changes;
     }
 
     @Override
@@ -62,15 +84,20 @@ public class WorldEventHandler extends Thread {
         while (true) {
             try {
                 BufferedReader reader = new BufferedReader(new FileReader(this.file.getEventLog().toFile()));
-                List<SpeedrunEvent> newEvents = new ArrayList<>();
+                List<SpeedrunEvent> eventLog = new ArrayList<>();
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    newEvents.add(new SpeedrunEvent(line));
+                    eventLog.add(new SpeedrunEvent(line));
                 }
-                if (!newEvents.equals(this.events)) {
-                    this.latestEvent = newEvents.get(newEvents.size() - 1);
-                    this.events.add(this.latestEvent);
-                    this.notifyListeners();
+
+                if (this.hasChanges(eventLog)) {
+                    this.latestEvent = eventLog.get(eventLog.size() - 1);
+                    List<SpeedrunEvent> changes = this.getChanges(eventLog);
+                    for (SpeedrunEvent e : changes) {
+                        this.notifyListeners(e);
+                    }
+                    this.events = eventLog;
+
                 }
 
                 Thread.sleep(this.DELAY_MS);

@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.event.SpeedrunEvent;
 import me.cylorun.event.WorldEventHandler;
-import me.cylorun.event.callbacks.SpeedrunEventType;
+import me.cylorun.event.SpeedrunEventType;
 import me.cylorun.event.callbacks.WorldEventListener;
 import me.cylorun.utils.ExceptionUtil;
 
