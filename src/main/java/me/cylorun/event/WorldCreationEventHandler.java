@@ -15,10 +15,12 @@ import java.util.List;
 import java.util.Objects;
 
 public class WorldCreationEventHandler extends Thread {
+    private final int DELAY_MS = 5000;
+    private List<String> previousWorlds;
     private String lastPath = "";
-    Gson gson = new Gson();
 
     public WorldCreationEventHandler() {
+        this.previousWorlds = new ArrayList<>();
         this.start();
     }
 
@@ -36,7 +38,7 @@ public class WorldCreationEventHandler extends Thread {
 
     @Override
     public void run() {
-        File lwjson = Paths.get(System.getProperty("user.home"), "speedrunigt", "latest_world.json").toFile();
+        File lwjson = Paths.get(System.getProperty("user.home")).resolve("speedrunigt").resolve("latest_world.json").toFile();
 
         while (true) {
             FileReader reader = null;
@@ -45,15 +47,17 @@ public class WorldCreationEventHandler extends Thread {
             } catch (FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
+
             JsonElement element = JsonParser.parseReader(reader);
-            String currPath = element.getAsJsonObject().get("world_path").toString();
-            if (!Objects.equals(currPath, this.lastPath)) {
-                this.lastPath = currPath;
+            String newPath = element.getAsJsonObject().get("world_path").getAsString();
+            if (!Objects.equals(newPath, this.lastPath) && !this.previousWorlds.contains(newPath)) { // makes sure that a world wont be tracked multiple times
+                this.previousWorlds.add(newPath);
+                this.lastPath = newPath;
                 this.notifyListeners(new WorldFile(this.lastPath));
             }
 
             try {
-                Thread.sleep(5000);
+                Thread.sleep(this.DELAY_MS);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

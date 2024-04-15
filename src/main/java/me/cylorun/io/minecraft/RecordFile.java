@@ -15,13 +15,7 @@ public class RecordFile {
         this.jsonObject = jsonObject;
     }
 
-    public JsonObject getJsonObject() {
+    public JsonObject getJson() {
         return jsonObject;
     }
-
-    public void setJsonObject(JsonObject jsonObject) {
-        this.jsonObject = jsonObject;
-    }
-
-    // You can add other methods to manipulate the JSON object as needed
 }
