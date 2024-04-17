@@ -4,10 +4,12 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import me.cylorun.io.TrackerOptions;
+import me.cylorun.utils.ResourceUtil;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static me.cylorun.io.sheets.GoogleSheetsService.getSheetsService;
@@ -15,13 +17,35 @@ import static me.cylorun.io.sheets.GoogleSheetsService.getSheetsService;
 public class GoogleSheetsClient {
 
     public static void generateLabels() {
+        List<Object> headers = ResourceUtil.getHeaderLabels();
 
+        try {
+            insert(headers, 1, true);
+        } catch (GeneralSecurityException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
-    public static void appendRowTop(String sheetId, List<Object> rowData) throws IOException, GeneralSecurityException {
+    public static void appendRowTop(List<Object> rowData) throws IOException, GeneralSecurityException {
+        insert(rowData, 3, false);
+    }
+
+    public static void insert(List<Object> rowData, int row, boolean overwrite) throws GeneralSecurityException, IOException {
         Sheets sheetsService = getSheetsService();
         String sheetName = TrackerOptions.getInstance().sheet_name;
-        String range = "A3:CE";
+        String sheetId = TrackerOptions.getInstance().sheet_id;
+        String range = String.format("A%s:CF", row); // A-CF is the perfect range now
+
+        if (overwrite) {
+            ValueRange newRow = new ValueRange().setValues(Arrays.asList(rowData));
+            UpdateValuesResponse res = sheetsService.spreadsheets().values()
+                    .update(sheetId, range, newRow)
+                    .setValueInputOption("RAW")
+                    .execute();
+            return;
+        }
 
         ValueRange response = sheetsService.spreadsheets().values()
                 .get(sheetId, sheetName + "!" + range)
