@@ -10,13 +10,15 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LogHandler extends Thread {
     public final int DELAY = 5000;
     public final WorldFile file;
     public List<LogEventListener> listeners;
 
-    private String lastPreviousLine = "";
+    private String lastLine = "";
     private long lastSize = 0L;
 
     public LogHandler(WorldFile file) {
@@ -30,16 +32,34 @@ public class LogHandler extends Thread {
         }
     }
 
+    private void parseLog(List<String> lines) {
+        String regex = "^\\[\\d{2}:\\d{2}:\\d{2}\\]\\s*\\[Render\\s+thread\\/INFO\\]:\\s*\\[CHAT\\]\\s*(?!.*(?:\\[Debug\\]:|<\\w+>)).*$";
+
+        Pattern pattern = Pattern.compile(regex);
+        for (String l : lines) {
+                        /*
+                        [15:51:29] [Render thread/INFO]: [CHAT] Respawn point set -- pass
+                        [15:51:48] [Render thread/INFO]: [CHAT] [Debug]: Render Distance: 9 -- ignore
+                        [15:51:05] [Render thread/INFO]: [CHAT] <cylorun> hi -- ignore
+                        */
+
+            Matcher matcher = pattern.matcher(l);
+            if (matcher.find()) {
+                System.out.println("yoyoyo");
+            }
+        }
+    }
+
     private List<String> getChanges(List<String> lines) {
         List<String> newLines = new ArrayList<>();
         int endIdx = 0;
         for (int i = lines.size() - 1; i > 0; i--) {
-            if (lines.get(i).equals(this.lastPreviousLine)) {
+            if (lines.get(i).equals(this.lastLine)) {
                 endIdx = i;
                 break;
             }
         }
-        for (int i = endIdx; i < lines.size(); i++) {
+        for (int i = endIdx + 1; i < lines.size(); i++) {
             newLines.add(lines.get(i));
         }
         return newLines;
@@ -60,10 +80,8 @@ public class LogHandler extends Thread {
                     }
 
                     List<String> newLines = this.getChanges(lines);
-
-                    for (String l : newLines){
-
-                    }
+                    this.lastLine = newLines.get(newLines.size() - 1);
+                    this.parseLog(newLines);
                 }
 
 

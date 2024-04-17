@@ -54,6 +54,7 @@ public class ResourceUtil {
         return list;
     }
 
+
     private static String loadFile(URL url) {
         StringBuilder stringBuilder = new StringBuilder();
 
