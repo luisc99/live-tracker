@@ -1,5 +1,7 @@
 package me.cylorun.event;
 
+import me.cylorun.enums.SpeedrunEventType;
+
 public class SpeedrunEvent {
     public SpeedrunEventType type;
     public Integer igt;

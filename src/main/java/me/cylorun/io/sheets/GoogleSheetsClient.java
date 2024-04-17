@@ -4,6 +4,7 @@ import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import me.cylorun.io.TrackerOptions;
+import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.ResourceUtil;
 
 import java.io.IOException;
@@ -21,9 +22,8 @@ public class GoogleSheetsClient {
 
         try {
             insert(headers, 1, true);
-        } catch (GeneralSecurityException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (GeneralSecurityException | IOException e) {
+            ExceptionUtil.showError(e);
             throw new RuntimeException(e);
         }
     }

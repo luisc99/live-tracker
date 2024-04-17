@@ -1,4 +1,4 @@
-package me.cylorun.event;
+package me.cylorun.enums;
 
 public enum SpeedrunEventType {
     // common

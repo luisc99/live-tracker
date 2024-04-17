@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.event.SpeedrunEvent;
 import me.cylorun.event.WorldEventHandler;
-import me.cylorun.event.SpeedrunEventType;
+import me.cylorun.enums.SpeedrunEventType;
 import me.cylorun.event.callbacks.WorldEventListener;
 import me.cylorun.utils.ExceptionUtil;
 
@@ -13,10 +13,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WorldFile extends File implements WorldEventListener {
     private final WorldEventHandler eventHandler;
-    public boolean isActiveWorld = true;
+    public boolean track = true;
+    public boolean finished = false;
 
     public WorldFile(String path) {
         super(path);
@@ -29,11 +32,23 @@ public class WorldFile extends File implements WorldEventListener {
     }
 
     public Path getEventLog() {
-        return Path.of(this.getAbsolutePath()).resolve("speedrunigt").resolve("events.log");
+        return Paths.get(this.getAbsolutePath()).resolve("speedrunigt").resolve("events.log");
+    }
+
+    public Path getLogPath() {
+        return Paths.get(this.getAbsolutePath()).getParent().getParent().resolve("logs").resolve("latest.log");
     }
 
 
+    public List<Object> getEverything(RecordFile record) {
+        List<Object> res = new ArrayList<>();
+
+
+        return res;
+    }
+
     public void onCompletion() {
+        this.finished = true;
         FileReader reader = null;
         try {
             reader = new FileReader(this.getRecordPath().toFile());
@@ -47,16 +62,21 @@ public class WorldFile extends File implements WorldEventListener {
 
     @Override
     public void onNewEvent(SpeedrunEvent e) {
-        if (e.type.equals(SpeedrunEventType.REJOIN_WORLD)) {
-            this.isActiveWorld = true;
-        }
-
-        if (this.isActiveWorld) {
-            if (e.type.equals(SpeedrunEventType.LEAVE_WORLD)) {
-                this.isActiveWorld = false;
-                System.out.printf("%s has been left\n", this.getName());
+        if (!this.finished) {
+            if (e.type.equals(SpeedrunEventType.REJOIN_WORLD)) {
+                this.track = true;
             }
-            System.out.printf("Name: %s, Event: %s\n",this.getName(), e);
+
+            if (this.track) {
+                if (e.type.equals(SpeedrunEventType.LEAVE_WORLD)) {
+                    this.track = false;
+                }
+
+                if (e.type.equals(SpeedrunEventType.CREDITS)) {
+                    this.onCompletion();
+                }
+                System.out.printf("Name: %s, Event: %s\n", this.getName(), e);
+            }
         }
     }
 }
