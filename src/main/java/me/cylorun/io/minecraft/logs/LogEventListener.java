@@ -1,4 +1,4 @@
-package me.cylorun.event.callbacks;
+package me.cylorun.io.minecraft.logs;
 
 public interface LogEventListener {
     void onDeath();

@@ -1,17 +1,15 @@
-package me.cylorun.event;
+package me.cylorun.io.minecraft.logs;
 
 import me.cylorun.enums.LogEvent;
-import me.cylorun.event.callbacks.LogEventListener;
-import me.cylorun.io.minecraft.WorldFile;
+import me.cylorun.io.minecraft.world.WorldFile;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class LogHandler extends Thread {
     public final int DELAY = 5000;
@@ -23,30 +21,13 @@ public class LogHandler extends Thread {
 
     public LogHandler(WorldFile file) {
         this.file = file;
+        this.lastSize = this.file.getLogPath().toFile().length();
         this.start();
     }
 
     public void notifyListeners(LogEvent e) {
         for (LogEventListener lel : this.listeners) {
 
-        }
-    }
-
-    private void parseLog(List<String> lines) {
-        String regex = "^\\[\\d{2}:\\d{2}:\\d{2}\\]\\s*\\[Render\\s+thread\\/INFO\\]:\\s*\\[CHAT\\]\\s*(?!.*(?:\\[Debug\\]:|<\\w+>)).*$";
-
-        Pattern pattern = Pattern.compile(regex);
-        for (String l : lines) {
-                        /*
-                        [15:51:29] [Render thread/INFO]: [CHAT] Respawn point set -- pass
-                        [15:51:48] [Render thread/INFO]: [CHAT] [Debug]: Render Distance: 9 -- ignore
-                        [15:51:05] [Render thread/INFO]: [CHAT] <cylorun> hi -- ignore
-                        */
-
-            Matcher matcher = pattern.matcher(l);
-            if (matcher.find()) {
-                System.out.println("yoyoyo");
-            }
         }
     }
 
@@ -64,24 +45,42 @@ public class LogHandler extends Thread {
         }
         return newLines;
     }
+    private List<String> readFile(File file) throws IOException {
+        BufferedReader reader = new BufferedReader(new FileReader(file));
+        List<String> lines = new ArrayList<>();
+        String line;
+
+        while ((line = reader.readLine()) != null) {
+            lines.add(line);
+        }
+
+        return lines;
+    }
 
     @Override
     public void run() {
+        File logFile = this.file.getLogPath().toFile();
+        List<String> t = null;
+        try {
+            t = this.getChanges(this.readFile(logFile));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        this.lastLine = t.get(t.size() - 1); // to ignore events that occured before loading the world, prevents duplication when rejoining
+
         while (true) {
             try {
-                File logFile = this.file.getLogPath().toFile();
                 if (logFile.length() > this.lastSize) { // log has updated
                     this.lastSize = logFile.length();
-                    BufferedReader reader = new BufferedReader(new FileReader(logFile));
-                    List<String> lines = new ArrayList<>();
-                    String line;
-                    while ((line = reader.readLine()) != null) {
-                        lines.add(line);
-                    }
 
-                    List<String> newLines = this.getChanges(lines);
+
+                    List<String> newLines = this.getChanges(this.readFile(logFile));
+                    List<LogEvent> events = LogParser.getAllEvents(newLines);
                     this.lastLine = newLines.get(newLines.size() - 1);
-                    this.parseLog(newLines);
+
+                    for (LogEvent e : events){
+                        System.out.println(e);
+                    }
                 }
 
 

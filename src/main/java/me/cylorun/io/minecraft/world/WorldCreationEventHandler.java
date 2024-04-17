@@ -1,10 +1,7 @@
-package me.cylorun.event;
+package me.cylorun.io.minecraft.world;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import me.cylorun.event.callbacks.WorldCreationListener;
-import me.cylorun.io.minecraft.WorldFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;

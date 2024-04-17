@@ -1,8 +1,7 @@
 package me.cylorun;
 
-import me.cylorun.event.LogHandler;
-import me.cylorun.event.WorldCreationEventHandler;
-import me.cylorun.io.sheets.GoogleSheetsClient;
+import me.cylorun.io.minecraft.logs.LogHandler;
+import me.cylorun.io.minecraft.world.WorldCreationEventHandler;
 
 public class Tracker {
     public static void main(String[] args) {

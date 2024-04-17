@@ -1,7 +1,6 @@
-package me.cylorun.event;
+package me.cylorun.io.minecraft.world;
 
-import me.cylorun.event.callbacks.WorldEventListener;
-import me.cylorun.io.minecraft.WorldFile;
+import me.cylorun.io.minecraft.SpeedrunEvent;
 import me.cylorun.utils.ExceptionUtil;
 
 import java.io.BufferedReader;

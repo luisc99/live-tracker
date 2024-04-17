@@ -1,4 +1,4 @@
-package me.cylorun.event;
+package me.cylorun.io.minecraft;
 
 import me.cylorun.enums.SpeedrunEventType;
 
