@@ -2,20 +2,17 @@ package me.cylorun.io.minecraft.world;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import me.cylorun.enums.SpeedrunEventType;
 import me.cylorun.io.minecraft.RecordFile;
 import me.cylorun.io.minecraft.SpeedrunEvent;
-import me.cylorun.io.minecraft.world.WorldEventHandler;
-import me.cylorun.enums.SpeedrunEventType;
-import me.cylorun.io.minecraft.world.WorldEventListener;
 import me.cylorun.utils.ExceptionUtil;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class WorldFile extends File implements WorldEventListener {
     private final WorldEventHandler eventHandler;
@@ -38,6 +35,23 @@ public class WorldFile extends File implements WorldEventListener {
 
     public Path getLogPath() {
         return Paths.get(this.getAbsolutePath()).getParent().getParent().resolve("logs").resolve("latest.log");
+    }
+
+    public String getUsername() throws IOException {
+        // [11:30:07] [Render thread/INFO]: Setting user: cylorun
+        String regex = "^\\[\\d{2}:\\d{2}:\\d{2}\\] \\[Render thread\\/INFO\\]: Setting user: .*$";
+        Pattern pattern = Pattern.compile(regex);
+        BufferedReader reader = new BufferedReader(new FileReader(this.getLogPath().toFile()));
+
+        String line;
+        String username = "";
+        while ((line = reader.readLine()) != null) {
+            if (pattern.matcher(line).find()) {
+                String[] split = line.split(":");
+                username = split[split.length-1].trim();
+            }
+        }
+        return username;
     }
 
 

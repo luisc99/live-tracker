@@ -1,13 +1,12 @@
 package me.cylorun.io.minecraft.logs;
 
-import me.cylorun.enums.LogEvent;
+import me.cylorun.enums.LogEventType;
 import me.cylorun.io.minecraft.world.WorldFile;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +24,7 @@ public class LogHandler extends Thread {
         this.start();
     }
 
-    public void notifyListeners(LogEvent e) {
+    public void notifyListeners(LogEventType e) {
         for (LogEventListener lel : this.listeners) {
 
         }
@@ -75,12 +74,10 @@ public class LogHandler extends Thread {
 
 
                     List<String> newLines = this.getChanges(this.readFile(logFile));
-                    List<LogEvent> events = LogParser.getAllEvents(newLines);
+                    List<LogEventType> events = LogParser.getAllEvents(newLines, this.file);
                     this.lastLine = newLines.get(newLines.size() - 1);
 
-                    for (LogEvent e : events){
-                        System.out.println(e);
-                    }
+                    System.out.println(events);
                 }
 
 

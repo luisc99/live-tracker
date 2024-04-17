@@ -1,12 +1,13 @@
 package me.cylorun.enums;
 
-public enum LogEvent {
+public enum LogEventType {
     DEATH("death"),
+    HUNGER_RESET("hunger_reset"),
     RESPAWN_SET("respawn_set");
 
     private String label;
 
-    private LogEvent(String label) {
+    private LogEventType(String label) {
         this.label = label;
     }
 
