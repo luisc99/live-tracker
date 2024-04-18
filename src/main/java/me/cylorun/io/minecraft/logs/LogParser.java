@@ -6,6 +6,7 @@ import me.cylorun.io.minecraft.world.WorldFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class LogParser {
@@ -46,7 +47,7 @@ public class LogParser {
             System.out.println(l);
             if (chatLogPattern.matcher(l).find()) {
 //                System.out.println(lines.get(lines.indexOf(l)-1));
-                if (lines.indexOf(l) != 0 && serverDeathPattern.matcher(lines.get(lines.indexOf(l)-1)).find()) { // checks if the previous line is the server death msg
+                if (lines.indexOf(l) != 0 && serverDeathPattern.matcher(lines.get(lines.indexOf(l) - 1)).find()) { // checks if the previous line is the server death msg
                     System.out.println("yoooo");
                     if (setRespawn) {
                         res.add(LogEventType.HUNGER_RESET);
@@ -68,11 +69,30 @@ public class LogParser {
     }
 
     public static int timeBetween(String lineA, String lineB) { // in seconds
+        int a = getTime(lineA);
+        int b = getTime(lineB);
+        if (a == -1 || b == -1) {
 
-        return 0;
+        }
+        return a - b;
     }
-    public static long getTime(String line){
-        return 0L;
+
+    public static int getTime(String line) { // returns seconds since 00:00
+        String pattern = "\\[(\\d{2}:\\d{2}:\\d{2})\\]";
+        Pattern regex = Pattern.compile(pattern);
+        Matcher matcher = regex.matcher(line);
+        String time;
+        if (!matcher.find()) {
+            return -1;
+        }
+        if (matcher.group().split(":").length != 3) {
+            return -1;
+        }
+
+        time = matcher.group();
+        String[] splitTime = time.split(":");
+
+        return (Integer.parseInt(splitTime[0]) * 120) + (Integer.parseInt(splitTime[1]) * 60) + (Integer.parseInt(splitTime[2]));
     }
 
 }

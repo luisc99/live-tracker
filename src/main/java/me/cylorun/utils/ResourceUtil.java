@@ -5,9 +5,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.Tracker;
-import org.jetbrains.annotations.NotNull;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -24,38 +26,31 @@ public class ResourceUtil {
             throw new RuntimeException("Resource not found: events/tracked.json");
         }
 
-        String trackedEventsData = loadFile(url);
 
         String[] keys = {"GENERAL_HEADERS", "TRACKED_BARTERS", "TRACKED_FOODS", "TRACKED_MOBS", "TRAVEL_METHODS"};
-        JsonObject jsonData = JsonParser.parseString(trackedEventsData).getAsJsonObject();
+        JsonObject jsonData = loadJsonResource(url);
 
-        try {
-            for (String k : keys) {
-                JsonArray a = (JsonArray) jsonData.get(k);
-                for (JsonElement o : a) {
-                    String insertStr;
+        for (String k : keys) {
+            JsonArray a = (JsonArray) jsonData.get(k);
+            for (JsonElement o : a) {
+                String insertStr = o.getAsString();
 
-                    if (k.equals("TRACKED_BARTERS") || k.equals("TRACKED_FOODS") || k.equals("TRACKED_MOBS")) {
-                        insertStr = o.getAsString().split(":")[1];
-                    } else if(k.equals("TRAVEL_METHODS")) {
-                        insertStr = o.getAsString().split(":")[1].replace("_one_cm","");
-                    } else {
-                        insertStr = o.getAsString();
-                    }
-
-                    list.add(insertStr);
+                if (k.equals("TRACKED_BARTERS") || k.equals("TRACKED_FOODS") || k.equals("TRACKED_MOBS")) {
+                    insertStr = o.getAsString().split(":")[1];
+                } else if (k.equals("TRAVEL_METHODS")) {
+                    insertStr = o.getAsString().split(":")[1].replace("_one_cm", "");
                 }
+
+                list.add(insertStr);
             }
-            list.add("Seed");
-        } catch (Exception e) {
-            ExceptionUtil.showError(e);
-            throw new RuntimeException();
         }
+
+        list.add("Seed");
         return list;
     }
 
 
-    private static String loadFile(URL url) {
+    public static JsonObject loadJsonResource(URL url) {
         StringBuilder stringBuilder = new StringBuilder();
 
         try (InputStream inputStream = url.openStream();
@@ -68,7 +63,7 @@ public class ResourceUtil {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return stringBuilder.toString();
+        return JsonParser.parseString(stringBuilder.toString()).getAsJsonObject();
     }
 }
 
