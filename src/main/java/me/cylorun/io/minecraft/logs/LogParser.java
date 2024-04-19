@@ -24,13 +24,12 @@ public class LogParser {
 
         // any message not sent by a user or Debug
         String chatLogRegex = "^\\[\\d{2}:\\d{2}:\\d{2}\\]\\s*\\[Render\\s+thread\\/INFO\\]:\\s*\\[CHAT\\]\\s*(?!.*(?:\\[Debug\\]:|<\\w+>)).*$";
-        String excludeUserRegex = String.format("^(?!.*%s).*$", username);
+
         String serverDeathRegex = String.format("^\\[\\d{2}:\\d{2}:\\d{2}\\] \\[Server thread\\/INFO\\]: %s (\\S.*)$", username);
 
 
         Pattern chatLogPattern = Pattern.compile(chatLogRegex);
         Pattern serverDeathPattern = Pattern.compile(serverDeathRegex);
-        Pattern excludeUserPattern = Pattern.compile(excludeUserRegex);
         boolean setRespawn = false;
 
         for (String l : lines) {
@@ -62,6 +61,9 @@ public class LogParser {
                 }
 
             }
+            if (isChatMessage(l)) {
+
+            }
 
         }
 
@@ -81,18 +83,30 @@ public class LogParser {
         String pattern = "\\[(\\d{2}:\\d{2}:\\d{2})\\]";
         Pattern regex = Pattern.compile(pattern);
         Matcher matcher = regex.matcher(line);
-        String time;
         if (!matcher.find()) {
             return -1;
         }
-        if (matcher.group().split(":").length != 3) {
+        String time = matcher.group();
+
+        if (time.split(":").length != 3) {
             return -1;
         }
 
-        time = matcher.group();
         String[] splitTime = time.split(":");
-
         return (Integer.parseInt(splitTime[0]) * 120) + (Integer.parseInt(splitTime[1]) * 60) + (Integer.parseInt(splitTime[2]));
+    }
+
+    public static boolean isServerThread(String line) {
+        Pattern pattern = Pattern.compile("^\\[\\d{2}:\\d{2}:\\d{2}\\] \\[Server thread/INFO\\]:\n");
+        return pattern.matcher(line).find();
+    }
+    public static boolean isRenderThread(String line) {
+        Pattern pattern = Pattern.compile("^\\[\\d{2}:\\d{2}:\\d{2}\\] \\[Render thread/INFO\\]:\n");
+        return pattern.matcher(line).find();
+    }
+    public static boolean isChatMessage(String line) {
+        Pattern pattern = Pattern.compile("^\\[\\d{2}:\\d{2}:\\d{2}\\]\\s*\\[Render\\s+thread\\/INFO\\]:\\s*\\[CHAT\\]\\s*(?!.*(?:\\[Debug\\]:|<\\w+>)).*$");
+        return pattern.matcher(line).find();
     }
 
 }

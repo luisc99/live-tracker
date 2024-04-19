@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.enums.SpeedrunEventType;
 import me.cylorun.io.minecraft.RecordFile;
+import me.cylorun.io.minecraft.Run;
 import me.cylorun.io.minecraft.SpeedrunEvent;
 import me.cylorun.utils.ExceptionUtil;
 
@@ -62,7 +63,7 @@ public class WorldFile extends File implements WorldEventListener {
         return res;
     }
 
-    public void onCompletion() {
+    public void onCompletion(SpeedrunEvent event) {
         this.finished = true;
         FileReader reader = null;
         try {
@@ -73,6 +74,8 @@ public class WorldFile extends File implements WorldEventListener {
         }
         JsonObject o = JsonParser.parseReader(reader).getAsJsonObject();
         RecordFile record = new RecordFile(o);
+        Run thisRun = new Run(this, record);
+
     }
 
     @Override
@@ -88,8 +91,9 @@ public class WorldFile extends File implements WorldEventListener {
                 }
 
                 if (e.type.equals(SpeedrunEventType.CREDITS)) {
-                    this.onCompletion();
+                    this.onCompletion(e);
                 }
+
                 System.out.printf("Name: %s, Event: %s\n", this.getName(), e);
             }
         }
