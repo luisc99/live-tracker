@@ -1,7 +1,9 @@
 package me.cylorun.io.minecraft.logs;
 
+import com.google.gson.JsonObject;
 import me.cylorun.enums.LogEventType;
 import me.cylorun.io.minecraft.world.WorldFile;
+import me.cylorun.utils.I18n;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -12,21 +14,15 @@ import java.util.regex.Pattern;
 public class LogParser {
 
     public static int maxSpawnSetToDeathTime = 30; // max time from setting spawn point to dying
+    private int lastRespawnSet = -1;
+    private boolean respawnSet = false;
 
-    public static List<LogEventType> getAllEvents(List<String> lines, WorldFile file) {
+    public LogParser() {
+
+    }
+
+    public List<LogEventType> getAllEvents(List<String> lines, WorldFile file) {
         List<LogEventType> res = new ArrayList<>();
-        String username = null;
-        try {
-            username = file.getUsername();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        // any message not sent by a user or Debug
-
-
-
-        boolean setRespawn = false;
 
         for (String l : lines) {
             /*
@@ -40,21 +36,29 @@ public class LogParser {
             [18:02:11] [Render thread/INFO]: [CHAT] cylorun fell from a high place --  chat log regex
             */
 
+            if (this.respawnSet) {
+                if (getTime(l) - this.lastRespawnSet > maxSpawnSetToDeathTime) {
+                    this.respawnSet = false;
+                }
+            }
+//            System.out.printf("last: %s, curr: %s\n", this.lastRespawn, getTime(l));
             if (isChatLogMessage(l)) {
-                if(isRenderThread(l)) {
-                    setRespawn = true;
+                if (l.contains(I18n.get("chat.respawn_set"))) {
+                    this.lastRespawnSet = getTime(l);
+                    this.respawnSet = true;
                     res.add(LogEventType.RESPAWN_SET);
                 }
 
-                if (l.contains(username) && isServerThread(getPrevLine(l, lines))) {
-                    if(setRespawn){
+                if (containsDeath(l)) {
+                    if (this.respawnSet) {
                         res.add(LogEventType.HUNGER_RESET);
-                        setRespawn = false;
+                        this.respawnSet = false;
                     } else {
                         res.add(LogEventType.DEATH);
                     }
                 }
             }
+
 
         }
 
@@ -75,36 +79,45 @@ public class LogParser {
         return a - b;
     }
 
-    public static int getTime(String line) { // returns seconds since 00:00
+    public static int getTime(String line) {
         String pattern = "\\[(\\d{2}:\\d{2}:\\d{2})\\]";
         Pattern regex = Pattern.compile(pattern);
         Matcher matcher = regex.matcher(line);
         if (!matcher.find()) {
             return -1;
         }
-        String time = matcher.group();
+        String time = matcher.group(1);
 
-        if (time.split(":").length != 3) {
+        String[] splitTime = time.split(":");
+        if (splitTime.length != 3) {
             return -1;
         }
 
-        String[] splitTime = time.split(":");
-        return (Integer.parseInt(splitTime[0]) * 120) + (Integer.parseInt(splitTime[1]) * 60) + (Integer.parseInt(splitTime[2]));
+        return (Integer.parseInt(splitTime[0]) * 3600) + (Integer.parseInt(splitTime[1]) * 60) + Integer.parseInt(splitTime[2]);
     }
 
-    public static boolean containsDeath(String line, String username) {
-        String regex = String.format("^\\[\\d{2}:\\d{2}:\\d{2}\\] \\[Server thread\\/INFO\\]: %s (\\S.*)$", username);
-        Pattern pattern = Pattern.compile(regex);
-        return pattern.matcher(line).find();
+    public static boolean containsDeath(String line) {
+//        if (isServerThread(line)) {
+            JsonObject deaths = I18n.getAllDeaths();
+            for (String s : deaths.keySet()) {
+                String v = deaths.get(s).getAsString();
+                line = line.toLowerCase();
+                if (line.contains(v.toLowerCase())) {
+                    return true;
+                }
+            }
+//        }
+
+        return false;
     }
 
     public static boolean isServerThread(String line) {
-        Pattern pattern = Pattern.compile("^\\[\\d{2}:\\d{2}:\\d{2}\\] \\[Server thread/INFO\\]:\n");
+        Pattern pattern = Pattern.compile("\\\\[(\\\\d{2}:\\\\d{2}:\\\\d{2})\\\\] \\\\[Server thread/INFO\\\\]: (.*)");
         return pattern.matcher(line).find();
     }
 
     public static boolean isRenderThread(String line) {
-        Pattern pattern = Pattern.compile("^\\[\\d{2}:\\d{2}:\\d{2}\\] \\[Render thread/INFO\\]:\n");
+        Pattern pattern = Pattern.compile("^\\[\\d{2}:\\d{2}:\\d{2}\\] \\[Render thread/INFO\\]:.*");
         return pattern.matcher(line).find();
     }
 

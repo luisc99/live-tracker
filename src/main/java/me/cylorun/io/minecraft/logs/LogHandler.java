@@ -2,6 +2,7 @@ package me.cylorun.io.minecraft.logs;
 
 import me.cylorun.enums.LogEventType;
 import me.cylorun.io.minecraft.world.WorldFile;
+import org.mortbay.log.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -66,6 +67,7 @@ public class LogHandler extends Thread {
             throw new RuntimeException(e);
         }
         this.lastLine = t.get(t.size() - 1); // to ignore events that occured before loading the world, prevents duplication when rejoining
+        LogParser parser = new LogParser();
 
         while (true) {
             try {
@@ -74,8 +76,8 @@ public class LogHandler extends Thread {
 
 
                     List<String> newLines = this.getChanges(this.readFile(logFile));
-                    List<LogEventType> events = LogParser.getAllEvents(newLines, this.file);
-                    this.lastLine = newLines.get(newLines.size() - 1);
+                    List<LogEventType> events = parser.getAllEvents(newLines, this.file);
+                    this.lastLine = newLines.isEmpty() ? this.lastLine : newLines.get(newLines.size() - 1);
 
                     System.out.println(events);
                 }
