@@ -23,46 +23,37 @@ public class LogParser {
         }
 
         // any message not sent by a user or Debug
-        String chatLogRegex = "^\\[\\d{2}:\\d{2}:\\d{2}\\]\\s*\\[Render\\s+thread\\/INFO\\]:\\s*\\[CHAT\\]\\s*(?!.*(?:\\[Debug\\]:|<\\w+>)).*$";
-
-        String serverDeathRegex = String.format("^\\[\\d{2}:\\d{2}:\\d{2}\\] \\[Server thread\\/INFO\\]: %s (\\S.*)$", username);
 
 
-        Pattern chatLogPattern = Pattern.compile(chatLogRegex);
-        Pattern serverDeathPattern = Pattern.compile(serverDeathRegex);
+
         boolean setRespawn = false;
 
         for (String l : lines) {
-                        /*
-                        [15:51:29] [Render thread/INFO]: [CHAT] Respawn point set -- pass
-                        [15:51:48] [Render thread/INFO]: [CHAT] [Debug]: Render Distance: 9 -- ignore
-                        [15:51:05] [Render thread/INFO]: [CHAT] <cylorun> hi -- ignore
-                        */
+            /*
+            [15:51:29] [Render thread/INFO]: [CHAT] Respawn point set -- pass
+            [15:51:48] [Render thread/INFO]: [CHAT] [Debug]: Render Distance: 9 -- ignore
+            [15:51:05] [Render thread/INFO]: [CHAT] <cylorun> hi -- ignore
+            */
 
-                        /*
-                        [18:02:11] [Server thread/INFO]: cylorun fell from a high place -- server death pattern
-                        [18:02:11] [Render thread/INFO]: [CHAT] cylorun fell from a high place --  chat log regex
-                        */
-            System.out.println(l);
-            if (chatLogPattern.matcher(l).find()) {
-//                System.out.println(lines.get(lines.indexOf(l)-1));
-                if (lines.indexOf(l) != 0 && serverDeathPattern.matcher(lines.get(lines.indexOf(l) - 1)).find()) { // checks if the previous line is the server death msg
-                    System.out.println("yoooo");
-                    if (setRespawn) {
+            /*
+            [18:02:11] [Server thread/INFO]: cylorun fell from a high place -- server death pattern
+            [18:02:11] [Render thread/INFO]: [CHAT] cylorun fell from a high place --  chat log regex
+            */
+
+            if (isChatLogMessage(l)) {
+                if(isRenderThread(l)) {
+                    setRespawn = true;
+                    res.add(LogEventType.RESPAWN_SET);
+                }
+
+                if (l.contains(username) && isServerThread(getPrevLine(l, lines))) {
+                    if(setRespawn){
                         res.add(LogEventType.HUNGER_RESET);
+                        setRespawn = false;
                     } else {
                         res.add(LogEventType.DEATH);
                     }
                 }
-
-                // ALSO GETS TRIGGERED FROM MOST COMMANDS, doesnt really matter, but theres probably some other cases too
-                if (excludeUserPattern.matcher(l).find()) { // doesn't contain the username and is a "chat-log" message
-                    setRespawn = true;
-                }
-
-            }
-            if (isChatMessage(l)) {
-
             }
 
         }
@@ -70,11 +61,16 @@ public class LogParser {
         return res;
     }
 
+    private static String getPrevLine(String line, List<String> lines) {
+        if (lines.indexOf(line) == 0) return line;
+        return lines.get(lines.indexOf(line) - 1);
+    }
+
     public static int timeBetween(String lineA, String lineB) { // in seconds
         int a = getTime(lineA);
         int b = getTime(lineB);
         if (a == -1 || b == -1) {
-
+            return 0;
         }
         return a - b;
     }
@@ -96,15 +92,23 @@ public class LogParser {
         return (Integer.parseInt(splitTime[0]) * 120) + (Integer.parseInt(splitTime[1]) * 60) + (Integer.parseInt(splitTime[2]));
     }
 
+    public static boolean containsDeath(String line, String username) {
+        String regex = String.format("^\\[\\d{2}:\\d{2}:\\d{2}\\] \\[Server thread\\/INFO\\]: %s (\\S.*)$", username);
+        Pattern pattern = Pattern.compile(regex);
+        return pattern.matcher(line).find();
+    }
+
     public static boolean isServerThread(String line) {
         Pattern pattern = Pattern.compile("^\\[\\d{2}:\\d{2}:\\d{2}\\] \\[Server thread/INFO\\]:\n");
         return pattern.matcher(line).find();
     }
+
     public static boolean isRenderThread(String line) {
         Pattern pattern = Pattern.compile("^\\[\\d{2}:\\d{2}:\\d{2}\\] \\[Render thread/INFO\\]:\n");
         return pattern.matcher(line).find();
     }
-    public static boolean isChatMessage(String line) {
+
+    public static boolean isChatLogMessage(String line) { // something not typed by the player or debug, advancements deaths and commands
         Pattern pattern = Pattern.compile("^\\[\\d{2}:\\d{2}:\\d{2}\\]\\s*\\[Render\\s+thread\\/INFO\\]:\\s*\\[CHAT\\]\\s*(?!.*(?:\\[Debug\\]:|<\\w+>)).*$");
         return pattern.matcher(line).find();
     }
