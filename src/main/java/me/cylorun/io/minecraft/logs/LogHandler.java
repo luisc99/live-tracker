@@ -74,7 +74,6 @@ public class LogHandler extends Thread {
                 if (logFile.length() > this.lastSize) { // log has updated
                     this.lastSize = logFile.length();
 
-
                     List<String> newLines = this.getChanges(this.readFile(logFile));
                     List<LogEventType> events = parser.getAllEvents(newLines, this.file);
                     this.lastLine = newLines.isEmpty() ? this.lastLine : newLines.get(newLines.size() - 1);

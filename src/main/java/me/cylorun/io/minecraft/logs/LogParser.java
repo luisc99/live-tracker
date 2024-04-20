@@ -41,8 +41,8 @@ public class LogParser {
                     this.respawnSet = false;
                 }
             }
-//            System.out.printf("last: %s, curr: %s\n", this.lastRespawn, getTime(l));
-            if (isChatLogMessage(l)) {
+
+            if (isChatLogMessage(l)) { // possible duplication bug
                 if (l.contains(I18n.get("chat.respawn_set"))) {
                     this.lastRespawnSet = getTime(l);
                     this.respawnSet = true;
