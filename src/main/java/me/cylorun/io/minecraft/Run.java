@@ -1,12 +1,13 @@
 package me.cylorun.io.minecraft;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import me.cylorun.io.TrackerOptions;
 import me.cylorun.io.minecraft.world.WorldFile;
+import me.cylorun.utils.Assert;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 
 public class Run extends ArrayList<Object> {
@@ -21,17 +22,71 @@ public class Run extends ArrayList<Object> {
         this.worldFile = worldFile;
         this.recordFile = recordFile;
 
-        Set<String> uuids = this.recordFile.getJson().get("stats").getAsJsonObject().keySet();
         this.adv = recordFile.getJson().get("advancements").getAsJsonObject();
-        this.stats = recordFile.getJson().get("stats").getAsJsonObject().get(uuids.toArray()[0].toString()).getAsJsonObject().get("stats").getAsJsonObject();
+        this.stats = this.getStats();
 
     }
 
-    public Run gatherAll(){
+    public synchronized Run gatherAll() {
+        if (this.stats == null) {
+            this.stats = this.getStats();
+        }
+
         this.add(this.getDate());
         this.add(this.getIronSource());
-        System.out.println(this.getIronSource());
+        this.add(this.getEnterType());
+        this.add(this.getGoldSource());
         return this;
+    }
+
+    private JsonObject getStats(){
+        Set<String> uuids = this.recordFile.getJson().get("stats").getAsJsonObject().keySet();
+        if (!uuids.isEmpty()){
+            return this.recordFile.getJson().get("stats").getAsJsonObject().get(uuids.toArray()[0].toString()).getAsJsonObject().get("stats").getAsJsonObject();
+        }
+        return null;
+    }
+
+    private String getDate() {
+        Date date = new Date(this.recordFile.getJson().get("date").getAsLong());
+        return new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(date);
+    }
+
+    private String getEnterType() {
+        String enterType = "None";
+        if (this.adv.has("minecraft:story/enter_the_nether")) {
+            enterType = "Obsidian";
+            if (this.stats.has("minecraft:mined") && this.stats.get("minecraft:mined").getAsJsonObject().has("minecraft:magma_block")) {
+                if (this.adv.has("minecraft:story/lava_bucket")) {
+                    enterType = "Magma Ravine";
+                } else {
+                    enterType = "Bucketless";
+                }
+            } else if (this.adv.has("minecraft:story/lava_bucket")) {
+                enterType = "Lava Pool";
+
+            }
+        }
+        return enterType;
+    }
+
+    private String getGoldSource() {
+        String goldSource = "None";
+
+        // Check if "gold_ingot" is either dropped or picked up
+        if ((stats.has("minecraft:dropped") && stats.get("minecraft:dropped").getAsJsonObject().has("minecraft:gold_ingot")) ||
+                (stats.has("minecraft:picked_up") && (stats.get("minecraft:picked_up").getAsJsonObject().has("minecraft:gold_ingot") ||
+                        stats.get("minecraft:picked_up").getAsJsonObject().has("minecraft:gold_block")))) {
+            goldSource = "Classic";
+
+            // Check if "dark_prismarine" is mined
+            if (stats.has("minecraft:mined") && stats.get("minecraft:mined").getAsJsonObject().has("minecraft:dark_prismarine")) {
+                goldSource = "Monument";
+            } else if (adv.has("minecraft:nether/find_bastion")) {
+                goldSource = "Bastion";
+            }
+        }
+        return goldSource;
     }
 
     private String getIronSource() {
@@ -48,8 +103,7 @@ public class Run extends ArrayList<Object> {
                 if (netherIgt < ironIgt) {
                     ironSource = "Nether";
                 }
-            }
-            else if (stats.has("minecraft:crafted") && stats.getAsJsonObject("minecraft:crafted").has("minecraft:furnace") &&
+            } else if (stats.has("minecraft:crafted") && stats.getAsJsonObject("minecraft:crafted").has("minecraft:furnace") &&
                     stats.has("minecraft:mined") && stats.getAsJsonObject("minecraft:mined").has("minecraft:iron_ore")) {
                 ironSource = "Structureless";
             }
@@ -107,12 +161,10 @@ public class Run extends ArrayList<Object> {
                                         ((this.stats.has("minecraft:custom") && (this.stats.getAsJsonObject("minecraft:custom").get("minecraft:open_chest").getAsInt() == 1)) ||
                                                 this.adv.has("minecraft:nether/find_bastion"))) {
                             ironSource = "Half Shipwreck";
-                        }
-                        else if ((this.stats.has("minecraft:crafted") && this.stats.getAsJsonObject("minecraft:crafted").has("minecraft:diamond_pickaxe")) ||
+                        } else if ((this.stats.has("minecraft:crafted") && this.stats.getAsJsonObject("minecraft:crafted").has("minecraft:diamond_pickaxe")) ||
                                 (this.stats.has("minecraft:crafted") && this.stats.getAsJsonObject("minecraft:crafted").has("minecraft:diamond_sword"))) {
                             ironSource = "Buried Treasure";
-                        }
-                        else if (this.stats.has("minecraft:mined") &&
+                        } else if (this.stats.has("minecraft:mined") &&
                                 ((this.stats.getAsJsonObject("minecraft:mined").has("minecraft:oak_log") &&
                                         this.stats.getAsJsonObject("minecraft:mined").get("minecraft:oak_log").getAsInt() <= 4) ||
                                         (this.stats.getAsJsonObject("minecraft:mined").has("minecraft:dark_oak_log") &&
@@ -126,8 +178,7 @@ public class Run extends ArrayList<Object> {
                                         (this.stats.getAsJsonObject("minecraft:mined").has("minecraft:acacia_log") &&
                                                 this.stats.getAsJsonObject("minecraft:mined").get("minecraft:acacia_log").getAsInt() <= 4))) {
                             ironSource = "Half Shipwreck";
-                        }
-                        else {
+                        } else {
                             ironSource = "Buried Treasure";
                         }
                     }
@@ -136,9 +187,18 @@ public class Run extends ArrayList<Object> {
         }
         return ironSource;
     }
-    private String getDate(){
-        return new Date(this.recordFile.getJson().get("date").getAsLong()).toString();
+
+    public  boolean shouldPush() {
+        TrackerOptions options = TrackerOptions.getInstance();
+        Assert.isNotNull(this.stats);
+        String runType =  this.recordFile.getJson().get("run_type").getAsString();
+        if (options.detect_ssg && runType.equals("set_seed")) {
+            return false;
+        }
+
+        return this.adv.has("minecraft:story/smelt_iron") || this.adv.has("minecraft:story/enter_the_nether");
     }
+
 
 
 }

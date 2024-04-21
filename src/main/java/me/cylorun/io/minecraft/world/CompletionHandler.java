@@ -1,7 +1,7 @@
 package me.cylorun.io.minecraft.world;
 
-import me.cylorun.io.minecraft.SpeedrunEvent;
+import me.cylorun.io.minecraft.Run;
 
 public interface CompletionHandler {
-    void handleCompletion(SpeedrunEvent e);
+    void handleCompletion();
 }

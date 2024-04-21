@@ -16,6 +16,8 @@ public class TrackerOptions {
     public String sheet_name = "Raw Data";
     public Boolean gen_labels = true;
     public String lang = "en_us";
+    public boolean detect_ssg = true;
+
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path CONFIG_PATH = Paths.get("config.json");
     private static TrackerOptions instance;

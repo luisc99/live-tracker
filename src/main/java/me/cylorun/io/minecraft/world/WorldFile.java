@@ -54,15 +54,17 @@ public class WorldFile extends File implements WorldEventListener {
         this.completionHandler = completionHandler;
     }
 
-    private void onCompletion(SpeedrunEvent e){
+    public void onCompletion(){ // not necessarily on credits, just whenever the run is over
         if (this.completionHandler !=null){
-            this.completionHandler.handleCompletion(e);
+            this.completionHandler.handleCompletion();
         }
     }
 
     @Override
     public void onNewEvent(SpeedrunEvent e) {
         if (!this.finished) {
+            System.out.printf("Name: %s, Event: %s\n", this.getName(), e);
+
             if (e.type.equals(SpeedrunEventType.REJOIN_WORLD)) {
                 this.track = true;
             }
@@ -73,11 +75,15 @@ public class WorldFile extends File implements WorldEventListener {
                 }
 
                 if (e.type.equals(SpeedrunEventType.CREDITS)) {
-                    this.onCompletion(e);
+                    this.finished = true;
+                    this.onCompletion();
                 }
 
-                System.out.printf("Name: %s, Event: %s\n", this.getName(), e);
             }
         }
+    }
+    @Override
+    public String toString(){
+        return this.getName();
     }
 }

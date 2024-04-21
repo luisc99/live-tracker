@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class WorldCreationEventHandler extends Thread {
-    private List<String> previousWorlds;
+    public List<String> previousWorlds;
     private String lastPath = "";
 
     public WorldCreationEventHandler() {
