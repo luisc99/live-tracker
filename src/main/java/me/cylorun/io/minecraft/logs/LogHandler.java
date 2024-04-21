@@ -2,25 +2,26 @@ package me.cylorun.io.minecraft.logs;
 
 import me.cylorun.enums.LogEventType;
 import me.cylorun.io.minecraft.world.WorldFile;
-import org.mortbay.log.Log;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class LogHandler extends Thread {
-    public final int DELAY = 5000;
     public final WorldFile file;
     public List<LogEventListener> listeners;
-
+    public Map<LogEventType, Integer> logEventMap;
     private String lastLine = "";
-    private long lastSize = 0L;
+    private long lastSize;
 
     public LogHandler(WorldFile file) {
         this.file = file;
+        this.logEventMap = new HashMap<>();
         this.lastSize = this.file.getLogPath().toFile().length();
         this.start();
     }
@@ -78,11 +79,18 @@ public class LogHandler extends Thread {
                     List<LogEventType> events = parser.getAllEvents(newLines, this.file);
                     this.lastLine = newLines.isEmpty() ? this.lastLine : newLines.get(newLines.size() - 1);
 
-                    System.out.println(events);
+                    for(LogEventType e : events){
+                        int prev = 0;
+                        if (this.logEventMap.containsKey(e)){
+                            prev = this.logEventMap.get(e);
+                        }
+
+                        this.logEventMap.put(e, prev+1);
+                    }
                 }
 
 
-                Thread.sleep(this.DELAY);
+                Thread.sleep(5000);
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }

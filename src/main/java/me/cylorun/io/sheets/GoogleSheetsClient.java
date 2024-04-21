@@ -17,6 +17,14 @@ import static me.cylorun.io.sheets.GoogleSheetsService.getSheetsService;
 
 public class GoogleSheetsClient {
 
+    public static void setup(){
+        TrackerOptions options = TrackerOptions.getInstance();
+        if (options.gen_labels) {
+            generateLabels();
+        }
+    }
+
+
     public static void generateLabels() {
         List<Object> headers = ResourceUtil.getHeaderLabels();
 

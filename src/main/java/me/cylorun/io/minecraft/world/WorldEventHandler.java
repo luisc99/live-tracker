@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class WorldEventHandler extends Thread {
-    private final int DELAY_MS = 5000;
     public List<SpeedrunEvent> events;
     private List<WorldEventListener> listeners;
     private SpeedrunEvent latestEvent;
@@ -99,7 +98,7 @@ public class WorldEventHandler extends Thread {
 
                 }
 
-                Thread.sleep(this.DELAY_MS);
+                Thread.sleep(5000);
             } catch (InterruptedException | IOException e) {
                 ExceptionUtil.showError(e);
                 throw new RuntimeException(e);

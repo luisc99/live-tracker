@@ -1,22 +1,16 @@
 package me.cylorun.io.minecraft.world;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import me.cylorun.enums.SpeedrunEventType;
-import me.cylorun.io.minecraft.RecordFile;
-import me.cylorun.io.minecraft.Run;
 import me.cylorun.io.minecraft.SpeedrunEvent;
-import me.cylorun.utils.ExceptionUtil;
 
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
 public class WorldFile extends File implements WorldEventListener {
     private final WorldEventHandler eventHandler;
+    private CompletionHandler completionHandler;
     public boolean track = true;
     public boolean finished = false;
 
@@ -56,26 +50,14 @@ public class WorldFile extends File implements WorldEventListener {
     }
 
 
-    public List<Object> getEverything(RecordFile record) {
-        List<Object> res = new ArrayList<>();
-
-
-        return res;
+    public void setCompletionHandler(CompletionHandler completionHandler){
+        this.completionHandler = completionHandler;
     }
 
-    public void onCompletion(SpeedrunEvent event) {
-        this.finished = true;
-        FileReader reader = null;
-        try {
-            reader = new FileReader(this.getRecordPath().toFile());
-        } catch (FileNotFoundException e) {
-            ExceptionUtil.showError(e);
-            throw new RuntimeException(e);
+    private void onCompletion(SpeedrunEvent e){
+        if (this.completionHandler !=null){
+            this.completionHandler.handleCompletion(e);
         }
-        JsonObject o = JsonParser.parseReader(reader).getAsJsonObject();
-        RecordFile record = new RecordFile(o);
-        Run thisRun = new Run(this, record);
-
     }
 
     @Override

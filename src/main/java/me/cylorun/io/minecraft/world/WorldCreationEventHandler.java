@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class WorldCreationEventHandler extends Thread {
-    private final int DELAY_MS = 5000;
     private List<String> previousWorlds;
     private String lastPath = "";
 
@@ -54,7 +53,7 @@ public class WorldCreationEventHandler extends Thread {
             }
 
             try {
-                Thread.sleep(this.DELAY_MS);
+                Thread.sleep(5000);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
