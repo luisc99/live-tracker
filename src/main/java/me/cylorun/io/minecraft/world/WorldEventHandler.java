@@ -36,7 +36,7 @@ public class WorldEventHandler extends Thread {
 
     public void notifyListeners(SpeedrunEvent e) {
         for (WorldEventListener wel : this.listeners) {
-            wel.onNewEvent(e);
+            wel.onSpeedrunEvent(e);
         }
     }
 

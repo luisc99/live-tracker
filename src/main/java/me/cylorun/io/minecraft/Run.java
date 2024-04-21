@@ -1,6 +1,5 @@
 package me.cylorun.io.minecraft;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.io.minecraft.world.WorldFile;
@@ -18,12 +17,14 @@ public class Run extends ArrayList<Object> {
     private final RecordFile recordFile;
     private JsonObject stats;
     private JsonObject adv;
+    private JsonObject liveData;
     private List<SpeedrunEvent> eventLog;
     private long seed;
 
     public Run(WorldFile worldFile, RecordFile recordFile) {
         this.worldFile = worldFile;
         this.recordFile = recordFile;
+        this.liveData = worldFile.liveData;
         this.eventLog = worldFile.eventHandler.events;
         this.adv = recordFile.getJson().get("advancements").getAsJsonObject();
         this.stats = this.getStats();
@@ -56,8 +57,6 @@ public class Run extends ArrayList<Object> {
         }
         this.add(msToString(this.recordFile.getJson().get("final_igt").getAsLong()));
         this.add("Gold");
-
-
 
 
         return this;

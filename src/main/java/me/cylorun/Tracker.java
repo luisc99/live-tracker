@@ -42,7 +42,6 @@ public class Tracker {
     }
 
     public static void handleWorld(WorldFile world) {
-        LogHandler logH = new LogHandler(world);
         world.setCompletionHandler(() -> {
             world.finished = true;
             FileReader reader;

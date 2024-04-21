@@ -1,22 +1,38 @@
 package me.cylorun.io.minecraft.world;
 
+import com.google.gson.JsonObject;
+import me.cylorun.enums.LogEventType;
 import me.cylorun.enums.SpeedrunEventType;
+import me.cylorun.io.minecraft.LogEvent;
 import me.cylorun.io.minecraft.SpeedrunEvent;
+import me.cylorun.io.minecraft.logs.LogEventListener;
+import me.cylorun.io.minecraft.logs.LogHandler;
+import me.cylorun.io.minecraft.player.Inventory;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
-public class WorldFile extends File implements WorldEventListener {
+public class WorldFile extends File implements WorldEventListener, LogEventListener {
     public final WorldEventHandler eventHandler;
     private CompletionHandler completionHandler;
     public boolean track = true;
     public boolean finished = false;
+    public JsonObject liveData;
+    public Inventory inv;
+    public LogHandler logHandler;
 
     public WorldFile(String path) {
         super(path);
+        this.inv = new Inventory(this);
         this.eventHandler = new WorldEventHandler(this);
+        this.logHandler = new LogHandler(this);
+
+        this.logHandler.addListener(this);
         this.eventHandler.addListener(this);
     }
 
@@ -31,6 +47,7 @@ public class WorldFile extends File implements WorldEventListener {
     public Path getLogPath() {
         return Paths.get(this.getAbsolutePath()).getParent().getParent().resolve("logs").resolve("latest.log");
     }
+
     public Path getLevelDatPath() {
         return Paths.get(this.getAbsolutePath()).resolve("level.dat");
     }
@@ -46,25 +63,25 @@ public class WorldFile extends File implements WorldEventListener {
         while ((line = reader.readLine()) != null) {
             if (pattern.matcher(line).find()) {
                 String[] split = line.split(":");
-                username = split[split.length-1].trim();
+                username = split[split.length - 1].trim();
             }
         }
         return username;
     }
 
 
-    public void setCompletionHandler(CompletionHandler completionHandler){
+    public void setCompletionHandler(CompletionHandler completionHandler) {
         this.completionHandler = completionHandler;
     }
 
-    public void onCompletion(){ // not necessarily on credits, just whenever the run is over
-        if (this.completionHandler !=null){
+    public void onCompletion() { // not necessarily on credits, just whenever the run is over
+        if (this.completionHandler != null) {
             this.completionHandler.handleCompletion();
         }
     }
 
     @Override
-    public void onNewEvent(SpeedrunEvent e) {
+    public void onSpeedrunEvent(SpeedrunEvent e) {
         if (!this.finished) {
 //            System.out.printf("Name: %s, Event: %s\n", this.getName(), e);
 
@@ -81,12 +98,28 @@ public class WorldFile extends File implements WorldEventListener {
                     this.finished = true;
                     this.onCompletion();
                 }
-
             }
         }
     }
+
     @Override
-    public String toString(){
+    public void onLogEvent(LogEvent e) {
+        if (!this.finished) {
+            if (this.track) {
+                if (e.type.equals(LogEventType.RESPAWN_SET)) {
+                    this.inv.read();
+                }
+
+                if (e.type.equals(LogEventType.HUNGER_RESET)) {
+
+                }
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
         return this.getName();
     }
+
 }

@@ -1,6 +1,6 @@
 package me.cylorun.io.minecraft.logs;
 
-import me.cylorun.enums.LogEventType;
+import me.cylorun.io.minecraft.LogEvent;
 import me.cylorun.io.minecraft.world.WorldFile;
 
 import java.io.BufferedReader;
@@ -15,7 +15,7 @@ import java.util.Map;
 public class LogHandler extends Thread {
     public final WorldFile file;
     public List<LogEventListener> listeners;
-    public Map<LogEventType, Integer> logEventMap;
+    public Map<LogEvent, Integer> logEventMap;
     private String lastLine = "";
     private long lastSize;
 
@@ -26,9 +26,13 @@ public class LogHandler extends Thread {
         this.start();
     }
 
-    public void notifyListeners(LogEventType e) {
-        for (LogEventListener lel : this.listeners) {
+    public void addListener(LogEventListener lel) {
+        this.listeners.add(lel);
+    }
 
+    public void notifyListeners(LogEvent e) {
+        for (LogEventListener lel : this.listeners) {
+            lel.onLogEvent(e);
         }
     }
 
@@ -46,6 +50,7 @@ public class LogHandler extends Thread {
         }
         return newLines;
     }
+
     private List<String> readFile(File file) throws IOException {
         BufferedReader reader = new BufferedReader(new FileReader(file));
         List<String> lines = new ArrayList<>();
@@ -76,21 +81,23 @@ public class LogHandler extends Thread {
                     this.lastSize = logFile.length();
 
                     List<String> newLines = this.getChanges(this.readFile(logFile));
-                    List<LogEventType> events = parser.getAllEvents(newLines, this.file);
+                    List<LogEvent> events = parser.getAllEvents(newLines, this.file);
                     this.lastLine = newLines.isEmpty() ? this.lastLine : newLines.get(newLines.size() - 1);
 
-                    for(LogEventType e : events){
+                    for (LogEvent e : events) {
                         int prev = 0;
-                        if (this.logEventMap.containsKey(e)){
+                        if (this.logEventMap.containsKey(e)) {
                             prev = this.logEventMap.get(e);
                         }
 
-                        this.logEventMap.put(e, prev+1);
+                        this.logEventMap.put(e, prev + 1);
+
+                        this.notifyListeners(e);
                     }
                 }
 
 
-                Thread.sleep(5000);
+                Thread.sleep(2000);
             } catch (InterruptedException | IOException e) {
                 throw new RuntimeException(e);
             }

@@ -1,22 +1,23 @@
-package me.cylorun.io.minecraft;
+package me.cylorun.io.minecraft.player;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import me.cylorun.io.minecraft.NBTReader;
 import me.cylorun.io.minecraft.world.WorldFile;
 
 import java.util.ArrayList;
 
-public class InventoryReader extends ArrayList<InventoryItem> {
+public class Inventory extends ArrayList<InventoryItem> {
 
     private final WorldFile file;
 
-    public InventoryReader(WorldFile file) {
+    public Inventory(WorldFile file) {
         this.file = file;
     }
 
-    public InventoryReader read() {
+    public Inventory read() {
         NBTReader reader = new NBTReader(this.file.getLevelDatPath());
         this.clear();
 

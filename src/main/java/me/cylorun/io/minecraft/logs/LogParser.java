@@ -2,6 +2,7 @@ package me.cylorun.io.minecraft.logs;
 
 import com.google.gson.JsonObject;
 import me.cylorun.enums.LogEventType;
+import me.cylorun.io.minecraft.LogEvent;
 import me.cylorun.io.minecraft.world.WorldFile;
 import me.cylorun.utils.I18n;
 
@@ -21,8 +22,8 @@ public class LogParser {
 
     }
 
-    public List<LogEventType> getAllEvents(List<String> lines, WorldFile file) {
-        List<LogEventType> res = new ArrayList<>();
+    public List<LogEvent> getAllEvents(List<String> lines, WorldFile file) {
+        List<LogEvent> res = new ArrayList<>();
 
         for (String l : lines) {
             /*
@@ -46,15 +47,15 @@ public class LogParser {
                 if (l.contains(I18n.get("chat.respawn_set"))) {
                     this.lastRespawnSet = getTime(l);
                     this.respawnSet = true;
-                    res.add(LogEventType.RESPAWN_SET);
+                    res.add(new LogEvent(LogEventType.RESPAWN_SET, l));
                 }
 
                 if (containsDeath(l)) {
                     if (this.respawnSet) {
-                        res.add(LogEventType.HUNGER_RESET);
+                        res.add(new LogEvent(LogEventType.HUNGER_RESET, l));
                         this.respawnSet = false;
                     } else {
-                        res.add(LogEventType.DEATH);
+                        res.add(new LogEvent(LogEventType.DEATH, l));
                     }
                 }
             }
