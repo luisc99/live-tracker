@@ -1,5 +1,6 @@
 package me.cylorun.io.minecraft;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.io.minecraft.world.WorldFile;
@@ -8,6 +9,7 @@ import me.cylorun.utils.Assert;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 public class Run extends ArrayList<Object> {
@@ -16,32 +18,54 @@ public class Run extends ArrayList<Object> {
     private final RecordFile recordFile;
     private JsonObject stats;
     private JsonObject adv;
-    private final int size = 150; // header count / col count
+    private List<SpeedrunEvent> eventLog;
+    private long seed;
 
     public Run(WorldFile worldFile, RecordFile recordFile) {
         this.worldFile = worldFile;
         this.recordFile = recordFile;
-
+        this.eventLog = worldFile.eventHandler.events;
         this.adv = recordFile.getJson().get("advancements").getAsJsonObject();
         this.stats = this.getStats();
-
+        this.seed = Long.parseLong(new NBTReader(this.worldFile.getLevelDatPath()).get(NBTReader.SEED_PATH));
     }
 
     public synchronized Run gatherAll() {
         if (this.stats == null) {
             this.stats = this.getStats();
         }
+        String[] majorSplits = {"rsg.obtain_iron_pickaxe",
+                "rsg.enter_nether",
+                "rsg.enter_bastion",
+                "rsg.enter_fortress",
+                "rsg.first_portal",
+                "rsg.second_portal",
+                "rsg.enter_stronghold",
+                "rsg.enter_end"};
 
         this.add(this.getDate());
         this.add(this.getIronSource());
         this.add(this.getEnterType());
         this.add(this.getGoldSource());
+        this.add(this.getSpawnBiome());
+        this.add(msToString(this.recordFile.getJson().get("final_rta").getAsLong()));
+        this.add(this.getWoodTime());
+
+        for (String split : majorSplits) {
+            this.add(this.getSplitTime(split));
+        }
+        this.add(msToString(this.recordFile.getJson().get("final_igt").getAsLong()));
+        this.add("Gold");
+
+
+
+
         return this;
     }
 
-    private JsonObject getStats(){
+    private JsonObject getStats() {
         Set<String> uuids = this.recordFile.getJson().get("stats").getAsJsonObject().keySet();
-        if (!uuids.isEmpty()){
+        if (!uuids.isEmpty()) {
             return this.recordFile.getJson().get("stats").getAsJsonObject().get(uuids.toArray()[0].toString()).getAsJsonObject().get("stats").getAsJsonObject();
         }
         return null;
@@ -50,6 +74,49 @@ public class Run extends ArrayList<Object> {
     private String getDate() {
         Date date = new Date(this.recordFile.getJson().get("date").getAsLong());
         return new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(date);
+    }
+
+    private String getWoodTime() {
+        try {
+            long ms = this.adv.get("minecraft:recipes/misc/charcoal").getAsJsonObject().get("criteria").getAsJsonObject().get("has_log").getAsJsonObject().get("igt").getAsLong();
+            return msToString(ms);
+        } catch (Exception ignored) {
+            return "";
+        }
+    }
+
+
+    private String getSplitTime(String splitName) {
+        long time = Long.MAX_VALUE;
+        for (SpeedrunEvent e : this.eventLog) {
+            if (e.type.label.equals(splitName)) {
+                time = e.igt;
+            }
+        }
+
+        if (time == Long.MAX_VALUE) {
+            return "";
+        }
+
+        return Run.msToString(time);
+    }
+
+    private String getSpawnBiome() {
+        String spawnBiome = "None";
+        if (adv.has("minecraft:adventure/adventuring_time")) {
+            JsonObject adventuringTime = adv.getAsJsonObject("minecraft:adventure/adventuring_time");
+            if (adventuringTime.has("criteria")) {
+                JsonObject criteria = adventuringTime.getAsJsonObject("criteria");
+                for (String biome : criteria.keySet()) {
+                    JsonObject biomeData = criteria.getAsJsonObject(biome);
+                    if (biomeData.has("igt") && biomeData.get("igt").getAsInt() == 0) {
+                        spawnBiome = biome.split(":")[1];
+                        break;
+                    }
+                }
+            }
+        }
+        return spawnBiome;
     }
 
     private String getEnterType() {
@@ -188,10 +255,10 @@ public class Run extends ArrayList<Object> {
         return ironSource;
     }
 
-    public  boolean shouldPush() {
+    public boolean shouldPush() {
         TrackerOptions options = TrackerOptions.getInstance();
-        Assert.isNotNull(this.stats);
-        String runType =  this.recordFile.getJson().get("run_type").getAsString();
+        Assert.isNotNull(this.stats, "Stats is null");
+        String runType = this.recordFile.getJson().get("run_type").getAsString();
         if (options.detect_ssg && runType.equals("set_seed")) {
             return false;
         }
@@ -199,6 +266,15 @@ public class Run extends ArrayList<Object> {
         return this.adv.has("minecraft:story/smelt_iron") || this.adv.has("minecraft:story/enter_the_nether");
     }
 
+    public static String msToString(long time) {
 
+        long totalSeconds = time / 1000;
+        long hours = totalSeconds / 3600;
+        long remainingSeconds = totalSeconds % 3600;
+        long minutes = remainingSeconds / 60;
+        long seconds = remainingSeconds % 60;
+
+        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
 
 }

@@ -1,5 +1,7 @@
 package me.cylorun.enums;
 
+import me.cylorun.io.minecraft.SpeedrunEvent;
+
 public enum SpeedrunEventType {
     // common
     LEAVE_WORLD("common.leave_world"),
@@ -28,12 +30,11 @@ public enum SpeedrunEventType {
     KILL_DRAGON("rsg.kill_dragon"),
     CREDITS("rsg.credits");
 
-    private final String label;
+    public final String label;
 
-    private SpeedrunEventType(String label) {
+    SpeedrunEventType(String label) {
         this.label = label;
     }
-
     @Override
     public String toString() {
         return this.label;

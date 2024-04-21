@@ -94,6 +94,7 @@ public class WorldEventHandler extends Thread {
                     for (SpeedrunEvent e : changes) {
                         this.notifyListeners(e);
                     }
+
                     this.events = eventLog;
 
                 }

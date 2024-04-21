@@ -9,7 +9,7 @@ import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
 public class WorldFile extends File implements WorldEventListener {
-    private final WorldEventHandler eventHandler;
+    public final WorldEventHandler eventHandler;
     private CompletionHandler completionHandler;
     public boolean track = true;
     public boolean finished = false;
@@ -30,6 +30,9 @@ public class WorldFile extends File implements WorldEventListener {
 
     public Path getLogPath() {
         return Paths.get(this.getAbsolutePath()).getParent().getParent().resolve("logs").resolve("latest.log");
+    }
+    public Path getLevelDatPath() {
+        return Paths.get(this.getAbsolutePath()).resolve("level.dat");
     }
 
     public String getUsername() throws IOException {
@@ -63,7 +66,7 @@ public class WorldFile extends File implements WorldEventListener {
     @Override
     public void onNewEvent(SpeedrunEvent e) {
         if (!this.finished) {
-            System.out.printf("Name: %s, Event: %s\n", this.getName(), e);
+//            System.out.printf("Name: %s, Event: %s\n", this.getName(), e);
 
             if (e.type.equals(SpeedrunEventType.REJOIN_WORLD)) {
                 this.track = true;
