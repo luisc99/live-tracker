@@ -2,6 +2,7 @@ package me.cylorun.io.minecraft;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import me.cylorun.utils.ExceptionUtil;
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.io.NamedTag;
 
@@ -30,6 +31,7 @@ public class NBTReader {
         try {
             tag = NBTUtil.read(this.path.toFile());
         } catch (IOException e) {
+            ExceptionUtil.showError(e);
             throw new RuntimeException(e);
         }
         return JsonParser.parseString(tag.getTag().toString()).getAsJsonObject();

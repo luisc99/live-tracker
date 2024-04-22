@@ -99,7 +99,7 @@ public class WorldEventHandler extends Thread {
 
                 }
 
-                Thread.sleep(5000);
+                Thread.sleep(2000);
             } catch (InterruptedException | IOException e) {
                 ExceptionUtil.showError(e);
                 throw new RuntimeException(e);

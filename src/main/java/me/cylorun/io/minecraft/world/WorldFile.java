@@ -1,10 +1,10 @@
 package me.cylorun.io.minecraft.world;
 
 import com.google.gson.JsonObject;
-import me.cylorun.enums.LogEventType;
 import me.cylorun.enums.SpeedrunEventType;
 import me.cylorun.io.minecraft.LogEvent;
 import me.cylorun.io.minecraft.SpeedrunEvent;
+import me.cylorun.io.minecraft.live.BarterHandler;
 import me.cylorun.io.minecraft.logs.LogEventListener;
 import me.cylorun.io.minecraft.logs.LogHandler;
 import me.cylorun.io.minecraft.player.Inventory;
@@ -18,8 +18,9 @@ import java.nio.file.Paths;
 import java.util.regex.Pattern;
 
 public class WorldFile extends File implements WorldEventListener, LogEventListener {
-    public final WorldEventHandler eventHandler;
     private CompletionHandler completionHandler;
+    public final WorldEventHandler eventHandler;
+    public BarterHandler barterHandler;
     public boolean track = true;
     public boolean finished = false;
     public JsonObject liveData;
@@ -30,10 +31,12 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         super(path);
         this.inv = new Inventory(this);
         this.eventHandler = new WorldEventHandler(this);
+        this.barterHandler = new BarterHandler(this);
         this.logHandler = new LogHandler(this);
 
         this.logHandler.addListener(this);
         this.eventHandler.addListener(this);
+        this.liveData = new JsonObject();
     }
 
     public Path getRecordPath() {
@@ -80,11 +83,12 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         }
     }
 
+
     @Override
     public void onSpeedrunEvent(SpeedrunEvent e) {
         if (!this.finished) {
 //            System.out.printf("Name: %s, Event: %s\n", this.getName(), e);
-
+            this.barterHandler.onSpeedrunEvent(e);
             if (e.type.equals(SpeedrunEventType.REJOIN_WORLD)) {
                 this.track = true;
             }
@@ -106,13 +110,8 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     public void onLogEvent(LogEvent e) {
         if (!this.finished) {
             if (this.track) {
-                if (e.type.equals(LogEventType.RESPAWN_SET)) {
-                    this.inv.read();
-                }
+                this.barterHandler.onLogEvent(e);
 
-                if (e.type.equals(LogEventType.HUNGER_RESET)) {
-
-                }
             }
         }
     }
