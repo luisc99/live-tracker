@@ -23,6 +23,7 @@ public class LogHandler extends Thread {
         this.file = file;
         this.logEventMap = new HashMap<>();
         this.lastSize = this.file.getLogPath().toFile().length();
+        this.listeners = new ArrayList<>();
         this.start();
     }
 

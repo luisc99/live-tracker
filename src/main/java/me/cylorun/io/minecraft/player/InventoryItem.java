@@ -11,6 +11,6 @@ public class InventoryItem {
 
     @Override
     public String toString() {
-        return String.format("{name: %s, count: %s}", this.name, this.count);
+        return String.format("{\"name\": %s, \"count\": %s}", this.name, this.count);
     }
 }
