@@ -17,7 +17,6 @@ import java.util.Collections;
 
 public class GoogleSheetsService {
     private static final String CREDENTIALS_FILE = Paths.get("credentials.json").toString();
-    private static final String NAME = "LiveTracker";
 
 
     public static Sheets getSheetsService() throws IOException, GeneralSecurityException {
@@ -29,6 +28,6 @@ public class GoogleSheetsService {
                 GoogleNetHttpTransport.newTrustedTransport(),
                 JacksonFactory.getDefaultInstance(),
                 credential
-        ).setApplicationName(NAME).build();
+        ).setApplicationName("LiveTracker").build();
     }
 }

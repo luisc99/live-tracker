@@ -15,8 +15,8 @@ public class Run extends ArrayList<Object> {
 
     private final WorldFile worldFile;
     private final RecordFile recordFile;
-    private JsonObject stats;
-    private JsonObject adv;
+    public JsonObject stats;
+    public JsonObject adv;
     private JsonObject liveData;
     private List<SpeedrunEvent> eventLog;
     private long seed;

@@ -49,6 +49,7 @@
     "starved_death": "starved to death",
     "killed_by_mob_magic": "was killed by $ using magic",
     "killed_by_mob_mob": "was killed by $ using $",
-    "impaled_trident_mob": "was impaled by $ using Trident"
+    "impaled_trident_mob": "was impaled by $ using Trident",
+    "burned_death": "$ burned to death"
   }
 }

@@ -43,6 +43,6 @@ test {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'me.cylorun.Main'
+        attributes 'Main-Class': 'me.cylorun.Tracker'
     }
 }

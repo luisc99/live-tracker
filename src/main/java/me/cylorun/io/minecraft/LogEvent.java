@@ -11,4 +11,9 @@ public class LogEvent {
         this.time = LogParser.getTime(line);
         this.type = type;
     }
+
+    @Override
+    public String toString() {
+        return this.type.toString();
+    }
 }
