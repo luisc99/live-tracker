@@ -2,6 +2,7 @@ package me.cylorun.io.minecraft.logs;
 
 import com.google.gson.JsonObject;
 import me.cylorun.enums.LogEventType;
+import me.cylorun.io.TrackerOptions;
 import me.cylorun.io.minecraft.LogEvent;
 import me.cylorun.io.minecraft.world.WorldFile;
 import me.cylorun.utils.I18n;
@@ -14,7 +15,6 @@ import java.util.regex.Pattern;
 
 public class LogParser {
 
-    public static int maxSpawnSetToDeathTime = 30; // max time from setting spawn point to dying
     private int lastRespawnSet = -1;
     private boolean respawnSet = false;
 
@@ -38,7 +38,7 @@ public class LogParser {
             */
 
             if (this.respawnSet) {
-                if (getTime(l) - this.lastRespawnSet > maxSpawnSetToDeathTime) {
+                if (getTime(l) - this.lastRespawnSet > TrackerOptions.getInstance().respawn_to_hr) {
                     this.respawnSet = false;
                 }
             }

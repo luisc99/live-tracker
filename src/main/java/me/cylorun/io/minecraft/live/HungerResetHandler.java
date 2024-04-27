@@ -1,5 +1,6 @@
 package me.cylorun.io.minecraft.live;
 
+import me.cylorun.io.TrackerOptions;
 import me.cylorun.io.minecraft.LogEvent;
 import me.cylorun.io.minecraft.SpeedrunEvent;
 import me.cylorun.io.minecraft.logs.LogEventListener;
@@ -50,7 +51,7 @@ public class HungerResetHandler implements WorldEventListener, LogEventListener 
     public void onLogEvent(LogEvent e) {
         if (!this.world.finished && this.world.track) {
             System.out.println(e.type);
-            if (System.currentTimeMillis() - this.lastRespawnSet > 30_000L) {
+            if (System.currentTimeMillis() - this.lastRespawnSet >  (TrackerOptions.getInstance().respawn_to_hr * 1000L)) {
                 tmpInv.clear();
             }
 

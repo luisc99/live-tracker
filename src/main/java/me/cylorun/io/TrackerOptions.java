@@ -17,6 +17,8 @@ public class TrackerOptions {
     public Boolean gen_labels = true;
     public String lang = "en_us";
     public boolean detect_ssg = true;
+    public int respawn_to_hr = 30; // seconds
+    public int game_save_interval = 10; // seconds
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     private static final Path CONFIG_PATH = Paths.get("config.json");
