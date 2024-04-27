@@ -1,15 +1,13 @@
 package me.cylorun.io.minecraft;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.io.minecraft.world.WorldFile;
 import me.cylorun.utils.Assert;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Run extends ArrayList<Object> {
 
@@ -56,6 +54,9 @@ public class Run extends ArrayList<Object> {
             this.add(this.getSplitTime(split));
         }
         this.add(msToString(this.recordFile.getJson().get("final_igt").getAsLong()));
+        this.add(this.worldFile.strongholdTracker.getFinalData());
+        this.add(this.worldFile.strongholdTracker.getStrongholdRing());
+        this.add(String.valueOf(this.getExplosivesUsed()));
         this.add("Gold");
 
 
@@ -84,6 +85,15 @@ public class Run extends ArrayList<Object> {
         }
     }
 
+    private int getExplosivesUsed() {
+        if (!this.stats.has("minecraft:used")) return 0;
+        int explUsed = 0;
+        JsonObject used = this.stats.get("minecraft:used").getAsJsonObject();
+        for (Map.Entry<String, JsonElement> e : used.asMap().entrySet()) {
+            if (e.getKey().contains("_bed") || e.getKey().equals("minecraft:respawn_anchor")) explUsed+= e.getValue().getAsInt();
+        }
+        return explUsed - this.worldFile.hungerResetHandler.respawnPointsSet;
+    }
 
     private String getSplitTime(String splitName) {
         long time = Long.MAX_VALUE;

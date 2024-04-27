@@ -3,6 +3,7 @@ package me.cylorun.io.minecraft;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.utils.ExceptionUtil;
+import me.cylorun.utils.Vec2i;
 import net.minecraft.util.math.Vec3i;
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.io.NamedTag;
@@ -39,11 +40,11 @@ public class NBTReader {
         return JsonParser.parseString(tag.getTag().toString()).getAsJsonObject();
     }
 
-    public Vec3i getLocation() {
-        Integer[] loc = Arrays.stream(this.get(NBTReader.PLAYER_POS).split(" "))
-                .map(Integer::parseInt)
+    public Vec2i getPlayerLocation() {
+        Integer[] loc = Arrays.stream(this.get(NBTReader.PLAYER_POS).replaceAll("[\\[\\]]", "").split(","))
+                .map((l) -> (int) Double.parseDouble(l))
                 .toArray(Integer[]::new);
-        return new Vec3i(loc[0], loc[1], loc[2]);
+        return new Vec2i(loc[0], loc[2]);
     }
 
     public String get(String[] tags) {

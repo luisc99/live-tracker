@@ -44,7 +44,7 @@ public class GoogleSheetsClient {
         Sheets sheetsService = getSheetsService();
         String sheetName = TrackerOptions.getInstance().sheet_name;
         String sheetId = TrackerOptions.getInstance().sheet_id;
-        String range = String.format("A%s:CG", row);
+        String range = String.format("A%s:CJ", row);
 
         if (overwrite) {
             ValueRange newRow = new ValueRange().setValues(Arrays.asList(rowData));

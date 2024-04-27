@@ -16,12 +16,14 @@ import java.util.Map;
 
 public class HungerResetHandler implements WorldEventListener, LogEventListener {
     public Map<String, Integer> itemDiffs;
+    public int respawnPointsSet;
     private WorldFile world;
     private List<InventoryItem> tmpInv;
     private long lastRespawnSet = 0;
 
     public HungerResetHandler(WorldFile world) {
         this.world = world;
+        this.respawnPointsSet = 0;
 
         this.tmpInv = new ArrayList<>();
         this.itemDiffs = new HashMap<>(); //ammount of fake / duped items
@@ -59,6 +61,7 @@ public class HungerResetHandler implements WorldEventListener, LogEventListener 
                 case HUNGER_RESET -> this.updateDiff();
 
                 case RESPAWN_SET -> {
+                    this.respawnPointsSet++;
                     this.lastRespawnSet = System.currentTimeMillis();
                     this.world.inv.read();
                     try {
