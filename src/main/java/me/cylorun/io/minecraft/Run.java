@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.io.minecraft.world.WorldFile;
 import me.cylorun.utils.Assert;
+import me.cylorun.utils.Vec2i;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -55,7 +56,7 @@ public class Run extends ArrayList<Object> {
         }
         this.add(msToString(this.recordFile.getJson().get("final_igt").getAsLong()));
         this.add(this.worldFile.strongholdTracker.getFinalData());
-        this.add(this.worldFile.strongholdTracker.getStrongholdRing());
+        this.add(getStrongholdRing(this.worldFile.strongholdTracker.endPoint));
         this.add(String.valueOf(this.getExplosivesUsed()));
         this.add("Gold");
 
@@ -93,6 +94,22 @@ public class Run extends ArrayList<Object> {
             if (e.getKey().contains("_bed") || e.getKey().equals("minecraft:respawn_anchor")) explUsed+= e.getValue().getAsInt();
         }
         return explUsed - this.worldFile.hungerResetHandler.respawnPointsSet;
+    }
+
+    public static String getStrongholdRing(Vec2i strongholdLoc) {
+        if (strongholdLoc == null) {
+            return "Strongholdloc is null";
+        }
+
+        int dist = strongholdLoc.distanceTo(Vec2i.ZERO);
+        if (dist <= 2816) return "1";
+        if (dist <= 5888) return "2";
+        if (dist <= 8960) return "3";
+        if (dist <= 12032) return "4";
+        if (dist <= 15104) return "5";
+        if (dist <= 18146) return "6";
+        if (dist <= 21248) return "7";
+        return "8";
     }
 
     private String getSplitTime(String splitName) {

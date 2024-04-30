@@ -4,12 +4,11 @@ import com.google.gson.JsonObject;
 import me.cylorun.enums.SpeedrunEventType;
 import me.cylorun.io.minecraft.LogEvent;
 import me.cylorun.io.minecraft.SpeedrunEvent;
+import me.cylorun.io.minecraft.live.DistanceTracker;
 import me.cylorun.io.minecraft.live.HungerResetHandler;
-import me.cylorun.io.minecraft.live.StrongholdTracker;
 import me.cylorun.io.minecraft.logs.LogEventListener;
 import me.cylorun.io.minecraft.logs.LogHandler;
 import me.cylorun.io.minecraft.player.Inventory;
-import org.lwjgl.system.CallbackI;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,7 +22,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     private CompletionHandler completionHandler;
     public final WorldEventHandler eventHandler;
     public HungerResetHandler hungerResetHandler;
-    public StrongholdTracker strongholdTracker;
+    public DistanceTracker strongholdTracker;
     public boolean track = true;
     public boolean finished = false;
     public JsonObject liveData;
@@ -36,7 +35,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         this.eventHandler = new WorldEventHandler(this);
         this.logHandler = new LogHandler(this);
         this.hungerResetHandler = new HungerResetHandler(this);
-        this.strongholdTracker  = new StrongholdTracker(this);
+        this.strongholdTracker  = new DistanceTracker(this, SpeedrunEventType.FIRST_PORTAL, SpeedrunEventType.ENTER_STRONGHOLD);
 
         this.logHandler.addListener(this);
         this.eventHandler.addListener(this);
