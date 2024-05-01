@@ -3,7 +3,9 @@ package me.cylorun;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.sun.jna.platform.win32.OaIdl;
 import me.cylorun.gui.TrackerFrame;
+import me.cylorun.io.TrackerOptions;
 import me.cylorun.io.minecraft.RecordFile;
 import me.cylorun.io.minecraft.Run;
 import me.cylorun.io.minecraft.world.WorldCreationEventHandler;
@@ -27,6 +29,10 @@ public class Tracker {
 
     public static void main(String[] args) throws UnsupportedLookAndFeelException {
         UIManager.setLookAndFeel(new FlatDarculaLaf());
+        if (!TrackerOptions.validateSettings()) {
+            Logging.warn("Invalid settings/configuration");
+            return;
+        }
         GoogleSheetsClient.setup();
 
         List<WorldFile> worlds = new ArrayList<>();

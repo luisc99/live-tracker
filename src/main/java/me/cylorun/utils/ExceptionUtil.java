@@ -7,4 +7,9 @@ public class ExceptionUtil {
         JOptionPane.showMessageDialog(null, t.toString());
         Logging.error(t);
     }
+
+    public static void showError(Object o){
+        JOptionPane.showMessageDialog(null, o.toString());
+        Logging.error(o);
+    }
 }

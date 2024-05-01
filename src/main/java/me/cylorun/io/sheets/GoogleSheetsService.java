@@ -7,19 +7,24 @@ import com.google.api.client.json.jackson2.JacksonFactory;
 import com.google.api.client.util.store.FileDataStoreFactory;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.SheetsScopes;
+import me.cylorun.utils.ExceptionUtil;
 
+import javax.swing.*;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 
 public class GoogleSheetsService {
-    private static final String CREDENTIALS_FILE = Paths.get("credentials.json").toString();
+    public static final String CREDENTIALS_FILE = Paths.get("credentials.json").toString();
 
 
     public static Sheets getSheetsService() throws IOException, GeneralSecurityException {
+
         GoogleCredential credential = GoogleCredential
                 .fromStream(new FileInputStream(CREDENTIALS_FILE))
                 .createScoped(Collections.singleton(SheetsScopes.SPREADSHEETS));

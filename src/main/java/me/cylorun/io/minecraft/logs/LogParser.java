@@ -98,7 +98,7 @@ public class LogParser {
 
     public static boolean containsDeath(String line) {
 //        if (isServerThread(line)) {
-            JsonObject deaths = I18n.getAllDeaths();
+            JsonObject deaths = I18n.getALlDeathMessages();
             for (String s : deaths.keySet()) {
                 String v = deaths.get(s).getAsString();
                 line = line.toLowerCase();
