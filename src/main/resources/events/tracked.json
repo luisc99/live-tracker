@@ -7,7 +7,7 @@
     "enter_stronghold",
     "enter_end"
   ],
-  "STAT_CHECKS": [
+  "MISC_CHECKS": [
     [
       "minecraft:picked_up",
       "minecraft:blaze_rod"

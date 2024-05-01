@@ -1,12 +1,16 @@
 package me.cylorun.io.minecraft;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import me.cylorun.Tracker;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.io.minecraft.world.WorldFile;
 import me.cylorun.utils.Assert;
+import me.cylorun.utils.ResourceUtil;
 import me.cylorun.utils.Vec2i;
 
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -30,10 +34,9 @@ public class Run extends ArrayList<Object> {
         this.seed = Long.parseLong(new NBTReader(this.worldFile.getLevelDatPath()).get(NBTReader.SEED_PATH));
     }
 
-    public synchronized Run gatherAll() {
-        if (this.stats == null) {
-            this.stats = this.getStats();
-        }
+    public Run gatherAll() {
+        Assert.isNotNull(this.stats);
+
         String[] majorSplits = {"rsg.obtain_iron_pickaxe",
                 "rsg.enter_nether",
                 "rsg.enter_bastion",
@@ -59,8 +62,12 @@ public class Run extends ArrayList<Object> {
         this.add(getStrongholdRing(this.worldFile.strongholdTracker.endPoint));
         this.add(String.valueOf(this.getExplosivesUsed()));
         this.add("Gold");
-
-
+        this.addAll(this.getMiscStats());
+        this.addAll(this.getFinalBarters());
+        this.addAll(this.getMobKills());
+        this.addAll(this.getFoods());
+        this.addAll(this.getTravelled());
+        this.add(this.seed);
         return this;
     }
 
@@ -91,7 +98,8 @@ public class Run extends ArrayList<Object> {
         int explUsed = 0;
         JsonObject used = this.stats.get("minecraft:used").getAsJsonObject();
         for (Map.Entry<String, JsonElement> e : used.asMap().entrySet()) {
-            if (e.getKey().contains("_bed") || e.getKey().equals("minecraft:respawn_anchor")) explUsed+= e.getValue().getAsInt();
+            if (e.getKey().contains("_bed") || e.getKey().equals("minecraft:respawn_anchor"))
+                explUsed += e.getValue().getAsInt();
         }
         return explUsed - this.worldFile.hungerResetHandler.respawnPointsSet;
     }
@@ -279,6 +287,103 @@ public class Run extends ArrayList<Object> {
             }
         }
         return ironSource;
+    }
+
+    public List<String> getFinalBarters() {
+        List<String> res = new ArrayList<>();
+        URL url = Tracker.class.getClassLoader().getResource("events/tracked.json");
+        Assert.isNotNull(url, "Resource not found: events/tracked.json");
+
+        JsonObject o = ResourceUtil.loadJsonResource(url);
+        JsonArray barters = o.get("TRACKED_BARTERS").getAsJsonArray();
+        JsonObject pickedUp;
+        if (this.stats.has("minecraft:picked_up")) {
+            pickedUp = this.stats.get("minecraft:picked_up").getAsJsonObject();
+        } else {
+            for (JsonElement e : barters) {
+                res.add("0");
+            }
+            return res;
+        }
+
+        for (JsonElement barterItem : barters) {
+            if (pickedUp.has(barterItem.getAsString())) {
+                int diff = 0;
+                if (this.worldFile.hungerResetHandler.itemDiffs.containsKey(barterItem.getAsString())) {
+                    diff = this.worldFile.hungerResetHandler.itemDiffs.get(barterItem.getAsString());
+                }
+                res.add(String.valueOf(pickedUp.get(barterItem.getAsString()).getAsInt() - diff));
+            } else {
+                res.add("0");
+            }
+        }
+
+        return res;
+    }
+
+    public List<String> getMiscStats() {
+        List<String> res = new ArrayList<>();
+        URL url = Tracker.class.getClassLoader().getResource("events/tracked.json");
+
+        JsonArray checks = ResourceUtil.loadJsonResource(url).getAsJsonArray("MISC_CHECKS");
+
+        for (JsonElement e : checks) {
+            JsonArray check = e.getAsJsonArray();
+            try {
+                String d = this.stats.getAsJsonObject(check.get(0).getAsString()).get(check.get(1).getAsString()).getAsString();
+                System.out.printf("Checks: %s, Val: %s\n", check, d);
+                res.add(d);
+            } catch (Exception ex) {
+                res.add("0");
+            }
+
+        }
+        return res;
+    }
+
+    public List<String> getMobKills() {
+        List<String> res = new ArrayList<>();
+        URL url = Tracker.class.getClassLoader().getResource("events/tracked.json");
+        JsonArray mobs = ResourceUtil.loadJsonResource(url).getAsJsonArray("TRACKED_MOBS");
+        for (JsonElement mob : mobs) {
+            try{
+                String val = this.stats.getAsJsonObject("minecraft:killed").get(mob.getAsString()).getAsString();
+                res.add(val);
+            } catch (Exception e) {
+                res.add("0");
+            }
+        }
+        return res;
+    }
+
+    public List<String> getFoods() {
+        List<String> res = new ArrayList<>();
+        URL url = Tracker.class.getClassLoader().getResource("events/tracked.json");
+        JsonArray foods = ResourceUtil.loadJsonResource(url).getAsJsonArray("TRACKED_FOODS");
+        for (JsonElement food : foods) {
+            try{
+                String val = this.stats.getAsJsonObject("minecraft:used").get(food.getAsString()).getAsString();
+                res.add(val);
+            } catch (Exception e) {
+                res.add("0");
+            }
+        }
+        return res;
+    }
+
+    public List<String> getTravelled() {
+        List<String> res = new ArrayList<>();
+        URL url = Tracker.class.getClassLoader().getResource("events/tracked.json");
+        JsonArray methods = ResourceUtil.loadJsonResource(url).getAsJsonArray("TRAVEL_METHODS");
+        for (JsonElement method : methods) {
+            try{
+                String val = this.stats.getAsJsonObject("minecraft:custom").get(method.getAsString()).getAsString();
+                res.add(val);
+            } catch (Exception e) {
+                res.add("0");
+            }
+        }
+        return res;
     }
 
     public boolean shouldPush() {

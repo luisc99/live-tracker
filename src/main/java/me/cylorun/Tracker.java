@@ -49,38 +49,6 @@ public class Tracker {
 
     }
 
-    public static List<String> getFinalBarters(Run run, WorldFile world) {
-        List<String> res = new ArrayList<>();
-        URL url = Tracker.class.getClassLoader().getResource("events/tracked.json");
-        Assert.isNotNull(url, "Resource not found: events/tracked.json");
-
-        JsonObject o = ResourceUtil.loadJsonResource(url);
-        JsonArray barters = o.get("TRACKED_BARTERS").getAsJsonArray();
-        JsonObject pickedUp;
-        if (run.stats.has("minecraft:picked_up")) {
-            pickedUp = run.stats.get("minecraft:picked_up").getAsJsonObject();
-        } else {
-            for (JsonElement e : barters) {
-                res.add("0");
-            }
-            return res;
-        }
-
-        for (JsonElement barterItem : barters) {
-            if (pickedUp.has(barterItem.getAsString())) {
-                int diff = 0;
-                if (world.hungerResetHandler.itemDiffs.containsKey(barterItem.getAsString())) {
-                    diff = world.hungerResetHandler.itemDiffs.get(barterItem.getAsString());
-                }
-                res.add(String.valueOf(pickedUp.get(barterItem.getAsString()).getAsInt() - diff));
-            } else {
-                res.add("0");
-            }
-        }
-
-        return res;
-    }
-
     public static void handleWorld(WorldFile world) {
         world.setCompletionHandler(() -> {
             world.finished = true;
@@ -98,10 +66,7 @@ public class Tracker {
             Run thisRun = new Run(world, record);
 
             List<Object> runData = thisRun.gatherAll();
-            for (int i = 0; i < 13; i++) {
-                runData.add("Nil");
-            }
-            runData.addAll(getFinalBarters(thisRun, world));
+
             if (thisRun.shouldPush()) {
                 try {
                     GoogleSheetsClient.appendRowTop(runData);
@@ -113,6 +78,10 @@ public class Tracker {
             }
         });
     }
+
+
+
+
 
 
 }

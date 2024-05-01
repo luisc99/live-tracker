@@ -118,6 +118,15 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     }
 
     @Override
+    public boolean equals(Object o) {
+        if(!(o instanceof WorldFile f)){
+            return false;
+        }
+
+        return f.getAbsolutePath().equals(this.getAbsolutePath());
+    }
+
+    @Override
     public String toString() {
         return this.getName();
     }
