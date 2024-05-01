@@ -53,7 +53,7 @@ public class HungerResetHandler implements WorldEventListener, LogEventListener 
     public void onLogEvent(LogEvent e) {
         if (!this.world.finished && this.world.track) {
             System.out.println(e.type);
-            if (System.currentTimeMillis() - this.lastRespawnSet >  (TrackerOptions.getInstance().respawn_to_hr * 1000L)) {
+            if (System.currentTimeMillis() - this.lastRespawnSet > (TrackerOptions.getInstance().max_respawn_to_hr_time * 1000L)) {
                 tmpInv.clear();
             }
 
@@ -65,7 +65,7 @@ public class HungerResetHandler implements WorldEventListener, LogEventListener 
                     this.lastRespawnSet = System.currentTimeMillis();
                     this.world.inv.read();
                     try {
-                        Thread.sleep(1000);
+                        Thread.sleep(TrackerOptions.getInstance().game_save_interval * 1000L);
                     } catch (InterruptedException ex) {
                         throw new RuntimeException(ex);
                     }

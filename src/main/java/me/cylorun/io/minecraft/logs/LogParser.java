@@ -7,7 +7,6 @@ import me.cylorun.io.minecraft.LogEvent;
 import me.cylorun.io.minecraft.world.WorldFile;
 import me.cylorun.utils.I18n;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -38,7 +37,7 @@ public class LogParser {
             */
 
             if (this.respawnSet) {
-                if (getTime(l) - this.lastRespawnSet > TrackerOptions.getInstance().respawn_to_hr) {
+                if (getTime(l) - this.lastRespawnSet > TrackerOptions.getInstance().max_respawn_to_hr_time) {
                     this.respawnSet = false;
                 }
             }

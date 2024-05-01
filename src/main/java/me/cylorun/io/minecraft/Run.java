@@ -98,7 +98,7 @@ public class Run extends ArrayList<Object> {
 
     public static String getStrongholdRing(Vec2i strongholdLoc) {
         if (strongholdLoc == null) {
-            return "Strongholdloc is null";
+            return "";
         }
 
         int dist = strongholdLoc.distanceTo(Vec2i.ZERO);

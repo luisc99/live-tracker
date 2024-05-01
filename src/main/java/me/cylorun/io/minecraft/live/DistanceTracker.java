@@ -17,19 +17,22 @@ public class DistanceTracker implements WorldEventListener {
     private final NBTReader reader;
     private final SpeedrunEventType startEvent;
     private final SpeedrunEventType endEvent;
+    private final WorldFile file;
     public Vec2i startPoint;
     public Vec2i endPoint;
 
     public DistanceTracker(WorldFile file, SpeedrunEventType startEvent, SpeedrunEventType endEvent) {
         this.endEvent = endEvent;
         this.startEvent = startEvent;
+        this.file = file;
 
+        this.file.eventHandler.addListener(this);
         this.reader = new NBTReader(file.getLevelDatPath());
     }
 
     public String getFinalData() {
         if (this.startPoint == null || this.endPoint == null) {
-            return "Both points not reached yet!";
+            return "";
         }
 
         return String.valueOf(this.startPoint.distanceTo(this.endPoint));
