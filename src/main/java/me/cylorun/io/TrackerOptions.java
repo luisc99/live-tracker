@@ -30,7 +30,7 @@ public class TrackerOptions {
     public int game_save_interval; // seconds
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    private static final Path CONFIG_PATH = Paths.get("config.json");
+    public static final Path CONFIG_PATH = Paths.get("config.json");
     private static TrackerOptions instance;
 
     private TrackerOptions() {

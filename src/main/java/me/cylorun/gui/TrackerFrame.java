@@ -4,6 +4,7 @@ import me.cylorun.Tracker;
 import me.cylorun.gui.components.NumberOptionField;
 import me.cylorun.gui.components.TextOptionField;
 import me.cylorun.io.TrackerOptions;
+import me.cylorun.utils.ExceptionUtil;
 
 import javax.swing.*;
 import java.awt.*;
@@ -25,17 +26,6 @@ public class TrackerFrame extends JFrame implements WindowListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(this);
         this.setLayout(new GridLayout(1, 2));
-//        this.setLayout(new BorderLayout());
-
-//        JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
-//        separator.setSize(new Dimension(5, Integer.MAX_VALUE));
-//        JPanel hp = new JPanel();
-//        hp.setLayout(new BoxLayout(hp, BoxLayout.X_AXIS));
-//        hp.add(this.getTextArea());
-//        hp.add(separator);
-//        hp.add(this.getTabbedPane());
-
-//        this.add(hp);
 
         this.add(this.getTextArea());
         this.add(this.getTabbedPane());
@@ -52,9 +42,8 @@ public class TrackerFrame extends JFrame implements WindowListener {
 
     private JTabbedPane getTabbedPane() {
         this.tabbedPane = new JTabbedPane();
-        JPanel generalPanel = new JPanel();
-        generalPanel.setLayout(new GridLayout(3, 1));
-        JPanel advancedPanel = new JPanel();
+        JPanel generalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel advancedPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         TrackerOptions options = TrackerOptions.getInstance();
 
         generalPanel.add(new TextOptionField("Sheet Name", options.sheet_name, (val) -> {
@@ -70,11 +59,22 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
+        JButton manualButton = new JButton("Manually edit");
+        manualButton.addActionListener((e) -> {
+            try {
+                Desktop.getDesktop().open(TrackerOptions.CONFIG_PATH.toFile());
+            } catch (Exception ex) {
+                ExceptionUtil.showError(ex);
+            }
+        });
+
+        generalPanel.add(manualButton);
+
         advancedPanel.add(new NumberOptionField("Save interval (s)", "The interval which game files are updated at", options.game_save_interval, (val) -> {
             options.game_save_interval = val;
             TrackerOptions.save();
         }));
-        advancedPanel.add(new NumberOptionField("Max respawn to HR (s)", "The maximum time between a respawn point being set and a death for it to count as a hunger reset", options.max_respawn_to_hr_time, (val) -> {
+        advancedPanel.add(new NumberOptionField("Max respawn to hunger reset (s)", "The maximum time between a respawn point being set and a death for it to count as a hunger reset", options.max_respawn_to_hr_time, (val) -> {
             options.max_respawn_to_hr_time = val;
             TrackerOptions.save();
         }));
