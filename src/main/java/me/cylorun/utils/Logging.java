@@ -38,7 +38,7 @@ public class Logging {
 
     private static String nowTime() {
         LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss");
         return now.format(formatter);
     }
 
