@@ -16,6 +16,8 @@ public class TrackerOptions {
     public String sheet_name = "Raw Data";
     public Boolean gen_labels = true;
     public String lang = "en_us";
+    public Integer last_win_x = 0;
+    public Integer last_win_y = 0;
     public boolean detect_ssg = true;
     public int max_respawn_to_hr_time = 30; // seconds
     public int game_save_interval = 5; // seconds

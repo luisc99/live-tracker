@@ -1,23 +1,21 @@
 package me.cylorun;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
+import com.formdev.flatlaf.FlatDarculaLaf;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import me.cylorun.gui.TrackerFrame;
 import me.cylorun.io.minecraft.RecordFile;
 import me.cylorun.io.minecraft.Run;
 import me.cylorun.io.minecraft.world.WorldCreationEventHandler;
 import me.cylorun.io.minecraft.world.WorldFile;
 import me.cylorun.io.sheets.GoogleSheetsClient;
-import me.cylorun.utils.Assert;
 import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.Logging;
-import me.cylorun.utils.ResourceUtil;
 
+import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +23,17 @@ import java.util.List;
 
 public class Tracker {
 
-    public static final String VERSION = "0.0.0";
+    public static final String VERSION = "v0.0.0-beta.1";
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnsupportedLookAndFeelException {
+        UIManager.setLookAndFeel(new FlatDarculaLaf());
         GoogleSheetsClient.setup();
-        Logging.info("Tracking");
+
         List<WorldFile> worlds = new ArrayList<>();
+        TrackerFrame.getInstance().open();
+
+        Logging.info("Tracking");
+
         WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object is created per world path
         worldHandler.addListener(world -> {
             Logging.debug("New world detected: " + world);
@@ -78,10 +81,6 @@ public class Tracker {
             }
         });
     }
-
-
-
-
 
 
 }
