@@ -71,7 +71,7 @@ public class Run extends ArrayList<Object> {
         this.addAll(this.getMobKills());
         this.addAll(this.getFoods());
         this.addAll(this.getTravelled());
-        this.add(this.seed == 0? this.seed :"Failed to get seed");
+        this.add(this.seed == 0 ? "Failed to get seed" : this.seed);
         return this;
     }
 
