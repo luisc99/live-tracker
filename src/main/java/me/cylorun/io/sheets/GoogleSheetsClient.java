@@ -16,11 +16,12 @@ import java.util.List;
 import static me.cylorun.io.sheets.GoogleSheetsService.getSheetsService;
 
 public class GoogleSheetsClient {
-
+    private static boolean hasSetup = false;
     public static void setup(){
         TrackerOptions options = TrackerOptions.getInstance();
-        if (options.gen_labels) {
+        if (options.gen_labels && !hasSetup) {
             generateLabels();
+            hasSetup = true;
         }
     }
 

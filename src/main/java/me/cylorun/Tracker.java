@@ -3,7 +3,6 @@ package me.cylorun;
 import com.formdev.flatlaf.FlatDarculaLaf;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.sun.jna.platform.win32.OaIdl;
 import me.cylorun.gui.TrackerFrame;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.io.minecraft.RecordFile;
@@ -18,9 +17,11 @@ import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class Tracker {
@@ -29,19 +30,23 @@ public class Tracker {
 
     public static void main(String[] args) throws UnsupportedLookAndFeelException {
         UIManager.setLookAndFeel(new FlatDarculaLaf());
-        if (!TrackerOptions.validateSettings()) {
-            Logging.warn("Invalid settings/configuration");
-            return;
-        }
-        GoogleSheetsClient.setup();
-
         List<WorldFile> worlds = new ArrayList<>();
-        TrackerFrame.getInstance().open();
+        AtomicBoolean shouldTrack = new AtomicBoolean(false);
 
-        Logging.info("Tracking");
+        TrackerFrame.getInstance().open();
+        TrackerOptions.setValidSettingsConsumer((b -> {
+            if (b) GoogleSheetsClient.setup();
+            shouldTrack.set(b);
+        }));
+        TrackerOptions.validateSettings();
+        Logging.info("Running Live-Tracker-"+VERSION);
 
         WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object is created per world path
         worldHandler.addListener(world -> {
+            if(!shouldTrack.get()) {
+                Logging.warn("Will not track "+world+" due to invalid settings");
+                return;
+            }
             Logging.debug("New world detected: " + world);
             if (!worlds.contains(world)) {
                 worlds.add(world);
@@ -55,7 +60,6 @@ public class Tracker {
 
             handleWorld(world);
         });
-
     }
 
     public static void handleWorld(WorldFile world) {

@@ -1,21 +1,23 @@
 package me.cylorun.io;
 
-import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.services.sheets.v4.model.ValueRange;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import me.cylorun.io.sheets.GoogleSheetsService;
 import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.I18n;
 import me.cylorun.utils.Logging;
 
-import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.util.Arrays;
+import java.util.function.Consumer;
 
 public class TrackerOptions {
 
@@ -31,6 +33,7 @@ public class TrackerOptions {
 
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final Path CONFIG_PATH = Paths.get("config.json");
+    private static Consumer<Boolean> consumer;
     private static TrackerOptions instance;
 
     private TrackerOptions() {
@@ -64,43 +67,54 @@ public class TrackerOptions {
             ExceptionUtil.showError(e);
             throw new RuntimeException();
         }
+        new Thread(TrackerOptions::validateSettings).start();
+    }
+
+    public static void setValidSettingsConsumer(Consumer<Boolean> consumer) {
+        TrackerOptions.consumer = consumer;
     }
 
     public static boolean validateSettings() {
+        boolean isValid = true;
         Logging.info("Verifying settings");
         if (!Files.exists(Paths.get(GoogleSheetsService.CREDENTIALS_FILE))) {
             ExceptionUtil.showError("credentials.json file not found");
-            return false;
-        }
-
-        if (getInstance().sheet_name == null || getInstance().sheet_name.isEmpty()) {
+            isValid = false;
+        } else if (getInstance().sheet_name == null || getInstance().sheet_name.isEmpty()) {
             ExceptionUtil.showError("sheet_name is not defined");
-            return false;
-        }
-
-        if(getInstance().lang == null || getInstance().lang.isEmpty()) {
+            isValid = false;
+        } else if (getInstance().lang == null || getInstance().lang.isEmpty()) {
             ExceptionUtil.showError("Language not set");
-            return false;
-        }
-
-        if(!I18n.isValidLanguage(getInstance().lang)) {
-            ExceptionUtil.showError(getInstance().lang+" is not a supported language");
-            return false;
+            isValid = false;
+        } else if (!I18n.isValidLanguage(getInstance().lang)) {
+            ExceptionUtil.showError(getInstance().lang + " is not a supported language");
+            isValid = false;
         }
 
         try {
-            ValueRange response = GoogleSheetsService.getSheetsService().spreadsheets().values()
+            GoogleSheetsService.getSheetsService().spreadsheets().values()
                     .get(getInstance().sheet_id, getInstance().sheet_name + "!A1:B")
                     .execute();
         } catch (NullPointerException a) {
             ExceptionUtil.showError("sheet_id not defined");
-            return false;
+            isValid = false;
         } catch (GeneralSecurityException | IOException b) {
-            ExceptionUtil.showError("Something went wrong \n" + b);
-            return false;
+            String[] lines = b.toString().split("\\n");
+            String errorJson = String.join("\n", Arrays.copyOfRange(lines, 1, lines.length));
+
+            JsonObject o = JsonParser.parseString(errorJson).getAsJsonObject();
+            if (o.get("code").getAsInt() == 400) {
+                ExceptionUtil.showError("Invalid sheet name");
+            } else if (o.get("code").getAsInt() == 404) {
+                ExceptionUtil.showError("Invalid sheet id");
+            } else {
+                ExceptionUtil.showError("Something went wrong\n"+b);
+            }
+            isValid = false;
         }
 
-        return true;
+        consumer.accept(isValid);
+        return isValid;
     }
 
 }
