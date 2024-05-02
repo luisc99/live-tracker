@@ -31,7 +31,11 @@ public class Run extends ArrayList<Object> {
         this.eventLog = worldFile.eventHandler.events;
         this.adv = recordFile.getJson().get("advancements").getAsJsonObject();
         this.stats = this.getStats();
-        this.seed = Long.parseLong(new NBTReader(this.worldFile.getLevelDatPath()).get(NBTReader.SEED_PATH));
+        try {
+            this.seed = Long.parseLong(new NBTReader(this.worldFile.getLevelDatPath()).get(NBTReader.SEED_PATH));
+        } catch (NumberFormatException e) {
+            this.seed = 0;
+        }
     }
 
     public Run gatherAll() {
@@ -67,7 +71,7 @@ public class Run extends ArrayList<Object> {
         this.addAll(this.getMobKills());
         this.addAll(this.getFoods());
         this.addAll(this.getTravelled());
-        this.add(this.seed);
+        this.add(this.seed == 0? this.seed :"Failed to get seed");
         return this;
     }
 
