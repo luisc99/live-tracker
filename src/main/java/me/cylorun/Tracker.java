@@ -25,7 +25,7 @@ import java.util.List;
 
 public class Tracker {
 
-    public static final String VERSION = "v0.0.0-beta.1";
+    public static final String VERSION = "v0.0.1-beta.1";
 
     public static void main(String[] args) throws UnsupportedLookAndFeelException {
         UIManager.setLookAndFeel(new FlatDarculaLaf());
