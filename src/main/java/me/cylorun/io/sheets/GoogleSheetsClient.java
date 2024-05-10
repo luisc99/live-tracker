@@ -3,8 +3,11 @@ package me.cylorun.io.sheets;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.ExceptionUtil;
+import me.cylorun.utils.Logging;
 import me.cylorun.utils.ResourceUtil;
 
 import java.io.IOException;
@@ -19,12 +22,23 @@ public class GoogleSheetsClient {
     private static boolean hasSetup = false;
     public static void setup(){
         TrackerOptions options = TrackerOptions.getInstance();
-        if (options.gen_labels && !hasSetup) {
+        if (options.gen_labels && !hasSetup && isValidSheet(options.sheet_id, options.sheet_name)) {
             generateLabels();
             hasSetup = true;
         }
     }
 
+    public static boolean isValidSheet(String id, String name) {
+        try {
+            GoogleSheetsService.getSheetsService().spreadsheets().values()
+                    .get(id.trim(), name + "!A1:B")
+                    .execute();
+        } catch (NullPointerException | IOException | GeneralSecurityException a) {
+            Logging.error("Invalid sheet_id or sheet_name");
+            return false;
+        }
+        return true;
+    }
 
     public static void generateLabels() {
         List<Object> headers = ResourceUtil.getHeaderLabels();
@@ -44,7 +58,7 @@ public class GoogleSheetsClient {
     public static void insert(List<Object> rowData, int row, boolean overwrite) throws GeneralSecurityException, IOException {
         Sheets sheetsService = getSheetsService();
         String sheetName = TrackerOptions.getInstance().sheet_name;
-        String sheetId = TrackerOptions.getInstance().sheet_id;
+        String sheetId = TrackerOptions.getInstance().sheet_id.trim();
         String range = String.format("A%s:CN", row);
 
         if (overwrite) {

@@ -31,22 +31,13 @@ public class Tracker {
     public static void main(String[] args) throws UnsupportedLookAndFeelException {
         UIManager.setLookAndFeel(new FlatDarculaLaf());
         List<WorldFile> worlds = new ArrayList<>();
-        AtomicBoolean shouldTrack = new AtomicBoolean(false);
-
         TrackerFrame.getInstance().open();
-        TrackerOptions.setValidSettingsConsumer((b -> {
-            if (b) GoogleSheetsClient.setup();
-            shouldTrack.set(b);
-        }));
-        TrackerOptions.validateSettings();
+        GoogleSheetsClient.setup();
+
         Logging.info("Running Live-Tracker-"+VERSION);
 
         WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object is created per world path
         worldHandler.addListener(world -> {
-            if(!shouldTrack.get()) {
-                Logging.warn("Will not track "+world+" due to invalid settings");
-                return;
-            }
             Logging.debug("New world detected: " + world);
             if (!worlds.contains(world)) {
                 worlds.add(world);

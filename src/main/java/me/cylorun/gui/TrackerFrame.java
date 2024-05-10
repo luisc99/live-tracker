@@ -1,10 +1,14 @@
 package me.cylorun.gui;
 
 import me.cylorun.Tracker;
+import me.cylorun.gui.components.BooleanOptionField;
+import me.cylorun.gui.components.MultiChoiceOptionField;
 import me.cylorun.gui.components.NumberOptionField;
 import me.cylorun.gui.components.TextOptionField;
 import me.cylorun.io.TrackerOptions;
+import me.cylorun.io.sheets.GoogleSheetsClient;
 import me.cylorun.utils.ExceptionUtil;
+import me.cylorun.utils.I18n;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,15 +51,29 @@ public class TrackerFrame extends JFrame implements WindowListener {
         TrackerOptions options = TrackerOptions.getInstance();
 
         generalPanel.add(new TextOptionField("Sheet Name", options.sheet_name, (val) -> {
-            options.sheet_name = val;
-            TrackerOptions.save();
+                options.sheet_name = val;
+                TrackerOptions.save();
+
         }));
+
         generalPanel.add(new TextOptionField("Sheet ID", options.sheet_id, (val) -> {
-            options.sheet_id = val;
+                options.sheet_id = val;
+                TrackerOptions.save();
+
+        }));
+
+        generalPanel.add(new MultiChoiceOptionField(I18n.getSupported().toArray(new String[0]), options.lang, "Game lang",(val) -> {
+            options.lang = val;
             TrackerOptions.save();
         }));
-        generalPanel.add(new TextOptionField("Game lang", options.lang, (val) -> {
-            options.lang = val;
+
+        generalPanel.add(new BooleanOptionField("Generate Headers", options.gen_labels, (val)->{
+            options.gen_labels = val;
+            TrackerOptions.save();
+        }));
+
+        generalPanel.add(new BooleanOptionField("Detect SSG", options.detect_ssg, (val)->{
+            options.detect_ssg = val;
             TrackerOptions.save();
         }));
 
@@ -67,9 +85,11 @@ public class TrackerFrame extends JFrame implements WindowListener {
                 ExceptionUtil.showError(ex);
             }
         });
+        JButton validationButton = new JButton("Validate Settings");
+        validationButton.addActionListener(e -> TrackerOptions.validateSettings());
 
         generalPanel.add(manualButton);
-
+        generalPanel.add(validationButton);
         advancedPanel.add(new NumberOptionField("Save interval (s)", "The interval which game files are updated at", options.game_save_interval, (val) -> {
             options.game_save_interval = val;
             TrackerOptions.save();

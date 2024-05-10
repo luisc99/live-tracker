@@ -18,10 +18,13 @@ public class I18n {
         }
         return langJson.get("deaths").getAsJsonObject();
     }
-    public static boolean isValidLanguage(String lang) {
+    public static List<String> getSupported() {
         List<String> allowedLangs = new ArrayList<>();
         allowedLangs.add("en_us");
-        return allowedLangs.contains(lang);
+        return allowedLangs;
+    }
+    public static boolean isValidLanguage(String lang) {
+        return getSupported().contains(lang.trim());
     }
 
     public static String get(String key) {
