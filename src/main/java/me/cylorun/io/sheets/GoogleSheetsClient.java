@@ -3,12 +3,11 @@ package me.cylorun.io.sheets;
 import com.google.api.services.sheets.v4.Sheets;
 import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
 import com.google.api.services.sheets.v4.model.ValueRange;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import me.cylorun.Tracker;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.ExceptionUtil;
-import me.cylorun.utils.Logging;
 import me.cylorun.utils.ResourceUtil;
+import org.apache.logging.log4j.Level;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -34,7 +33,7 @@ public class GoogleSheetsClient {
                     .get(id.trim(), name + "!A1:B")
                     .execute();
         } catch (NullPointerException | IOException | GeneralSecurityException a) {
-            Logging.error("Invalid sheet_id or sheet_name");
+            Tracker.log(Level.ERROR,"Invalid sheet_id or sheet_name");
             return false;
         }
         return true;

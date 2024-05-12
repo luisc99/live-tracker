@@ -1,11 +1,11 @@
-package me.cylorun.io.minecraft.live;
+package me.cylorun.instance.live;
 
 import me.cylorun.enums.SpeedrunEventType;
 import me.cylorun.io.TrackerOptions;
-import me.cylorun.io.minecraft.NBTReader;
-import me.cylorun.io.minecraft.SpeedrunEvent;
-import me.cylorun.io.minecraft.world.WorldEventListener;
-import me.cylorun.io.minecraft.world.WorldFile;
+import me.cylorun.instance.NBTReader;
+import me.cylorun.instance.SpeedrunEvent;
+import me.cylorun.instance.world.WorldEventListener;
+import me.cylorun.instance.world.WorldFile;
 import me.cylorun.utils.Vec2i;
 
 import java.util.concurrent.Executors;

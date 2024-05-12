@@ -1,7 +1,7 @@
-package me.cylorun.io.minecraft.logs;
+package me.cylorun.instance.logs;
 
-import me.cylorun.io.minecraft.LogEvent;
-import me.cylorun.io.minecraft.world.WorldFile;
+import me.cylorun.instance.LogEvent;
+import me.cylorun.instance.world.WorldFile;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -1,4 +1,4 @@
-package me.cylorun.io.minecraft.player;
+package me.cylorun.instance.player;
 
 public class InventoryItem {
 

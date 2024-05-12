@@ -1,11 +1,11 @@
-package me.cylorun.io.minecraft.player;
+package me.cylorun.instance.player;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import me.cylorun.io.minecraft.NBTReader;
-import me.cylorun.io.minecraft.world.WorldFile;
+import me.cylorun.instance.NBTReader;
+import me.cylorun.instance.world.WorldFile;
 
 import java.util.ArrayList;
 

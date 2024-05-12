@@ -20,10 +20,10 @@ public class ResourceUtil {
 
     public static List<Object> getHeaderLabels() {
         List<Object> list = new ArrayList<>();
-        URL url = Tracker.class.getClassLoader().getResource("events/tracked.json");
+        URL url = Tracker.class.getClassLoader().getResource("tracked.json");
         if (url == null) {
-            ExceptionUtil.showError(new IOException("Resource not found: events/tracked.json"));
-            throw new RuntimeException("Resource not found: events/tracked.json");
+            ExceptionUtil.showError(new IOException("Resource not found: tracked.json"));
+            throw new RuntimeException("Resource not found: tracked.json");
         }
 
 

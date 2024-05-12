@@ -4,41 +4,49 @@ import com.formdev.flatlaf.FlatDarculaLaf;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.gui.TrackerFrame;
+import me.cylorun.instance.RecordFile;
+import me.cylorun.instance.Run;
+import me.cylorun.instance.world.WorldCreationEventHandler;
+import me.cylorun.instance.world.WorldFile;
 import me.cylorun.io.TrackerOptions;
-import me.cylorun.io.minecraft.RecordFile;
-import me.cylorun.io.minecraft.Run;
-import me.cylorun.io.minecraft.world.WorldCreationEventHandler;
-import me.cylorun.io.minecraft.world.WorldFile;
 import me.cylorun.io.sheets.GoogleSheetsClient;
 import me.cylorun.utils.ExceptionUtil;
-import me.cylorun.utils.Logging;
+import me.cylorun.utils.LogReceiver;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
+import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
+import org.apache.logging.log4j.core.config.builder.api.RootLoggerComponentBuilder;
+import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 import javax.swing.*;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.PrintStream;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 
 public class Tracker {
 
-    public static final String VERSION = "v0.0.1-beta.1";
-
+    public static final String VERSION = Tracker.class.getPackage().getImplementationVersion() == null ? "DEV" : Tracker.class.getPackage().getImplementationVersion();
+    private static final Logger logger = LogManager.getLogger(Tracker.class);
     public static void main(String[] args) throws UnsupportedLookAndFeelException {
         UIManager.setLookAndFeel(new FlatDarculaLaf());
+
         List<WorldFile> worlds = new ArrayList<>();
         TrackerFrame.getInstance().open();
         GoogleSheetsClient.setup();
-
-        Logging.info("Running Live-Tracker-"+VERSION);
+        Tracker.log(Level.INFO,"Running Live-Tracker-"+VERSION);
 
         WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object is created per world path
         worldHandler.addListener(world -> {
-            Logging.debug("New world detected: " + world);
+            Tracker.log(Level.DEBUG, "New world detected: " + world);
             if (!worlds.contains(world)) {
                 worlds.add(world);
             }
@@ -74,7 +82,7 @@ public class Tracker {
             if (thisRun.shouldPush()) {
                 try {
                     GoogleSheetsClient.appendRowTop(runData);
-                    Logging.info("Run Tracked");
+                    Tracker.log(Level.INFO,"Run Tracked");
                 } catch (IOException | GeneralSecurityException ex) {
                     ExceptionUtil.showError(ex);
                     throw new RuntimeException(ex);
@@ -83,5 +91,9 @@ public class Tracker {
         });
     }
 
+    public static void log(Level level, Object o) {
+        logger.log(level, o);
+        LogReceiver.log(level, o);
+    }
 
 }

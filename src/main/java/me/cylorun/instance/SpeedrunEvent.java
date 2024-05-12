@@ -1,4 +1,4 @@
-package me.cylorun.io.minecraft;
+package me.cylorun.instance;
 
 import me.cylorun.enums.SpeedrunEventType;
 import me.cylorun.utils.Assert;

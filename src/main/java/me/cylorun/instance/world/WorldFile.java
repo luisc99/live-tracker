@@ -1,14 +1,14 @@
-package me.cylorun.io.minecraft.world;
+package me.cylorun.instance.world;
 
 import com.google.gson.JsonObject;
 import me.cylorun.enums.SpeedrunEventType;
-import me.cylorun.io.minecraft.LogEvent;
-import me.cylorun.io.minecraft.SpeedrunEvent;
-import me.cylorun.io.minecraft.live.DistanceTracker;
-import me.cylorun.io.minecraft.live.HungerResetHandler;
-import me.cylorun.io.minecraft.logs.LogEventListener;
-import me.cylorun.io.minecraft.logs.LogHandler;
-import me.cylorun.io.minecraft.player.Inventory;
+import me.cylorun.instance.LogEvent;
+import me.cylorun.instance.SpeedrunEvent;
+import me.cylorun.instance.live.DistanceTracker;
+import me.cylorun.instance.live.HungerResetHandler;
+import me.cylorun.instance.logs.LogEventListener;
+import me.cylorun.instance.logs.LogHandler;
+import me.cylorun.instance.player.Inventory;
 
 import java.io.BufferedReader;
 import java.io.File;

@@ -1,7 +1,5 @@
 package me.cylorun.enums;
 
-import me.cylorun.io.minecraft.SpeedrunEvent;
-
 public enum SpeedrunEventType {
     // common
     LEAVE_WORLD("common.leave_world"),

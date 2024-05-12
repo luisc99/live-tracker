@@ -1,10 +1,9 @@
-package me.cylorun.io.minecraft;
+package me.cylorun.instance;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.Vec2i;
-import net.minecraft.util.math.Vec3i;
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.io.NamedTag;
 

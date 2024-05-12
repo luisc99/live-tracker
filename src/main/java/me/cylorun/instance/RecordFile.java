@@ -1,6 +1,4 @@
-package me.cylorun.io.minecraft;
-
-import com.google.gson.JsonElement;
+package me.cylorun.instance;
 
 import com.google.gson.JsonObject;
 

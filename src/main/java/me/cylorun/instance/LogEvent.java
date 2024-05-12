@@ -1,7 +1,7 @@
-package me.cylorun.io.minecraft;
+package me.cylorun.instance;
 
 import me.cylorun.enums.LogEventType;
-import me.cylorun.io.minecraft.logs.LogParser;
+import me.cylorun.instance.logs.LogParser;
 
 public class LogEvent {
 

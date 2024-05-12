@@ -2,19 +2,18 @@ package me.cylorun.io;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import me.cylorun.Tracker;
 import me.cylorun.io.sheets.GoogleSheetsClient;
 import me.cylorun.io.sheets.GoogleSheetsService;
 import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.I18n;
-import me.cylorun.utils.Logging;
+import org.apache.logging.log4j.Level;
 
-import javax.swing.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.function.Consumer;
 
 public class TrackerOptions {
 
@@ -51,7 +50,9 @@ public class TrackerOptions {
         }
         return instance;
     }
-
+    public static Path getTrackerPath() {
+        return Paths.get(System.getProperty("user.home"), "live-tracker");
+    }
     public static void save() {
         FileWriter writer;
         try {
@@ -66,7 +67,7 @@ public class TrackerOptions {
 
 
     public static void validateSettings() {
-        Logging.info("Verifying settings");
+        Tracker.log(Level.INFO,"Verifying settings");
         if (!Files.exists(Paths.get(GoogleSheetsService.CREDENTIALS_FILE))) {
             ExceptionUtil.showError("credentials.json file not found");
         } else if (getInstance().sheet_name == null || getInstance().sheet_name.isEmpty()) {
@@ -79,7 +80,7 @@ public class TrackerOptions {
         } else if(!GoogleSheetsClient.isValidSheet(getInstance().sheet_id, getInstance().sheet_name)) {
             ExceptionUtil.showError("Invalid sheet_id or sheet_name");
         } else {
-            Logging.info("Settings good");
+            Tracker.log(Level.INFO,"Settings good");
         }
 
     }

@@ -1,12 +1,12 @@
-package me.cylorun.io.minecraft.live;
+package me.cylorun.instance.live;
 
 import me.cylorun.io.TrackerOptions;
-import me.cylorun.io.minecraft.LogEvent;
-import me.cylorun.io.minecraft.SpeedrunEvent;
-import me.cylorun.io.minecraft.logs.LogEventListener;
-import me.cylorun.io.minecraft.player.InventoryItem;
-import me.cylorun.io.minecraft.world.WorldEventListener;
-import me.cylorun.io.minecraft.world.WorldFile;
+import me.cylorun.instance.LogEvent;
+import me.cylorun.instance.SpeedrunEvent;
+import me.cylorun.instance.logs.LogEventListener;
+import me.cylorun.instance.player.InventoryItem;
+import me.cylorun.instance.world.WorldEventListener;
+import me.cylorun.instance.world.WorldFile;
 
 import java.util.ArrayList;
 import java.util.HashMap;

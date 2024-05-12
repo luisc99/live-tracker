@@ -1,11 +1,11 @@
-package me.cylorun.io.minecraft;
+package me.cylorun.instance;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.cylorun.Tracker;
 import me.cylorun.io.TrackerOptions;
-import me.cylorun.io.minecraft.world.WorldFile;
+import me.cylorun.instance.world.WorldFile;
 import me.cylorun.utils.Assert;
 import me.cylorun.utils.ResourceUtil;
 import me.cylorun.utils.Vec2i;
@@ -295,7 +295,7 @@ public class Run extends ArrayList<Object> {
 
     public List<String> getFinalBarters() {
         List<String> res = new ArrayList<>();
-        URL url = Tracker.class.getClassLoader().getResource("events/tracked.json");
+        URL url = Tracker.class.getClassLoader().getResource("tracked.json");
         Assert.isNotNull(url, "Resource not found: events/tracked.json");
 
         JsonObject o = ResourceUtil.loadJsonResource(url);
@@ -327,7 +327,7 @@ public class Run extends ArrayList<Object> {
 
     public List<String> getMiscStats() {
         List<String> res = new ArrayList<>();
-        URL url = Tracker.class.getClassLoader().getResource("events/tracked.json");
+        URL url = Tracker.class.getClassLoader().getResource("tracked.json");
 
         JsonArray checks = ResourceUtil.loadJsonResource(url).getAsJsonArray("MISC_CHECKS");
 
@@ -347,7 +347,7 @@ public class Run extends ArrayList<Object> {
 
     public List<String> getMobKills() {
         List<String> res = new ArrayList<>();
-        URL url = Tracker.class.getClassLoader().getResource("events/tracked.json");
+        URL url = Tracker.class.getClassLoader().getResource("tracked.json");
         JsonArray mobs = ResourceUtil.loadJsonResource(url).getAsJsonArray("TRACKED_MOBS");
         for (JsonElement mob : mobs) {
             try{
@@ -362,7 +362,7 @@ public class Run extends ArrayList<Object> {
 
     public List<String> getFoods() {
         List<String> res = new ArrayList<>();
-        URL url = Tracker.class.getClassLoader().getResource("events/tracked.json");
+        URL url = Tracker.class.getClassLoader().getResource("tracked.json");
         JsonArray foods = ResourceUtil.loadJsonResource(url).getAsJsonArray("TRACKED_FOODS");
         for (JsonElement food : foods) {
             try{
@@ -377,7 +377,7 @@ public class Run extends ArrayList<Object> {
 
     public List<String> getTravelled() {
         List<String> res = new ArrayList<>();
-        URL url = Tracker.class.getClassLoader().getResource("events/tracked.json");
+        URL url = Tracker.class.getClassLoader().getResource("tracked.json");
         JsonArray methods = ResourceUtil.loadJsonResource(url).getAsJsonArray("TRAVEL_METHODS");
         for (JsonElement method : methods) {
             try{

@@ -1,6 +1,6 @@
-package me.cylorun.io.minecraft.world;
+package me.cylorun.instance.world;
 
-import me.cylorun.io.minecraft.SpeedrunEvent;
+import me.cylorun.instance.SpeedrunEvent;
 
 public interface WorldEventListener {
     void onSpeedrunEvent(SpeedrunEvent e);
