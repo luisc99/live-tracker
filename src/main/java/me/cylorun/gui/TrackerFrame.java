@@ -29,10 +29,9 @@ public class TrackerFrame extends JFrame implements WindowListener {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(this);
         this.setLayout(new GridLayout(1, 2));
-
         this.add(this.getTextArea());
         this.add(this.getTabbedPane());
-
+        this.setVisible(true);
     }
 
     private JScrollPane getTextArea() {
