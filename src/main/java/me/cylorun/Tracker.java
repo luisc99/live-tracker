@@ -81,7 +81,6 @@ public class Tracker {
             try {
                 reader = new FileReader(world.getRecordPath().toFile());
             } catch (FileNotFoundException ex) {
-                ExceptionUtil.showError(ex);
                 throw new RuntimeException(ex);
             }
 
@@ -96,7 +95,7 @@ public class Tracker {
                     GoogleSheetsClient.appendRowTop(runData);
                     Tracker.log(Level.INFO, "Run Tracked");
                 } catch (IOException | GeneralSecurityException ex) {
-                    ExceptionUtil.showError(ex);
+                    log(Level.ERROR, "Failed to upload run to google sheets");
                     throw new RuntimeException(ex);
                 }
             }

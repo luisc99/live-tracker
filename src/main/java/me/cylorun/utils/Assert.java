@@ -1,59 +1,63 @@
 package me.cylorun.utils;
 
+import me.cylorun.Tracker;
+import org.apache.logging.log4j.Level;
+
 public class Assert {
 
     public static void isTrue(boolean condition) {
         if (!condition) {
-            ExceptionUtil.showError(new AssertionError());
+            Tracker.log(Level.WARN, "Assertion");
+
             throw new AssertionError();
         }
     }
 
     public static void isTrue(boolean condition, String message) {
         if (!condition) {
-            ExceptionUtil.showError(new AssertionError(message));
+            Tracker.log(Level.WARN, "Assertion -> " + message);
             throw new AssertionError(message);
         }
     }
 
     public static void isFalse(boolean condition) {
         if (condition) {
-            ExceptionUtil.showError(new AssertionError());
+            Tracker.log(Level.WARN, "Assertion");
             throw new AssertionError();
         }
     }
 
     public static void isFalse(boolean condition, String message) {
         if (condition) {
-            ExceptionUtil.showError(new AssertionError(message));
+            Tracker.log(Level.WARN, "Assertion -> " + message);
             throw new AssertionError(message);
         }
     }
 
     public static void isEqual(Object value1, Object value2) {
         if (value1 != value2) {
-            ExceptionUtil.showError(new AssertionError());
+            Tracker.log(Level.WARN, "Assertion error");
             throw new AssertionError();
         }
     }
 
     public static void isEqual(Object value1, Object value2, String message) {
         if (value1 != value2) {
-            ExceptionUtil.showError(new AssertionError(message));
+            Tracker.log(Level.WARN, "Assertion -> " + message);
             throw new AssertionError(message);
         }
     }
 
     public static void isNotNull(Object object) {
         if (object == null) {
-            throw new AssertionError();
+            Tracker.log(Level.WARN,"Assertion");
+
         }
     }
 
     public static void isNotNull(Object object, String message) {
         if (object == null) {
-            throw new AssertionError(message);
+            Tracker.log(Level.WARN,"Assertion -> "+message);
         }
     }
-
 }

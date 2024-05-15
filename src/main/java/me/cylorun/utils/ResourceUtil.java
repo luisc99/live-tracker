@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.Tracker;
+import org.apache.logging.log4j.Level;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class ResourceUtil {
         List<Object> list = new ArrayList<>();
         URL url = Tracker.class.getClassLoader().getResource("tracked.json");
         if (url == null) {
-            ExceptionUtil.showError(new IOException("Resource not found: tracked.json"));
+            Tracker.log(Level.ERROR,"Resource not found: tracked.json");
             throw new RuntimeException("Resource not found: tracked.json");
         }
 

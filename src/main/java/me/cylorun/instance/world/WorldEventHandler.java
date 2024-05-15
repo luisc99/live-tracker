@@ -1,7 +1,9 @@
 package me.cylorun.instance.world;
 
+import me.cylorun.Tracker;
 import me.cylorun.instance.SpeedrunEvent;
 import me.cylorun.utils.ExceptionUtil;
+import org.apache.logging.log4j.Level;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -101,7 +103,7 @@ public class WorldEventHandler extends Thread {
 
                 Thread.sleep(2000);
             } catch (InterruptedException | IOException e) {
-                ExceptionUtil.showError(e);
+                Tracker.log(Level.ERROR, e);
                 throw new RuntimeException(e);
             }
         }
