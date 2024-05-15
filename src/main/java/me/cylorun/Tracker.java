@@ -41,9 +41,9 @@ public class Tracker {
         FlatDarculaLaf.setup();
         ToolTipManager.sharedInstance().setInitialDelay(0);
 
-        Tracker.args = args;
-        UpdateUtil.checkForUpdates(VERSION);
-        checkDeleteOldjar();
+//        Tracker.args = args;
+//        UpdateUtil.checkForUpdates(VERSION);
+//        checkDeleteOldjar();
         Tracker.run();
     }
 
