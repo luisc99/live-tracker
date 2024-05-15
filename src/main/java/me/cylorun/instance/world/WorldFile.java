@@ -1,6 +1,7 @@
 package me.cylorun.instance.world;
 
 import com.google.gson.JsonObject;
+import me.cylorun.Tracker;
 import me.cylorun.enums.SpeedrunEventType;
 import me.cylorun.instance.LogEvent;
 import me.cylorun.instance.SpeedrunEvent;
@@ -9,6 +10,7 @@ import me.cylorun.instance.live.HungerResetHandler;
 import me.cylorun.instance.logs.LogEventListener;
 import me.cylorun.instance.logs.LogHandler;
 import me.cylorun.instance.player.Inventory;
+import org.apache.logging.log4j.Level;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -35,7 +37,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         this.eventHandler = new WorldEventHandler(this);
         this.logHandler = new LogHandler(this);
         this.hungerResetHandler = new HungerResetHandler(this);
-        this.strongholdTracker  = new DistanceTracker(this, SpeedrunEventType.FIRST_PORTAL, SpeedrunEventType.ENTER_STRONGHOLD);
+        this.strongholdTracker = new DistanceTracker(this, SpeedrunEventType.FIRST_PORTAL, SpeedrunEventType.ENTER_STRONGHOLD);
 
         this.logHandler.addListener(this);
         this.eventHandler.addListener(this);
@@ -58,19 +60,23 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         return Paths.get(this.getAbsolutePath()).resolve("level.dat");
     }
 
-    public String getUsername() throws IOException {
+    public String getUsername() {
         // [11:30:07] [Render thread/INFO]: Setting user: cylorun
         String regex = "^\\[\\d{2}:\\d{2}:\\d{2}\\] \\[Render thread\\/INFO\\]: Setting user: .*$";
         Pattern pattern = Pattern.compile(regex);
-        BufferedReader reader = new BufferedReader(new FileReader(this.getLogPath().toFile()));
-
-        String line;
+        BufferedReader reader = null;
         String username = "";
-        while ((line = reader.readLine()) != null) {
-            if (pattern.matcher(line).find()) {
-                String[] split = line.split(":");
-                username = split[split.length - 1].trim();
+        try {
+            reader = new BufferedReader(new FileReader(this.getLogPath().toFile()));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                if (pattern.matcher(line).find()) {
+                    String[] split = line.split(":");
+                    username = split[split.length - 1].trim();
+                }
             }
+        } catch (IOException e) {
+            Tracker.log(Level.ERROR, "Something went wrong while trying to get the players username");
         }
         return username;
     }
@@ -119,7 +125,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
 
     @Override
     public boolean equals(Object o) {
-        if(!(o instanceof WorldFile f)){
+        if (!(o instanceof WorldFile f)) {
             return false;
         }
 

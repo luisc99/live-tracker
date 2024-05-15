@@ -9,6 +9,7 @@ import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.I18n;
 import org.apache.logging.log4j.Level;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -24,10 +25,11 @@ public class TrackerOptions {
     public Integer last_win_y = 0;
     public Boolean gen_labels = true;
     public boolean detect_ssg = true;
+    public boolean show_debug = false;
     public int max_respawn_to_hr_time = 30; // seconds
     public int game_save_interval = 5; // seconds
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    public static final Path CONFIG_PATH = Paths.get("config.json");
+    public static final Path CONFIG_PATH = getTrackerPath().resolve("config.json");
     private static TrackerOptions instance;
 
     private TrackerOptions() {
@@ -36,6 +38,7 @@ public class TrackerOptions {
 
     public static TrackerOptions getInstance() {
         if (instance == null) {
+            ensureTrackerDir();
             if (Files.exists(CONFIG_PATH)) {
                 try {
                     instance = GSON.fromJson(new String((Files.readAllBytes(CONFIG_PATH))), TrackerOptions.class);
@@ -50,8 +53,14 @@ public class TrackerOptions {
         }
         return instance;
     }
+
+    public static void ensureTrackerDir() {
+        if (!getTrackerPath().toFile().exists()) {
+            getTrackerPath().toFile().mkdirs();
+        }
+    }
     public static Path getTrackerPath() {
-        return Paths.get(System.getProperty("user.home"), "live-tracker");
+        return Paths.get(System.getProperty("user.home"), ".LiveTracker");
     }
     public static void save() {
         FileWriter writer;

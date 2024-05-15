@@ -2,9 +2,9 @@ package me.cylorun.instance.logs;
 
 import com.google.gson.JsonObject;
 import me.cylorun.enums.LogEventType;
-import me.cylorun.io.TrackerOptions;
 import me.cylorun.instance.LogEvent;
 import me.cylorun.instance.world.WorldFile;
+import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.I18n;
 
 import java.util.ArrayList;
@@ -25,23 +25,11 @@ public class LogParser {
         List<LogEvent> res = new ArrayList<>();
 
         for (String l : lines) {
-            /*
-            [15:51:29] [Render thread/INFO]: [CHAT] Respawn point set -- pass
-            [15:51:48] [Render thread/INFO]: [CHAT] [Debug]: Render Distance: 9 -- ignore
-            [15:51:05] [Render thread/INFO]: [CHAT] <cylorun> hi -- ignore
-            */
-
-            /*
-            [18:02:11] [Server thread/INFO]: cylorun fell from a high place -- server death pattern
-            [18:02:11] [Render thread/INFO]: [CHAT] cylorun fell from a high place --  chat log regex
-            */
-
             if (this.respawnSet) {
                 if (getTime(l) - this.lastRespawnSet > TrackerOptions.getInstance().max_respawn_to_hr_time) {
                     this.respawnSet = false;
                 }
             }
-
             if (isChatLogMessage(l)) { // possible duplication bug
                 if (l.contains(I18n.get("chat.respawn_set"))) {
                     this.lastRespawnSet = getTime(l);
@@ -49,7 +37,7 @@ public class LogParser {
                     res.add(new LogEvent(LogEventType.RESPAWN_SET, l));
                 }
 
-                if (containsDeath(l)) {
+                if (containsDeath(l, file.getUsername())) {
                     if (this.respawnSet) {
                         res.add(new LogEvent(LogEventType.HUNGER_RESET, l));
                         this.respawnSet = false;
@@ -63,11 +51,6 @@ public class LogParser {
         }
 
         return res;
-    }
-
-    private static String getPrevLine(String line, List<String> lines) {
-        if (lines.indexOf(line) == 0) return line;
-        return lines.get(lines.indexOf(line) - 1);
     }
 
     public static int timeBetween(String lineA, String lineB) { // in seconds
@@ -96,17 +79,15 @@ public class LogParser {
         return (Integer.parseInt(splitTime[0]) * 3600) + (Integer.parseInt(splitTime[1]) * 60) + Integer.parseInt(splitTime[2]);
     }
 
-    public static boolean containsDeath(String line) {
-//        if (isServerThread(line)) {
-            JsonObject deaths = I18n.getALlDeathMessages();
-            for (String s : deaths.keySet()) {
-                String v = deaths.get(s).getAsString();
-                line = line.toLowerCase();
-                if (line.contains(v.toLowerCase())) {
-                    return true;
-                }
+    public static boolean containsDeath(String line, String username) {
+        JsonObject deaths = I18n.getALlDeathMessages();
+        for (String s : deaths.keySet()) {
+            String v = deaths.get(s).getAsString().replace("$", username);
+            line = line.toLowerCase();
+            if (line.contains(v.toLowerCase())) {
+                return true;
             }
-//        }
+        }
 
         return false;
     }

@@ -6,7 +6,6 @@ import me.cylorun.gui.components.MultiChoiceOptionField;
 import me.cylorun.gui.components.NumberOptionField;
 import me.cylorun.gui.components.TextOptionField;
 import me.cylorun.io.TrackerOptions;
-import me.cylorun.io.sheets.GoogleSheetsClient;
 import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.I18n;
 
@@ -96,6 +95,11 @@ public class TrackerFrame extends JFrame implements WindowListener {
         }));
         advancedPanel.add(new NumberOptionField("Max respawn to hunger reset (s)", "The maximum time between a respawn point being set and a death for it to count as a hunger reset", options.max_respawn_to_hr_time, (val) -> {
             options.max_respawn_to_hr_time = val;
+            TrackerOptions.save();
+        }));
+
+        advancedPanel.add(new BooleanOptionField("Debug messages", options.show_debug, (val)->{
+            options.show_debug = val;
             TrackerOptions.save();
         }));
 

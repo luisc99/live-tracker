@@ -1,12 +1,12 @@
 package me.cylorun.instance.live;
 
-import me.cylorun.io.TrackerOptions;
 import me.cylorun.instance.LogEvent;
 import me.cylorun.instance.SpeedrunEvent;
 import me.cylorun.instance.logs.LogEventListener;
 import me.cylorun.instance.player.InventoryItem;
 import me.cylorun.instance.world.WorldEventListener;
 import me.cylorun.instance.world.WorldFile;
+import me.cylorun.io.TrackerOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,11 +42,6 @@ public class HungerResetHandler implements WorldEventListener, LogEventListener 
 
             this.itemDiffs.put(item.name, prev + item.count);
         }
-
-        for (Map.Entry<String, Integer> entry : this.itemDiffs.entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
-        }
-        System.out.println();
     }
 
     @Override

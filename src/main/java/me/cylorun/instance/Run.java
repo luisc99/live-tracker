@@ -335,7 +335,7 @@ public class Run extends ArrayList<Object> {
             JsonArray check = e.getAsJsonArray();
             try {
                 String d = this.stats.getAsJsonObject(check.get(0).getAsString()).get(check.get(1).getAsString()).getAsString();
-                System.out.printf("Checks: %s, Val: %s\n", check, d);
+//                System.out.printf("Checks: %s, Val: %s\n", check, d);
                 res.add(d);
             } catch (Exception ex) {
                 res.add("0");
