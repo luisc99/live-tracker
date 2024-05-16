@@ -75,10 +75,10 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
-        JButton manualButton = new JButton("Manually edit");
+        JButton manualButton = new JButton("Open Tracker Folder");
         manualButton.addActionListener((e) -> {
             try {
-                Desktop.getDesktop().open(TrackerOptions.CONFIG_PATH.toFile());
+                Desktop.getDesktop().open(TrackerOptions.getTrackerPath().toFile());
             } catch (Exception ex) {
                 ExceptionUtil.showError(ex);
             }

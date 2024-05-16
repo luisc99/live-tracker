@@ -36,13 +36,19 @@ public class NBTReader {
             tag = NBTUtil.read(this.path.toFile());
         } catch (IOException e) {
             Tracker.log(Level.ERROR,"Failed to read a nbt file");
-            throw new RuntimeException(e);
+            return null;
         }
         return JsonParser.parseString(tag.getTag().toString()).getAsJsonObject();
     }
 
     public Vec2i getPlayerLocation() {
-        Integer[] loc = Arrays.stream(this.get(NBTReader.PLAYER_POS).replaceAll("[\\[\\]]", "").split(","))
+        String stringData = this.get(NBTReader.PLAYER_POS);
+        if (stringData == null) {
+            return null;
+        }
+
+        String[] s = stringData.replaceAll("[\\[\\]]", "").split(",");
+        Integer[] loc = Arrays.stream(s)
                 .map((l) -> (int) Double.parseDouble(l))
                 .toArray(Integer[]::new);
         return new Vec2i(loc[0], loc[2]);
@@ -65,6 +71,10 @@ public class NBTReader {
     }
 
     private String getNestedValue(String[] tags, JsonObject curr) {
+        if (curr == null) {
+            return null;
+        }
+
         for (int i = 0; i < tags.length; i++) {
             String tag = tags[i];
             if (i == tags.length - 1) {

@@ -2,12 +2,11 @@ package me.cylorun.utils;
 
 import com.github.tuupertunut.powershelllibjava.PowerShellExecutionException;
 import me.cylorun.Tracker;
-import me.cylorun.gui.TrackerFrame;
+import me.cylorun.gui.components.ProgressBar;
 import org.apache.logging.log4j.Level;
 import org.kohsuke.github.GHAsset;
 import org.kohsuke.github.GHRelease;
 import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
 
 import javax.swing.*;
 import java.io.BufferedInputStream;
@@ -51,7 +50,7 @@ public class UpdateUtil {
             return false;
         }
 
-        GHRelease release = releases.get(0); // Get the latest release
+        GHRelease release = releases.get(0);
         String latestVersion = release.getTagName();
 
         if (latestVersion == null || latestVersion.isEmpty()) {
@@ -64,23 +63,24 @@ public class UpdateUtil {
             Tracker.log(Level.WARN, "Latest release does not have a .jar asset");
             return false;
         }
-
+        Tracker.log(Level.DEBUG, latestVersion);
         return !latestVersion.equals(currentVersion);
     }
 
 
     public static void checkForUpdates(String currVersion) {
         try {
-            if (shouldUpdate(currVersion)) {
+            if (true) {
                 int choice = JOptionPane.showConfirmDialog(null, "A new uopdate was found, want to update?", "New update", JOptionPane.YES_NO_OPTION);
                 if (choice == JOptionPane.YES_OPTION) {
                     GHAsset latestJar = getLatestJar();
                     UpdateUtil.update(latestJar);
                 }
-
+            } else {
+                Tracker.log(Level.INFO, "No new updates found.");
             }
         } catch (IOException | PowerShellExecutionException e) {
-            Tracker.log(Level.ERROR, "Something went wrong while trying to check for an update\n"+ e.getMessage());
+            Tracker.log(Level.ERROR, "Something went wrong while trying to check for an update\n" + e.getMessage());
             throw new RuntimeException(e);
         }
     }
@@ -99,13 +99,14 @@ public class UpdateUtil {
 
     private static void downloadAsset(GHAsset asset, Path dowloadPath) throws IOException {
         String downloadUrl = asset.getBrowserDownloadUrl();
-
+        ProgressBar progressBar = new ProgressBar((int) Math.min(asset.getSize(), Integer.MAX_VALUE), 0, "Downloading "+asset.getName());
         try (BufferedInputStream in = new BufferedInputStream(new URL(downloadUrl).openStream());
              FileOutputStream fileOutputStream = new FileOutputStream(dowloadPath.toFile())) {
             byte[] dataBuffer = new byte[1024];
             int bytesRead;
             while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
                 fileOutputStream.write(dataBuffer, 0, bytesRead);
+                progressBar.setValue(progressBar.getValue() + bytesRead);
             }
         } catch (IOException e) {
             Tracker.log(Level.ERROR, "Failed to download asset: " + e.getMessage());

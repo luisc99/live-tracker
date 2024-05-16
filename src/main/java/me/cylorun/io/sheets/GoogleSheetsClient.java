@@ -45,8 +45,7 @@ public class GoogleSheetsClient {
         try {
             insert(headers, 1, true);
         } catch (GeneralSecurityException | IOException e) {
-            Tracker.log(Level.ERROR,"Failed to insert google sheets data");
-            throw new RuntimeException(e);
+            Tracker.log(Level.ERROR,"Failed to generate google sheets headers");
         }
     }
 

@@ -2,6 +2,8 @@ package me.cylorun.utils;
 
 import com.github.tuupertunut.powershelllibjava.PowerShell;
 import com.github.tuupertunut.powershelllibjava.PowerShellExecutionException;
+import me.cylorun.Tracker;
+import org.apache.logging.log4j.Level;
 
 import java.io.IOException;
 
@@ -17,6 +19,7 @@ public class PowerShellUtil {
     }
 
     public static String execute(String command) throws PowerShellExecutionException, IOException {
+        Tracker.log(Level.INFO, "Running PS command: " + command);
         return POWER_SHELL.executeCommands(command);
     }
 }

@@ -20,14 +20,12 @@ public class Run extends ArrayList<Object> {
     private final RecordFile recordFile;
     public JsonObject stats;
     public JsonObject adv;
-    private JsonObject liveData;
     private List<SpeedrunEvent> eventLog;
     private long seed;
 
     public Run(WorldFile worldFile, RecordFile recordFile) {
         this.worldFile = worldFile;
         this.recordFile = recordFile;
-        this.liveData = worldFile.liveData;
         this.eventLog = worldFile.eventHandler.events;
         this.adv = recordFile.getJson().get("advancements").getAsJsonObject();
         this.stats = this.getStats();
