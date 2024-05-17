@@ -75,7 +75,6 @@ public class Tracker {
 
     public static void handleWorld(WorldFile world) {
         world.setCompletionHandler(() -> {
-            world.finished = true;
             FileReader reader;
 
             try {

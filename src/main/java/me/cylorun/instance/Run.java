@@ -65,6 +65,7 @@ public class Run extends ArrayList<Object> {
         this.add(String.valueOf(this.getExplosivesUsed()));
         this.add("Gold");
         this.addAll(this.getMiscStats());
+        this.add(worldFile.getName());
         this.addAll(this.getFinalBarters());
         this.addAll(this.getMobKills());
         this.addAll(this.getFoods());
