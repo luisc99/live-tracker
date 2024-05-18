@@ -412,4 +412,9 @@ public class Run extends ArrayList<Object> {
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 
+    public JsonObject getAsJson() {
+        JsonObject json = new JsonObject();
+
+        return json;
+    }
 }
