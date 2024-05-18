@@ -2,6 +2,7 @@ package me.cylorun.instance.world;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
+import me.cylorun.instance.RecordFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,6 +27,7 @@ public class WorldCreationEventHandler extends Thread {
     public void addListener(WorldCreationListener listener) {
         listeners.add(listener);
     }
+
     private String getLastWorldPath() {
         FileReader reader = null;
         try {
@@ -37,6 +39,7 @@ public class WorldCreationEventHandler extends Thread {
         JsonElement element = JsonParser.parseReader(reader);
         return element.getAsJsonObject().get("world_path").getAsString();
     }
+
     public void notifyListeners(WorldFile world) {
         for (WorldCreationListener listener : listeners) {
             listener.onNewWorld(world);
@@ -50,8 +53,14 @@ public class WorldCreationEventHandler extends Thread {
         while (true) {
             String newPath = getLastWorldPath();
             if (!Objects.equals(newPath, this.lastPath) && !this.previousWorlds.contains(newPath)) { // makes sure that a world wont be tracked multiple times
-                this.previousWorlds.add(newPath);
                 this.lastPath = newPath;
+
+                RecordFile rf = new RecordFile(Paths.get(newPath).resolve("speedrunigt").resolve("record.json").toFile());
+                if (rf.getJson().get("category").getAsString().equals("pratice_world")) { // yes i spelled it right
+                    continue;
+                }
+
+                this.previousWorlds.add(newPath);
                 this.notifyListeners(new WorldFile(this.lastPath));
             }
             try {

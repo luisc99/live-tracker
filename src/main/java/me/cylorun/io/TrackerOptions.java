@@ -21,6 +21,7 @@ public class TrackerOptions {
     public String sheet_id;
     public String sheet_name = "Raw Data";
     public String lang = "en_us";
+    public String api_key;
     public Integer last_win_x = 0;
     public Integer last_win_y = 0;
     public Boolean gen_labels = true;

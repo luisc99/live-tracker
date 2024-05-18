@@ -75,27 +75,17 @@ public class Tracker {
 
     public static void handleWorld(WorldFile world) {
         world.setCompletionHandler(() -> {
-            FileReader reader;
 
-            try {
-                reader = new FileReader(world.getRecordPath().toFile());
-            } catch (FileNotFoundException ex) {
-                throw new RuntimeException(ex);
-            }
+            RecordFile record = new RecordFile(world.getRecordPath().toFile());
+            Run run = new Run(world, record);
+            List<Object> runData = run.gatherAll();
 
-            JsonObject o = JsonParser.parseReader(reader).getAsJsonObject();
-            RecordFile record = new RecordFile(o);
-            Run thisRun = new Run(world, record);
-
-            List<Object> runData = thisRun.gatherAll();
-
-            if (thisRun.shouldPush()) {
+            if (run.shouldPush()) {
                 try {
                     GoogleSheetsClient.appendRowTop(runData);
                     Tracker.log(Level.INFO, "Run Tracked");
-                } catch (IOException | GeneralSecurityException ex) {
-                    log(Level.ERROR, "Failed to upload run to google sheets");
-                    throw new RuntimeException(ex);
+                } catch (IOException | GeneralSecurityException e) {
+                    log(Level.ERROR, "Failed to upload run to google sheets\n"+e);
                 }
             }
         });
@@ -138,5 +128,4 @@ public class Tracker {
         LOGGER.log(level, o);
         LogReceiver.log(level, o);
     }
-
 }
