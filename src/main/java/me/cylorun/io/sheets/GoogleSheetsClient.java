@@ -1,11 +1,9 @@
 package me.cylorun.io.sheets;
 
 import com.google.api.services.sheets.v4.Sheets;
-import com.google.api.services.sheets.v4.model.UpdateValuesResponse;
-import com.google.api.services.sheets.v4.model.ValueRange;
+import com.google.api.services.sheets.v4.model.*;
 import me.cylorun.Tracker;
 import me.cylorun.io.TrackerOptions;
-import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.ResourceUtil;
 import org.apache.logging.log4j.Level;
 
@@ -13,13 +11,15 @@ import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static me.cylorun.io.sheets.GoogleSheetsService.getSheetsService;
 
 public class GoogleSheetsClient {
     private static boolean hasSetup = false;
-    public static void setup(){
+
+    public static void setup() {
         TrackerOptions options = TrackerOptions.getInstance();
         if (options.gen_labels && !hasSetup && isValidSheet(options.sheet_id, options.sheet_name)) {
             generateLabels();
@@ -33,7 +33,7 @@ public class GoogleSheetsClient {
                     .get(id.trim(), name + "!A1:B")
                     .execute();
         } catch (NullPointerException | IOException | GeneralSecurityException a) {
-            Tracker.log(Level.ERROR,"Invalid sheet_id or sheet_name");
+            Tracker.log(Level.ERROR, "Invalid sheet_id or sheet_name");
             return false;
         }
         return true;
@@ -46,7 +46,7 @@ public class GoogleSheetsClient {
             insert(headers, 1, true);
             Tracker.log(Level.INFO, "Generated header labels");
         } catch (GeneralSecurityException | IOException e) {
-            Tracker.log(Level.ERROR,"Failed to generate google sheets headers");
+            Tracker.log(Level.ERROR, "Failed to generate google sheets headers");
         }
     }
 
@@ -58,7 +58,7 @@ public class GoogleSheetsClient {
         Sheets sheetsService = getSheetsService();
         String sheetName = TrackerOptions.getInstance().sheet_name;
         String sheetId = TrackerOptions.getInstance().sheet_id.trim();
-        String range = String.format("A%s:CM", row);
+        String range = String.format("A%s:CO", row);
 
         if (overwrite) {
             ValueRange newRow = new ValueRange().setValues(Arrays.asList(rowData));
@@ -85,5 +85,43 @@ public class GoogleSheetsClient {
                 .update(sheetId, sheetName + "!" + range.split(":")[0], body)
                 .setValueInputOption("RAW")
                 .execute();
+    }
+
+    public static Integer getSheetIdByName(Sheets sheetsService, String spreadsheetId, String sheetName) throws IOException {
+        Spreadsheet spreadsheet = sheetsService.spreadsheets().get(spreadsheetId).execute();
+        for (Sheet sheet : spreadsheet.getSheets()) {
+            if (sheet.getProperties().getTitle().equals(sheetName)) {
+                return sheet.getProperties().getSheetId();
+            }
+        }
+        return null;
+    }
+
+    public static void deleteRow(int rowIndex) throws IOException, GeneralSecurityException {
+        TrackerOptions options = TrackerOptions.getInstance();
+        Sheets service = getSheetsService();
+        Integer sheetId = getSheetIdByName(service, options.sheet_id, options.sheet_name);
+
+        if (sheetId == null) {
+            Tracker.log(Level.WARN, "Sheet not found! " + options.sheet_name);
+            return;
+        }
+
+        DeleteDimensionRequest deleteRequest = new DeleteDimensionRequest()
+                .setRange(new DimensionRange()
+                        .setSheetId(sheetId)
+                        .setDimension("ROWS")
+                        .setStartIndex(rowIndex)
+                        .setEndIndex(rowIndex + 1));
+
+        Request request = new Request().setDeleteDimension(deleteRequest);
+
+        BatchUpdateSpreadsheetRequest batchUpdateRequest = new BatchUpdateSpreadsheetRequest()
+                .setRequests(Collections.singletonList(request));
+
+        service.spreadsheets()
+                .batchUpdate(options.sheet_id, batchUpdateRequest)
+                .execute();
+
     }
 }

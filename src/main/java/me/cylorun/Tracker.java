@@ -34,6 +34,7 @@ public class Tracker {
 
     public static final String VERSION = Tracker.class.getPackage().getImplementationVersion() == null ? "DEV" : Tracker.class.getPackage().getImplementationVersion();
     private static final Logger LOGGER = LogManager.getLogger(Tracker.class);
+    public static boolean hasFirstRun = false;
     public static String[] args;
 
     public static void main(String[] args) throws UnsupportedLookAndFeelException {
@@ -81,6 +82,7 @@ public class Tracker {
             List<Object> runData = run.gatherAll();
 
             if (run.shouldPush()) {
+                hasFirstRun = true;
                 try {
                     GoogleSheetsClient.appendRowTop(runData);
                     Tracker.log(Level.INFO, "Run Tracked");

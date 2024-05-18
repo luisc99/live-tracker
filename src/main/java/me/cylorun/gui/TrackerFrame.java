@@ -46,6 +46,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
         this.tabbedPane = new JTabbedPane();
         JPanel generalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JPanel advancedPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JPanel editorPanel = new RunEditorPanel();
         TrackerOptions options = TrackerOptions.getInstance();
 
         generalPanel.add(new TextOptionField("Sheet Name", options.sheet_name, (val) -> {
@@ -104,7 +105,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
 
         this.tabbedPane.add("General", generalPanel);
         this.tabbedPane.add("Advanced", advancedPanel);
-
+        this.tabbedPane.add("Runs", editorPanel);
         return this.tabbedPane;
     }
 

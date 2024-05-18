@@ -3,6 +3,8 @@ package me.cylorun.instance;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.Tracker;
+import me.cylorun.utils.Assert;
+import me.cylorun.utils.JSONUtil;
 import org.apache.logging.log4j.Level;
 
 import javax.sound.midi.Track;
@@ -20,16 +22,8 @@ public class RecordFile {
         this.jsonObject = jsonObject;
     }
     public RecordFile(File file) {
-        FileReader reader;
-
-        try {
-            reader = new FileReader(file);
-        } catch (FileNotFoundException ex) {
-            Tracker.log(Level.ERROR ,"Record file non existent\n"+ file.getAbsolutePath());
-            throw new RuntimeException();
-        }
-        System.out.println(file.getAbsolutePath());
-        this.jsonObject = JsonParser.parseReader(reader).getAsJsonObject();
+        Assert.isTrue(file.getName().endsWith(".json"), "Record file must be a JSON file\n"+file.getAbsolutePath());
+        this.jsonObject = JSONUtil.parseFile(file);
     }
 
     public JsonObject getJson() {

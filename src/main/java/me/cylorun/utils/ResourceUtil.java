@@ -46,6 +46,7 @@ public class ResourceUtil {
             }
         }
 
+        list.add("Session Marker");
         list.add("Seed");
         return list;
     }
