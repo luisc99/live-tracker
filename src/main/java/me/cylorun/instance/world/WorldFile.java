@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import me.cylorun.Tracker;
 import me.cylorun.enums.SpeedrunEventType;
 import me.cylorun.instance.LogEvent;
+import me.cylorun.instance.RunCoords;
 import me.cylorun.instance.SpeedrunEvent;
 import me.cylorun.instance.live.DistanceTracker;
 import me.cylorun.instance.live.HungerResetHandler;
@@ -25,6 +26,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     public final WorldEventHandler eventHandler;
     public HungerResetHandler hungerResetHandler;
     public DistanceTracker strongholdTracker;
+    public RunCoords runCoords;
     public boolean track = true;
     public boolean finished = false;
     public JsonObject liveData;
@@ -38,6 +40,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         this.logHandler = new LogHandler(this);
         this.hungerResetHandler = new HungerResetHandler(this);
         this.strongholdTracker = new DistanceTracker(this, SpeedrunEventType.FIRST_PORTAL, SpeedrunEventType.ENTER_STRONGHOLD);
+        this.runCoords = new RunCoords();
 
         this.logHandler.addListener(this);
         this.eventHandler.addListener(this);

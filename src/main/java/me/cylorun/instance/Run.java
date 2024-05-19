@@ -16,8 +16,8 @@ import java.util.*;
 
 public class Run extends ArrayList<Object> {
 
-    private final WorldFile worldFile;
-    private final RecordFile recordFile;
+    public final WorldFile worldFile;
+    public final RecordFile recordFile;
     public JsonObject stats;
     public JsonObject adv;
     private List<SpeedrunEvent> eventLog;
