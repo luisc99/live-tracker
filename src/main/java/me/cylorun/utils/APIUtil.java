@@ -9,7 +9,7 @@ import org.apache.logging.log4j.Level;
 import java.io.IOException;
 
 public class APIUtil {
-    public static final String API_URL = "http://localhost:5000";
+    public static final String API_URL = "https://100k-backend.vercel.app/";
     private int uploadRun(Run run) {
         TrackerOptions options = TrackerOptions.getInstance();
         OkHttpClient client = new OkHttpClient();

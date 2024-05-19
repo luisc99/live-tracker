@@ -1,4 +1,4 @@
-package me.cylorun.instance;
+package me.cylorun.map;
 
 import me.cylorun.utils.Vec2i;
 

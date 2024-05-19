@@ -1,4 +1,4 @@
-package me.cylorun.instance;
+package me.cylorun.map;
 
 import kaptainwutax.biomeutils.biome.Biome;
 import kaptainwutax.biomeutils.source.BiomeSource;
@@ -8,7 +8,13 @@ import kaptainwutax.biomeutils.source.OverworldBiomeSource;
 import kaptainwutax.featureutils.structure.*;
 import kaptainwutax.mcutils.rand.ChunkRand;
 import kaptainwutax.mcutils.state.Dimension;
+import kaptainwutax.mcutils.util.pos.CPos;
 import kaptainwutax.mcutils.version.MCVersion;
+import kaptainwutax.terrainutils.TerrainGenerator;
+import me.cylorun.Tracker;
+import me.cylorun.utils.ResourceUtil;
+import org.apache.commons.lang3.tuple.Pair;
+import org.apache.logging.log4j.Level;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -26,6 +32,8 @@ public class ChunkMapGenerator {
     private Stronghold sh;
     private RuinedPortal owRp;
     private RuinedPortal netherRp;
+    private Shipwreck ship;
+    private BuriedTreasure bt;
     private Mansion mansion;
     private ChunkRand rand;
 
@@ -41,22 +49,36 @@ public class ChunkMapGenerator {
         this.mansion = new Mansion(MCVersion.v1_16_1);
         this.owRp = new RuinedPortal(Dimension.OVERWORLD, MCVersion.v1_16_1);
         this.netherRp = new RuinedPortal(Dimension.NETHER, MCVersion.v1_16_1);
+        this.ship = new Shipwreck(MCVersion.v1_16_1);
+        this.bt = new BuriedTreasure(MCVersion.v1_16_1);
         this.rand = new ChunkRand(this.seed);
+
     }
 
     public void generate() {
         BiomeSource source = this.getBiomeSource();
-        BufferedImage image = new BufferedImage(size.width * 16, size.height * 16, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(this.size.width * 16, this.size.height * 16, BufferedImage.TYPE_INT_RGB);
 
-        for (int i = 0; i < size.width; i++) {
-            for (int j = 0; j < size.height; j++) {
-                Biome biomeId = source.getBiome(i * 16, 63, j * 16);
-                Color color = mapBiomeToColor(biomeId.getName());
+        int halfWidth = this.size.width / 2;
+        int halfHeight = this.size.height / 2;
 
+        for (int i = -halfWidth; i < halfWidth; i++) {
+            for (int j = -halfHeight; j < halfHeight; j++) {
                 Graphics2D g = image.createGraphics();
-                g.setColor(color);
-                g.fillRect(i * 16, j * 16, 16, 16);
-                g.dispose();
+                Pair<CPos, String> s = this.getStructureData((i + halfWidth) * 16, (j + halfHeight) * 16);
+                System.out.println(s);
+
+                if (s == null) {
+                    Biome biomeId = source.getBiome(i * 16, 63, j * 16);
+                    Color color = mapBiomeToColor(biomeId.getName());
+                    g.setColor(color);
+                    g.fillRect((i + halfWidth) * 16, (j + halfHeight) * 16, 16, 16);
+                    g.dispose();
+                } else {
+                    Image img = this.getImage(s.getValue());
+                    g.drawImage(img, (i + halfWidth) * 16, (j + halfHeight) * 16, 16, 16, null);
+                }
+
             }
         }
 
@@ -68,10 +90,55 @@ public class ChunkMapGenerator {
         }
     }
 
-    private String getStructure(int x, int z) { // chunk coords
-
-        return "";
+    private BufferedImage getImage(String path) {
+        BufferedImage image;
+        try {
+            image = ResourceUtil.loadImageFromResources(path);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        return image;
     }
+
+    private Pair<CPos, String> getStructureData(int x, int z) {
+        CPos mansionPos = this.mansion.getInRegion(this.seed, x, z, this.rand);
+        if (mansionPos != null && this.mansion.canSpawn(mansionPos, this.getBiomeSource()) && this.mansion.canGenerate(x, z, this.getTerrainGenerator())) {
+            return Pair.of(mansionPos, "mansion.png");
+        }
+
+        CPos btPos = this.bt.getInRegion(this.seed, x, z, this.rand);
+        if (btPos != null && this.bt.canSpawn(btPos, this.getBiomeSource()) && this.bt.canGenerate(x, z, this.getTerrainGenerator())) {
+            return Pair.of(btPos, "buried_treasure.png");
+        }
+
+        CPos bastionPos = this.bastion.getInRegion(this.seed, x, z, this.rand);
+        if (bastionPos != null && this.bastion.canSpawn(bastionPos, this.getBiomeSource()) && this.bastion.canGenerate(x, z, this.getTerrainGenerator())) {
+            return Pair.of(bastionPos, "bastion.png");
+        }
+
+        CPos shipPos = this.ship.getInRegion(this.seed, x, z, this.rand);
+        if (shipPos != null && this.ship.canSpawn(shipPos, this.getBiomeSource()) && this.ship.canGenerate(x, z, this.getTerrainGenerator())) {
+            return Pair.of(shipPos, "shipwreck.png");
+        }
+
+        CPos fortPos = this.fort.getInRegion(this.seed, x, z, this.rand);
+        if (fortPos != null && this.fort.canSpawn(fortPos, this.getBiomeSource()) && this.fort.canGenerate(x, z, this.getTerrainGenerator())) {
+            return Pair.of(fortPos, "fortress.png");
+        }
+
+        CPos netherRpPos = this.netherRp.getInRegion(this.seed, x, z, this.rand);
+        if (netherRpPos != null && this.netherRp.canSpawn(netherRpPos, this.getBiomeSource()) && this.netherRp.canGenerate(x, z, this.getTerrainGenerator())) {
+            return Pair.of(netherRpPos, "ruined_portal.png");
+        }
+
+        CPos owRpPos = this.owRp.getInRegion(this.seed, x, z, this.rand);
+        if (owRpPos != null && this.owRp.canSpawn(owRpPos, this.getBiomeSource()) && this.owRp.canGenerate(x, z, this.getTerrainGenerator())) {
+            return Pair.of(owRpPos, "ruined_portal.png");
+        }
+
+        return null;
+    }
+
 
     private BiomeSource getBiomeSource() {
         switch (this.dim) {
@@ -86,6 +153,9 @@ public class ChunkMapGenerator {
             }
             default -> throw new RuntimeException("Not a valid dimension: " + this.dim.getName());
         }
+    }
+    private TerrainGenerator getTerrainGenerator() {
+        return TerrainGenerator.of(this.getBiomeSource());
     }
 
     private Color mapBiomeToColor(String biome) {
@@ -129,10 +199,14 @@ public class ChunkMapGenerator {
                 return new Color(0, 102, 51);
             case "giant_tree_taiga_hills":
                 return new Color(0, 76, 38);
+            case "giant_spruce_taiga":
+                return new Color(1, 37, 20);
             case "snowy_taiga":
                 return new Color(192, 192, 192);
             case "snowy_taiga_hills":
                 return new Color(128, 128, 128);
+            case "snowy_taiga_mountains":
+                return new Color(61, 58, 58);
             case "taiga_mountains":
                 return new Color(56, 72, 56);
             case "swamp":
@@ -183,6 +257,8 @@ public class ChunkMapGenerator {
                 return new Color(42, 112, 110);
             case "frozen_river":
                 return new Color(192, 192, 255);
+            case "ice_spikes":
+                return new Color(95, 95, 218);
             case "river":
                 return new Color(0, 0, 255);
             case "beach":
@@ -236,9 +312,9 @@ public class ChunkMapGenerator {
             case "small_end_islands":
                 return new Color(50, 50, 50);
             case "the_end":
-                return Color.BLACK;
+                return new Color(232, 222, 169, 255);
             default:
-                System.out.println(biome);
+                Tracker.log(Level.DEBUG, String.format("Color for biome %s is missing", biome));
                 return Color.GRAY;
         }
     }

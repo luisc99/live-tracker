@@ -7,6 +7,8 @@ import com.google.gson.JsonParser;
 import me.cylorun.Tracker;
 import org.apache.logging.log4j.Level;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -21,7 +23,7 @@ public class ResourceUtil {
 
     public static List<Object> getHeaderLabels() {
         List<Object> list = new ArrayList<>();
-        URL url = Tracker.class.getClassLoader().getResource("tracked.json");
+        URL url = ResourceUtil.class.getClassLoader().getResource("tracked.json");
         if (url == null) {
             Tracker.log(Level.ERROR,"Resource not found: tracked.json");
             throw new RuntimeException("Resource not found: tracked.json");
@@ -49,6 +51,16 @@ public class ResourceUtil {
         list.add("Session Marker");
         list.add("Seed");
         return list;
+    }
+    public static BufferedImage loadImageFromResources(String path) throws IOException {
+        ClassLoader classLoader = ResourceUtil.class.getClassLoader();
+        try (InputStream inputStream = classLoader.getResourceAsStream(path)) {
+            if (inputStream == null) {
+                Tracker.log(Level.ERROR, "Resource not found: " + path);
+                throw new IOException("Resource not found: " + path);
+            }
+            return ImageIO.read(inputStream);
+        }
     }
 
 

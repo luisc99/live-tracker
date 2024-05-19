@@ -4,7 +4,7 @@ import com.google.gson.JsonObject;
 import me.cylorun.Tracker;
 import me.cylorun.enums.SpeedrunEventType;
 import me.cylorun.instance.LogEvent;
-import me.cylorun.instance.RunCoords;
+import me.cylorun.map.RunCoords;
 import me.cylorun.instance.SpeedrunEvent;
 import me.cylorun.instance.live.DistanceTracker;
 import me.cylorun.instance.live.HungerResetHandler;
