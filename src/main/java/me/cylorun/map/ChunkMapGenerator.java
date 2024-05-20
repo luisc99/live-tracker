@@ -78,7 +78,6 @@ public class ChunkMapGenerator {
                     Image img = this.getImage(s.getValue());
                     g.drawImage(img, (i + halfWidth) * 16, (j + halfHeight) * 16, 16, 16, null);
                 }
-
             }
         }
 
@@ -111,29 +110,31 @@ public class ChunkMapGenerator {
             return Pair.of(btPos, "buried_treasure.png");
         }
 
-        CPos bastionPos = this.bastion.getInRegion(this.seed, x, z, this.rand);
-        if (bastionPos != null && this.bastion.canSpawn(bastionPos, this.getBiomeSource()) && this.bastion.canGenerate(x, z, this.getTerrainGenerator())) {
-            return Pair.of(bastionPos, "bastion.png");
-        }
+
 
         CPos shipPos = this.ship.getInRegion(this.seed, x, z, this.rand);
         if (shipPos != null && this.ship.canSpawn(shipPos, this.getBiomeSource()) && this.ship.canGenerate(x, z, this.getTerrainGenerator())) {
             return Pair.of(shipPos, "shipwreck.png");
         }
 
-        CPos fortPos = this.fort.getInRegion(this.seed, x, z, this.rand);
-        if (fortPos != null && this.fort.canSpawn(fortPos, this.getBiomeSource()) && this.fort.canGenerate(x, z, this.getTerrainGenerator())) {
-            return Pair.of(fortPos, "fortress.png");
-        }
-
-        CPos netherRpPos = this.netherRp.getInRegion(this.seed, x, z, this.rand);
-        if (netherRpPos != null && this.netherRp.canSpawn(netherRpPos, this.getBiomeSource()) && this.netherRp.canGenerate(x, z, this.getTerrainGenerator())) {
-            return Pair.of(netherRpPos, "ruined_portal.png");
-        }
-
         CPos owRpPos = this.owRp.getInRegion(this.seed, x, z, this.rand);
         if (owRpPos != null && this.owRp.canSpawn(owRpPos, this.getBiomeSource()) && this.owRp.canGenerate(x, z, this.getTerrainGenerator())) {
             return Pair.of(owRpPos, "ruined_portal.png");
+        }
+
+        CPos fortPos = this.fort.getInRegion(this.seed, x, z, this.rand);
+        if (this.dim == Dimension.NETHER && fortPos != null && this.fort.canSpawn(fortPos, this.getBiomeSource()) && this.fort.canGenerate(x, z, this.getTerrainGenerator())) {
+            return Pair.of(fortPos, "fortress.png");
+        }
+
+        CPos bastionPos = this.bastion.getInRegion(this.seed, x, z, this.rand);
+        if (this.dim == Dimension.NETHER && bastionPos != null && this.bastion.canSpawn(bastionPos, this.getBiomeSource()) && this.bastion.canGenerate(x, z, this.getTerrainGenerator())) {
+            return Pair.of(bastionPos, "bastion.png");
+        }
+
+        CPos netherRpPos = this.netherRp.getInRegion(this.seed, x, z, this.rand);
+        if (this.dim == Dimension.NETHER && netherRpPos != null && this.netherRp.canSpawn(netherRpPos, this.getBiomeSource()) && this.netherRp.canGenerate(x, z, this.getTerrainGenerator())) {
+            return Pair.of(netherRpPos, "ruined_portal.png");
         }
 
         return null;
