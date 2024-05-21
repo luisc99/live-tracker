@@ -1,16 +1,17 @@
 package me.cylorun.instance.world;
 
 import com.google.gson.JsonObject;
+import com.mojang.datafixers.util.Pair;
 import me.cylorun.Tracker;
 import me.cylorun.enums.SpeedrunEventType;
 import me.cylorun.instance.LogEvent;
-import me.cylorun.map.RunCoords;
 import me.cylorun.instance.SpeedrunEvent;
 import me.cylorun.instance.live.DistanceTracker;
 import me.cylorun.instance.live.HungerResetHandler;
 import me.cylorun.instance.logs.LogEventListener;
 import me.cylorun.instance.logs.LogHandler;
 import me.cylorun.instance.player.Inventory;
+import me.cylorun.utils.Vec2i;
 import org.apache.logging.log4j.Level;
 
 import java.io.BufferedReader;
@@ -19,6 +20,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 public class WorldFile extends File implements WorldEventListener, LogEventListener {
@@ -26,7 +29,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     public final WorldEventHandler eventHandler;
     public HungerResetHandler hungerResetHandler;
     public DistanceTracker strongholdTracker;
-    public RunCoords runCoords;
+    public List<Pair<Vec2i, Vec2i>> playerCoords;
     public boolean track = true;
     public boolean finished = false;
     public JsonObject liveData;
@@ -40,7 +43,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         this.logHandler = new LogHandler(this);
         this.hungerResetHandler = new HungerResetHandler(this);
         this.strongholdTracker = new DistanceTracker(this, SpeedrunEventType.FIRST_PORTAL, SpeedrunEventType.ENTER_STRONGHOLD);
-        this.runCoords = new RunCoords();
+        this.playerCoords = new ArrayList<>();
 
         this.logHandler.addListener(this);
         this.eventHandler.addListener(this);

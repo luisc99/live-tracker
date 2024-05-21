@@ -3,6 +3,8 @@ package me.cylorun.instance;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.Tracker;
+import me.cylorun.instance.world.WorldFile;
+import me.cylorun.utils.Assert;
 import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.Vec2i;
 import net.querz.nbt.io.NBTUtil;
@@ -21,13 +23,18 @@ public class NBTReader {
     public static String[] PLAYER_DIMENSION = {"value", "Data", "value", "Player", "value", "Dimension", "value"};
     public static String[] PLAYER_POS = {"value", "Data", "value", "Player", "value", "Pos", "value", "list"};
 
-    public NBTReader(Path path) {
+    private NBTReader(Path path) {
         this.path = path;
     }
 
     public NBTReader setPath(Path path) {
         this.path = path;
         return this;
+    }
+
+    public static NBTReader from(WorldFile file) {
+        Assert.isNotNull(file,"Worldfile object null");
+        return new NBTReader(file.getLevelDatPath());
     }
 
     public JsonObject read() {

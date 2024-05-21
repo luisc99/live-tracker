@@ -30,7 +30,7 @@ public class Run extends ArrayList<Object> {
         this.adv = recordFile.getJson().get("advancements").getAsJsonObject();
         this.stats = this.getStats();
         try {
-            this.seed = Long.parseLong(new NBTReader(this.worldFile.getLevelDatPath()).get(NBTReader.SEED_PATH));
+            this.seed = Long.parseLong(NBTReader.from(this.worldFile).get(NBTReader.SEED_PATH));
         } catch (NumberFormatException e) {
             this.seed = 0;
         }

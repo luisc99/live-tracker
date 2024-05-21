@@ -97,6 +97,10 @@ public class TrackerFrame extends JFrame implements WindowListener {
             options.max_respawn_to_hr_time = val;
             TrackerOptions.save();
         }));
+        advancedPanel.add(new NumberOptionField("Path update interval (s)", "Interval between coordinate checks, used for the chunkmap", options.path_interval, (val) -> {
+            options.path_interval = val;
+            TrackerOptions.save();
+        }));
 
         advancedPanel.add(new BooleanOptionField("Debug messages", options.show_debug, (val)->{
             options.show_debug = val;

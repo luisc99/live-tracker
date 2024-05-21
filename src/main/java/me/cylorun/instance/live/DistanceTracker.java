@@ -27,7 +27,7 @@ public class DistanceTracker implements WorldEventListener {
         this.file = file;
 
         this.file.eventHandler.addListener(this);
-        this.reader = new NBTReader(file.getLevelDatPath());
+        this.reader = NBTReader.from(file);
     }
 
     public String getFinalData() {

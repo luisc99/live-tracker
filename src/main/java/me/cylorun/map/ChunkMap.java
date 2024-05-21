@@ -14,6 +14,7 @@ import kaptainwutax.mcutils.util.pos.CPos;
 import kaptainwutax.mcutils.version.MCVersion;
 import kaptainwutax.terrainutils.TerrainGenerator;
 import me.cylorun.Tracker;
+import me.cylorun.instance.world.WorldFile;
 import me.cylorun.utils.ResourceUtil;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
@@ -30,16 +31,16 @@ public class ChunkMap {
     private final long seed;
     private final Dimension dim;
     private final java.awt.Dimension size;
-    private final RunCoords runCoords;
+    private final WorldFile world;
     private List<StructureProvider> structures;
     private List<Pair<String, CPos>> structureCoords;
     private ChunkRand rand;
 
-    public ChunkMap(long seed, java.awt.Dimension size, Dimension dim, RunCoords runCoords) {
+    public ChunkMap(long seed, java.awt.Dimension size, Dimension dim, WorldFile world) {
         this.seed = seed;
         this.dim = dim;
         this.size = size;
-        this.runCoords = runCoords;
+        this.world = world;
 
         this.structures = new ArrayList<>();
         this.structureCoords = new ArrayList<>();
@@ -51,17 +52,15 @@ public class ChunkMap {
         BiomeSource source = this.getBiomeSource();
         BufferedImage image = new BufferedImage(this.size.width * 16, this.size.height * 16, BufferedImage.TYPE_INT_RGB);
         this.generateStructures();
-        int halfWidth = this.size.width / 2;
-        int halfHeight = this.size.height / 2;
 
-        for (int i = -halfWidth; i < halfWidth; i++) {
-            for (int j = -halfHeight; j < halfHeight; j++) {
+        for (int i = 0; i < this.size.width; i++) {
+            for (int j = 0; j < this.size.height; j++) {
                 Graphics2D g = image.createGraphics();
 
-                Biome biomeId = source.getBiome(i * 16, 63, j * 16);
+                Biome biomeId = source.getBiome(i * 16 - (this.size.width * 8), 63, j * 16 - (this.size.height * 8));
                 Color color = this.mapBiomeToColor(biomeId.getName());
                 g.setColor(color);
-                g.fillRect((i + halfWidth) * 16, (j + halfHeight) * 16, 16, 16);
+                g.fillRect(i * 16, j * 16, 16, 16);
                 g.dispose();
             }
         }
@@ -71,8 +70,14 @@ public class ChunkMap {
             Image img = this.getImage(p.getLeft());
             int x = p.getRight().getX();
             int z = p.getRight().getZ();
-            System.out.printf("name: %s | coords: %s\n",p.getLeft(), p.getRight());
-            g.drawImage(img, (x + halfWidth) * 16, (z + halfHeight) * 16, 48, 48, null);
+
+            int pixelX = (x + (this.size.width / 2)) * 16;
+            int pixelZ = (z + (this.size.height / 2)) * 16;
+
+            g.drawImage(img, pixelX, pixelZ, 48, 48, null);
+            g.setColor(Color.BLACK);
+            g.drawString(String.format("%s | %s", x * 16, z * 16), pixelX, pixelZ - 16);
+            g.dispose();
         }
 
         try {
@@ -83,6 +88,10 @@ public class ChunkMap {
         }
     }
 
+
+    private void drawPath(BufferedImage img) {
+
+    }
     private BufferedImage getImage(String path) {
         BufferedImage image;
         try {
@@ -94,7 +103,7 @@ public class ChunkMap {
     }
 
     private List<Pair<String, CPos>> generateStructures() {
-        int searchRad = this.size.height > this.size.width ? this.size.height * 16 : this.size.width * 16;
+        int searchRad = Math.max(this.size.height, this.size.width) * 16;
         for (StructureProvider search : this.structures) {
             RegionStructure<?, ?> structure = search.structureSupplier.create(MCVersion.v1_16_1);
 
@@ -115,12 +124,6 @@ public class ChunkMap {
         }
         return this.structureCoords;
     }
-
-    private Pair<CPos, String> getStructureData(int x, int z) {
-
-        return null;
-    }
-
 
     private BiomeSource getBiomeSource() {
         switch (this.dim) {
@@ -197,6 +200,8 @@ public class ChunkMap {
                 return new Color(61, 58, 58);
             case "taiga_mountains":
                 return new Color(56, 72, 56);
+            case "giant_spruce_taiga_hills":
+                return new Color(37, 47, 18);
             case "swamp":
                 return new Color(0, 102, 102);
             case "swamp_hills":
@@ -292,13 +297,13 @@ public class ChunkMap {
                 return new Color(38, 29, 18);
             // End Biomes
             case "end_barrens":
-                return new Color(100, 100, 100);
+                return new Color(248, 239, 222);
             case "end_highlands":
-                return new Color(200, 200, 200);
+                return new Color(220, 218, 158);
             case "end_midlands":
-                return new Color(150, 150, 150);
+                return new Color(175, 171, 142);
             case "small_end_islands":
-                return new Color(50, 50, 50);
+                return new Color(0, 0, 0);
             case "the_end":
                 return new Color(232, 222, 169, 255);
             default:

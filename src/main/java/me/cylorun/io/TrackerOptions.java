@@ -9,7 +9,6 @@ import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.I18n;
 import org.apache.logging.log4j.Level;
 
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -29,6 +28,7 @@ public class TrackerOptions {
     public boolean show_debug = false;
     public int max_respawn_to_hr_time = 30; // seconds
     public int game_save_interval = 5; // seconds
+    public int path_interval = 5; //secs
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final Path CONFIG_PATH = getTrackerPath().resolve("config.json");
     private static TrackerOptions instance;
@@ -60,9 +60,11 @@ public class TrackerOptions {
             getTrackerPath().toFile().mkdirs();
         }
     }
+
     public static Path getTrackerPath() {
         return Paths.get(System.getProperty("user.home"), ".LiveTracker");
     }
+
     public static void save() {
         FileWriter writer;
         try {
@@ -77,7 +79,7 @@ public class TrackerOptions {
 
 
     public static void validateSettings() {
-        Tracker.log(Level.INFO,"Verifying settings");
+        Tracker.log(Level.INFO, "Verifying settings");
         if (!Files.exists(Paths.get(GoogleSheetsService.CREDENTIALS_FILE))) {
             ExceptionUtil.showError("credentials.json file not found");
         } else if (getInstance().sheet_name == null || getInstance().sheet_name.isEmpty()) {
@@ -87,10 +89,10 @@ public class TrackerOptions {
         } else if (!I18n.isValidLanguage(getInstance().lang)) {
             ExceptionUtil.showError(getInstance().lang + " is not a supported language");
 
-        } else if(!GoogleSheetsClient.isValidSheet(getInstance().sheet_id, getInstance().sheet_name)) {
+        } else if (!GoogleSheetsClient.isValidSheet(getInstance().sheet_id, getInstance().sheet_name)) {
             ExceptionUtil.showError("Invalid sheet_id or sheet_name");
         } else {
-            Tracker.log(Level.INFO,"Settings good");
+            Tracker.log(Level.INFO, "Settings good");
         }
 
     }

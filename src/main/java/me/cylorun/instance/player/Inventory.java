@@ -20,7 +20,7 @@ public class Inventory extends ArrayList<InventoryItem> {
     }
 
     public Inventory read() {
-        NBTReader reader = new NBTReader(this.file.getLevelDatPath());
+        NBTReader reader = NBTReader.from(this.file);
         String invString = reader.get(NBTReader.INVENTORY_PATH);
         if (invString == null) {
             Tracker.log(Level.WARN,"Failed to retrieve inventory data");
