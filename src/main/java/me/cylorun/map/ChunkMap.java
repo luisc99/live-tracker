@@ -5,9 +5,11 @@ import kaptainwutax.biomeutils.source.BiomeSource;
 import kaptainwutax.biomeutils.source.EndBiomeSource;
 import kaptainwutax.biomeutils.source.NetherBiomeSource;
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
-import kaptainwutax.featureutils.structure.*;
+import kaptainwutax.featureutils.structure.RegionStructure;
 import kaptainwutax.mcutils.rand.ChunkRand;
 import kaptainwutax.mcutils.state.Dimension;
+import kaptainwutax.mcutils.util.math.DistanceMetric;
+import kaptainwutax.mcutils.util.math.Vec3i;
 import kaptainwutax.mcutils.util.pos.CPos;
 import kaptainwutax.mcutils.version.MCVersion;
 import kaptainwutax.terrainutils.TerrainGenerator;
@@ -21,64 +23,56 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-public class ChunkMapGenerator {
+public class ChunkMap {
     private final long seed;
     private final Dimension dim;
     private final java.awt.Dimension size;
     private final RunCoords runCoords;
-    private BastionRemnant bastion;
-    private Fortress fort;
-    private Stronghold sh;
-    private RuinedPortal owRp;
-    private RuinedPortal netherRp;
-    private Shipwreck ship;
-    private BuriedTreasure bt;
-    private Mansion mansion;
+    private List<StructureProvider> structures;
+    private List<Pair<String, CPos>> structureCoords;
     private ChunkRand rand;
 
-    public ChunkMapGenerator(long seed, java.awt.Dimension size, Dimension dim, RunCoords runCoords) {
+    public ChunkMap(long seed, java.awt.Dimension size, Dimension dim, RunCoords runCoords) {
         this.seed = seed;
         this.dim = dim;
         this.size = size;
         this.runCoords = runCoords;
 
-        this.fort = new Fortress(MCVersion.v1_16_1);
-        this.bastion = new BastionRemnant(MCVersion.v1_16_1);
-        this.sh = new Stronghold(MCVersion.v1_16_1);
-        this.mansion = new Mansion(MCVersion.v1_16_1);
-        this.owRp = new RuinedPortal(Dimension.OVERWORLD, MCVersion.v1_16_1);
-        this.netherRp = new RuinedPortal(Dimension.NETHER, MCVersion.v1_16_1);
-        this.ship = new Shipwreck(MCVersion.v1_16_1);
-        this.bt = new BuriedTreasure(MCVersion.v1_16_1);
-        this.rand = new ChunkRand(this.seed);
+        this.structures = new ArrayList<>();
+        this.structureCoords = new ArrayList<>();
 
+        this.rand = new ChunkRand(this.seed);
     }
 
     public void generate() {
         BiomeSource source = this.getBiomeSource();
         BufferedImage image = new BufferedImage(this.size.width * 16, this.size.height * 16, BufferedImage.TYPE_INT_RGB);
-
+        this.generateStructures();
         int halfWidth = this.size.width / 2;
         int halfHeight = this.size.height / 2;
 
         for (int i = -halfWidth; i < halfWidth; i++) {
             for (int j = -halfHeight; j < halfHeight; j++) {
                 Graphics2D g = image.createGraphics();
-                Pair<CPos, String> s = this.getStructureData((i + halfWidth) * 16, (j + halfHeight) * 16);
-                System.out.println(s);
 
-                if (s == null) {
-                    Biome biomeId = source.getBiome(i * 16, 63, j * 16);
-                    Color color = mapBiomeToColor(biomeId.getName());
-                    g.setColor(color);
-                    g.fillRect((i + halfWidth) * 16, (j + halfHeight) * 16, 16, 16);
-                    g.dispose();
-                } else {
-                    Image img = this.getImage(s.getValue());
-                    g.drawImage(img, (i + halfWidth) * 16, (j + halfHeight) * 16, 16, 16, null);
-                }
+                Biome biomeId = source.getBiome(i * 16, 63, j * 16);
+                Color color = this.mapBiomeToColor(biomeId.getName());
+                g.setColor(color);
+                g.fillRect((i + halfWidth) * 16, (j + halfHeight) * 16, 16, 16);
+                g.dispose();
             }
+        }
+
+        for (Pair<String, CPos> p : this.structureCoords) {
+            Graphics2D g = image.createGraphics();
+            Image img = this.getImage(p.getLeft());
+            int x = p.getRight().getX();
+            int z = p.getRight().getZ();
+            System.out.printf("name: %s | coords: %s\n",p.getLeft(), p.getRight());
+            g.drawImage(img, (x + halfWidth) * 16, (z + halfHeight) * 16, 48, 48, null);
         }
 
         try {
@@ -99,43 +93,30 @@ public class ChunkMapGenerator {
         return image;
     }
 
+    private List<Pair<String, CPos>> generateStructures() {
+        int searchRad = this.size.height > this.size.width ? this.size.height * 16 : this.size.width * 16;
+        for (StructureProvider search : this.structures) {
+            RegionStructure<?, ?> structure = search.structureSupplier.create(MCVersion.v1_16_1);
+
+            RegionStructure.Data<?> lowerBound = structure.at(-searchRad / 16, -searchRad / 16);
+            RegionStructure.Data<?> upperBound = structure.at(searchRad / 16, searchRad / 16);
+            for (int regionX = lowerBound.regionX; regionX <= upperBound.regionX; regionX++) {
+                for (int regionZ = lowerBound.regionZ; regionZ <= upperBound.regionZ; regionZ++) {
+                    CPos cpos = structure.getInRegion(this.seed, regionX, regionZ, rand);
+
+                    if (cpos == null) continue;
+                    if (cpos.distanceTo(Vec3i.ZERO, DistanceMetric.CHEBYSHEV) > (double) searchRad / 16) continue;
+                    if (!structure.canSpawn(cpos.getX(), cpos.getZ(), this.getBiomeSource())) continue;
+                    Pair<String, CPos> pair = Pair.of(search.asset, cpos);
+                    this.structureCoords.add(pair);
+                }
+            }
+
+        }
+        return this.structureCoords;
+    }
+
     private Pair<CPos, String> getStructureData(int x, int z) {
-        CPos mansionPos = this.mansion.getInRegion(this.seed, x, z, this.rand);
-        if (mansionPos != null && this.mansion.canSpawn(mansionPos, this.getBiomeSource()) && this.mansion.canGenerate(x, z, this.getTerrainGenerator())) {
-            return Pair.of(mansionPos, "mansion.png");
-        }
-
-        CPos btPos = this.bt.getInRegion(this.seed, x, z, this.rand);
-        if (btPos != null && this.bt.canSpawn(btPos, this.getBiomeSource()) && this.bt.canGenerate(x, z, this.getTerrainGenerator())) {
-            return Pair.of(btPos, "buried_treasure.png");
-        }
-
-
-
-        CPos shipPos = this.ship.getInRegion(this.seed, x, z, this.rand);
-        if (shipPos != null && this.ship.canSpawn(shipPos, this.getBiomeSource()) && this.ship.canGenerate(x, z, this.getTerrainGenerator())) {
-            return Pair.of(shipPos, "shipwreck.png");
-        }
-
-        CPos owRpPos = this.owRp.getInRegion(this.seed, x, z, this.rand);
-        if (owRpPos != null && this.owRp.canSpawn(owRpPos, this.getBiomeSource()) && this.owRp.canGenerate(x, z, this.getTerrainGenerator())) {
-            return Pair.of(owRpPos, "ruined_portal.png");
-        }
-
-        CPos fortPos = this.fort.getInRegion(this.seed, x, z, this.rand);
-        if (this.dim == Dimension.NETHER && fortPos != null && this.fort.canSpawn(fortPos, this.getBiomeSource()) && this.fort.canGenerate(x, z, this.getTerrainGenerator())) {
-            return Pair.of(fortPos, "fortress.png");
-        }
-
-        CPos bastionPos = this.bastion.getInRegion(this.seed, x, z, this.rand);
-        if (this.dim == Dimension.NETHER && bastionPos != null && this.bastion.canSpawn(bastionPos, this.getBiomeSource()) && this.bastion.canGenerate(x, z, this.getTerrainGenerator())) {
-            return Pair.of(bastionPos, "bastion.png");
-        }
-
-        CPos netherRpPos = this.netherRp.getInRegion(this.seed, x, z, this.rand);
-        if (this.dim == Dimension.NETHER && netherRpPos != null && this.netherRp.canSpawn(netherRpPos, this.getBiomeSource()) && this.netherRp.canGenerate(x, z, this.getTerrainGenerator())) {
-            return Pair.of(netherRpPos, "ruined_portal.png");
-        }
 
         return null;
     }
@@ -155,6 +136,12 @@ public class ChunkMapGenerator {
             default -> throw new RuntimeException("Not a valid dimension: " + this.dim.getName());
         }
     }
+
+    public ChunkMap registerFeature(StructureProvider s) {
+        this.structures.add(s);
+        return this;
+    }
+
     private TerrainGenerator getTerrainGenerator() {
         return TerrainGenerator.of(this.getBiomeSource());
     }
