@@ -8,11 +8,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class LogReceiver {
-    public static boolean showDebug = true;
-
     public static void log(Level level, Object o) {
         String s = String.format("[%s/%s]: %s\n", level.toString(), nowTime(), o.toString());
-        if (level != Level.DEBUG || TrackerOptions.getInstance().show_debug){
+        if (level != Level.DEBUG || TrackerOptions.getInstance().show_debug) {
             TrackerFrame.getInstance().appendLog(s);
         }
     }

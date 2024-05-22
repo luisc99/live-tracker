@@ -29,11 +29,7 @@ public class Run extends ArrayList<Object> {
         this.eventLog = worldFile.eventHandler.events;
         this.adv = recordFile.getJson().get("advancements").getAsJsonObject();
         this.stats = this.getStats();
-        try {
-            this.seed = Long.parseLong(NBTReader.from(this.worldFile).get(NBTReader.SEED_PATH));
-        } catch (NumberFormatException e) {
-            this.seed = 0;
-        }
+
     }
 
     public Run gatherAll() {

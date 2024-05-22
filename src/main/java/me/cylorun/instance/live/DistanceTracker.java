@@ -1,11 +1,11 @@
 package me.cylorun.instance.live;
 
 import me.cylorun.enums.SpeedrunEventType;
-import me.cylorun.io.TrackerOptions;
 import me.cylorun.instance.NBTReader;
 import me.cylorun.instance.SpeedrunEvent;
 import me.cylorun.instance.world.WorldEventListener;
 import me.cylorun.instance.world.WorldFile;
+import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.Vec2i;
 
 import java.util.concurrent.Executors;
@@ -41,16 +41,16 @@ public class DistanceTracker implements WorldEventListener {
 
     @Override
     public void onSpeedrunEvent(SpeedrunEvent e) {
-        if(e.type.equals(this.endEvent)){
+        if (e.type.equals(this.endEvent)) {
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-            scheduler.schedule(()-> {
+            scheduler.schedule(() -> {
                 this.endPoint = reader.getPlayerLocation();
             }, TrackerOptions.getInstance().game_save_interval, TimeUnit.SECONDS);
         }
 
-        if(e.type.equals(this.startEvent)){
+        if (e.type.equals(this.startEvent)) {
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
-            scheduler.schedule(()-> {
+            scheduler.schedule(() -> {
                 this.startPoint = reader.getPlayerLocation();
             }, TrackerOptions.getInstance().game_save_interval, TimeUnit.SECONDS);
         }

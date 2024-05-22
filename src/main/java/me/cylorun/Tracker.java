@@ -9,6 +9,7 @@ import me.cylorun.instance.Run;
 import me.cylorun.instance.world.WorldCreationEventHandler;
 import me.cylorun.instance.world.WorldFile;
 import me.cylorun.io.sheets.GoogleSheetsClient;
+import me.cylorun.map.ChunkMap;
 import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.LogReceiver;
 import me.cylorun.utils.UpdateUtil;
@@ -17,6 +18,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.swing.*;
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -90,10 +92,14 @@ public class Tracker {
                     log(Level.ERROR, "Failed to upload run to google sheets\n"+e);
                 }
             }
+            ChunkMap cm = new ChunkMap(world.getSeed(), new Dimension(100,100), kaptainwutax.mcutils.state.Dimension.OVERWORLD, world);
+            cm.generate();
+            cm.setDimension(kaptainwutax.mcutils.state.Dimension.NETHER);
+            cm.generate();
         });
     }
 
-    public static void run() {
+    private static void run() {
 
         List<WorldFile> worlds = new ArrayList<>();
         TrackerFrame.getInstance().open();

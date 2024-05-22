@@ -1,10 +1,11 @@
 package me.cylorun.instance.world;
 
-import com.google.gson.JsonObject;
-import com.mojang.datafixers.util.Pair;
+import kaptainwutax.mcutils.state.Dimension;
 import me.cylorun.Tracker;
+import me.cylorun.enums.LogEventType;
 import me.cylorun.enums.SpeedrunEventType;
 import me.cylorun.instance.LogEvent;
+import me.cylorun.instance.NBTReader;
 import me.cylorun.instance.SpeedrunEvent;
 import me.cylorun.instance.live.DistanceTracker;
 import me.cylorun.instance.live.HungerResetHandler;
@@ -12,6 +13,7 @@ import me.cylorun.instance.logs.LogEventListener;
 import me.cylorun.instance.logs.LogHandler;
 import me.cylorun.instance.player.Inventory;
 import me.cylorun.utils.Vec2i;
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 
 import java.io.BufferedReader;
@@ -26,15 +28,16 @@ import java.util.regex.Pattern;
 
 public class WorldFile extends File implements WorldEventListener, LogEventListener {
     private CompletionHandler completionHandler;
+    private final NBTReader reader;
     public final WorldEventHandler eventHandler;
-    public HungerResetHandler hungerResetHandler;
-    public DistanceTracker strongholdTracker;
-    public List<Pair<Vec2i, Vec2i>> playerCoords;
+    public final HungerResetHandler hungerResetHandler;
+    public final DistanceTracker strongholdTracker;
+    public final List<Pair<Pair<Vec2i, Vec2i>, Dimension>> playerPath; // just the path the player takes
+    public final List<Pair<Pair<String, Vec2i>, Dimension>> playerLocations; // locations of deaths and other special events
+    public final Inventory inv;
+    public final LogHandler logHandler;
     public boolean track = true;
     public boolean finished = false;
-    public JsonObject liveData;
-    public Inventory inv;
-    public LogHandler logHandler;
 
     public WorldFile(String path) {
         super(path);
@@ -43,11 +46,13 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         this.logHandler = new LogHandler(this);
         this.hungerResetHandler = new HungerResetHandler(this);
         this.strongholdTracker = new DistanceTracker(this, SpeedrunEventType.FIRST_PORTAL, SpeedrunEventType.ENTER_STRONGHOLD);
-        this.playerCoords = new ArrayList<>();
+        this.reader = NBTReader.from(this);
+
+        this.playerPath = new ArrayList<>();
+        this.playerLocations = new ArrayList<>();
 
         this.logHandler.addListener(this);
         this.eventHandler.addListener(this);
-        this.liveData = new JsonObject();
     }
 
     public Path getRecordPath() {
@@ -60,6 +65,14 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
 
     public Path getLogPath() {
         return Paths.get(this.getAbsolutePath()).getParent().getParent().resolve("logs").resolve("latest.log");
+    }
+    public long getSeed() {
+        try {
+            return  Long.parseLong(NBTReader.from(this).get(NBTReader.SEED_PATH));
+        } catch (NumberFormatException e) {
+            Tracker.log(Level.WARN, "Failed to get the seed");
+            return 0;
+        }
     }
 
     public Path getLevelDatPath() {
@@ -123,7 +136,11 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     public void onLogEvent(LogEvent e) {
         if (!this.finished) {
             if (this.track) {
-
+                if (e.type.equals(LogEventType.DEATH)) {
+                    Vec2i loc = this.reader.getPlayerLocation();
+                    Dimension dim = this.reader.getPlayerDimension();
+                    this.playerLocations.add(Pair.of(Pair.of("icons/death.png", loc), dim));
+                }
             }
         }
     }

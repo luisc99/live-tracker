@@ -5,7 +5,7 @@ import kaptainwutax.biomeutils.source.BiomeSource;
 import kaptainwutax.biomeutils.source.EndBiomeSource;
 import kaptainwutax.biomeutils.source.NetherBiomeSource;
 import kaptainwutax.biomeutils.source.OverworldBiomeSource;
-import kaptainwutax.featureutils.structure.RegionStructure;
+import kaptainwutax.featureutils.structure.*;
 import kaptainwutax.mcutils.rand.ChunkRand;
 import kaptainwutax.mcutils.state.Dimension;
 import kaptainwutax.mcutils.util.math.DistanceMetric;
@@ -16,6 +16,7 @@ import kaptainwutax.terrainutils.TerrainGenerator;
 import me.cylorun.Tracker;
 import me.cylorun.instance.world.WorldFile;
 import me.cylorun.utils.ResourceUtil;
+import me.cylorun.utils.Vec2i;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 
@@ -29,11 +30,12 @@ import java.util.List;
 
 public class ChunkMap {
     private final long seed;
-    private final Dimension dim;
+    private Dimension dim;
     private final java.awt.Dimension size;
     private final WorldFile world;
     private List<StructureProvider> structures;
     private List<Pair<String, CPos>> structureCoords;
+    private List<Pair<String, Vec2i>> mapExtras;
     private ChunkRand rand;
 
     public ChunkMap(long seed, java.awt.Dimension size, Dimension dim, WorldFile world) {
@@ -44,11 +46,29 @@ public class ChunkMap {
 
         this.structures = new ArrayList<>();
         this.structureCoords = new ArrayList<>();
+        this.mapExtras = new ArrayList<>();
 
         this.rand = new ChunkRand(this.seed);
+        this.registerAll();
     }
 
-    public void generate() {
+    public void setDimension(Dimension dim) {
+        this.dim = dim;
+    }
+
+    private void registerAll() {
+        this.registerFeature(new StructureProvider((version -> new RuinedPortal(Dimension.NETHER, version)), Dimension.NETHER, "icons/ruined_portal.png"));
+        this.registerFeature(new StructureProvider((version -> new RuinedPortal(Dimension.OVERWORLD, version)), kaptainwutax.mcutils.state.Dimension.OVERWORLD, "icons/ruined_portal.png"));
+        this.registerFeature(new StructureProvider(BuriedTreasure::new, Dimension.OVERWORLD, "icons/buried_treasure.png"));
+        this.registerFeature(new StructureProvider(Village::new, Dimension.OVERWORLD, "icons/village.png"));
+        this.registerFeature(new StructureProvider(Shipwreck::new, Dimension.OVERWORLD, "icons/shipwreck.png"));
+        this.registerFeature(new StructureProvider(Mansion::new, Dimension.OVERWORLD, "icons/mansion.png"));
+        this.registerFeature(new StructureProvider(BastionRemnant::new, Dimension.NETHER, "icons/bastion.png"));
+        this.registerFeature(new StructureProvider(Fortress::new, Dimension.NETHER, "icons/fortress.png"));
+    }
+
+    public synchronized void generate() {
+        long start = System.currentTimeMillis();
         BiomeSource source = this.getBiomeSource();
         BufferedImage image = new BufferedImage(this.size.width * 16, this.size.height * 16, BufferedImage.TYPE_INT_RGB);
         this.generateStructures();
@@ -67,7 +87,7 @@ public class ChunkMap {
 
         for (Pair<String, CPos> p : this.structureCoords) {
             Graphics2D g = image.createGraphics();
-            Image img = this.getImage(p.getLeft());
+            Image img = this.getResourceImage(p.getLeft());
             int x = p.getRight().getX();
             int z = p.getRight().getZ();
 
@@ -80,19 +100,45 @@ public class ChunkMap {
             g.dispose();
         }
 
+
+        drawPlayerEvents(image);
+        drawPath(image);
+
         try {
             File output = new File(dim.getName().toLowerCase() + ".png");
             ImageIO.write(image, "png", output);
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        Tracker.log(Level.DEBUG, String.format("Generated chunk map for %s in %s ms", this.dim, System.currentTimeMillis() - start));
     }
 
 
-    private void drawPath(BufferedImage img) {
+    private void drawPath(BufferedImage i) {
 
     }
-    private BufferedImage getImage(String path) {
+
+    private void drawPlayerEvents(BufferedImage i) {
+        for (Pair<Pair<String, Vec2i>, Dimension> p : this.world.playerLocations) {
+            if (!p.getRight().equals(this.dim)) continue;
+            Graphics2D g = i.createGraphics();
+            Image img = this.getResourceImage(p.getLeft().getLeft());
+            int x = p.getLeft().getRight().getX();
+            int z = p.getLeft().getRight().getZ();
+
+            int pixelX = (x + ((this.size.width / 2) * 16));
+            int pixelZ = (z + ((this.size.height / 2) * 16)) ;
+
+
+            g.drawImage(img, pixelX, pixelZ, 64, 64, null);
+            g.setColor(Color.BLACK);
+            g.drawString(String.format("%s | %s", x, z), pixelX, pixelZ - 16);
+            g.dispose();
+        }
+    }
+
+    private BufferedImage getResourceImage(String path) {
         BufferedImage image;
         try {
             image = ResourceUtil.loadImageFromResources(path);
@@ -115,7 +161,8 @@ public class ChunkMap {
 
                     if (cpos == null) continue;
                     if (cpos.distanceTo(Vec3i.ZERO, DistanceMetric.CHEBYSHEV) > (double) searchRad / 16) continue;
-                    if (!structure.canSpawn(cpos.getX(), cpos.getZ(), this.getBiomeSource())) continue;
+                    if (!structure.canSpawn(cpos.getX(), cpos.getZ(), this.getBiomeSource()) || !this.dim.equals(search.dimension))
+                        continue;
                     Pair<String, CPos> pair = Pair.of(search.asset, cpos);
                     this.structureCoords.add(pair);
                 }

@@ -3,7 +3,6 @@ package me.cylorun.instance.world;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import me.cylorun.instance.RecordFile;
 import me.cylorun.utils.JSONUtil;
 
 import java.io.File;
@@ -20,6 +19,7 @@ public class WorldCreationEventHandler extends Thread {
     private File lwjson = Paths.get(System.getProperty("user.home")).resolve("speedrunigt").resolve("latest_world.json").toFile();
 
     public WorldCreationEventHandler() {
+        super("WorldCreationEventHandler");
         this.previousWorlds = new ArrayList<>();
         this.start();
     }
@@ -57,10 +57,10 @@ public class WorldCreationEventHandler extends Thread {
             if (!Objects.equals(newPath, this.lastPath) && !this.previousWorlds.contains(newPath)) { // makes sure that a world wont be tracked multiple times
                 this.lastPath = newPath;
 
-                JsonObject recordJson = JSONUtil.parseFile(Paths.get(newPath).resolve("speedrunigt").resolve("record.json").toFile());
-                if (recordJson.get("category").getAsString().equals("pratice_world")) { // yes i spelled it right
-                    continue;
-                }
+//                JsonObject recordJson = JSONUtil.parseFile(Paths.get(newPath).resolve("speedrunigt").resolve("record.json").toFile());
+//                if (recordJson != null && recordJson.get("category").getAsString().equals("pratice_world")) { // yes i spelled it right
+//                    continue;
+//                }
 
                 this.previousWorlds.add(newPath);
                 this.notifyListeners(new WorldFile(this.lastPath));

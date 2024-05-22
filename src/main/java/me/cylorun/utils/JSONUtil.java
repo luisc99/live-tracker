@@ -16,9 +16,8 @@ public class JSONUtil {
         try {
             reader = new FileReader(file);
         } catch (FileNotFoundException e) {
-            Tracker.log(Level.ERROR ,"Json file non existent\n"+ file.getAbsolutePath());
-
-            throw new RuntimeException(e);
+            Tracker.log(Level.ERROR, "Json file non existent: " + file.getAbsolutePath());
+            return null;
         }
 
         return JsonParser.parseReader(reader).getAsJsonObject();
