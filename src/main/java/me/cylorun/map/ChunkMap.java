@@ -94,6 +94,7 @@ public class ChunkMap {
             int pixelX = (x + (this.size.width / 2)) * 16;
             int pixelZ = (z + (this.size.height / 2)) * 16;
 
+            g.setFont(new Font("default", Font.BOLD, 40));
             g.drawImage(img, pixelX, pixelZ, 48, 48, null);
             g.setColor(Color.BLACK);
             g.drawString(String.format("%s | %s", x * 16, z * 16), pixelX, pixelZ - 16);
@@ -116,7 +117,24 @@ public class ChunkMap {
 
 
     private void drawPath(BufferedImage i) {
+        for (Pair<Pair<Vec2i, Vec2i>, Dimension> p : this.world.playerPath) {
+            if (!p.getRight().equals(this.dim)) continue;
+            Graphics2D g = i.createGraphics();
 
+            int xOff = (this.size.width * 8);
+            int zOff = (this.size.height * 8);
+
+            int x1 = p.getLeft().getLeft().getX() + xOff;
+            int z1 = p.getLeft().getLeft().getZ() + zOff;
+
+            int x2 = p.getLeft().getRight().getX() + xOff;
+            int z2 = p.getLeft().getRight().getZ() + zOff;
+
+            g.setColor(Color.RED);
+            g.setStroke(new BasicStroke(10));
+            g.drawLine(x1, z1, x2, z2);
+            g.dispose();
+        }
     }
 
     private void drawPlayerEvents(BufferedImage i) {
@@ -127,10 +145,10 @@ public class ChunkMap {
             int x = p.getLeft().getRight().getX();
             int z = p.getLeft().getRight().getZ();
 
-            int pixelX = (x + ((this.size.width / 2) * 16));
-            int pixelZ = (z + ((this.size.height / 2) * 16)) ;
+            int pixelX = x + (this.size.width * 8);
+            int pixelZ = z + (this.size.height * 8);
 
-
+            g.setFont(new Font("default", Font.BOLD, 40));
             g.drawImage(img, pixelX, pixelZ, 64, 64, null);
             g.setColor(Color.BLACK);
             g.drawString(String.format("%s | %s", x, z), pixelX, pixelZ - 16);
