@@ -9,12 +9,14 @@ import me.cylorun.instance.NBTReader;
 import me.cylorun.instance.SpeedrunEvent;
 import me.cylorun.instance.live.DistanceTracker;
 import me.cylorun.instance.live.HungerResetHandler;
+import me.cylorun.instance.live.PathTracker;
 import me.cylorun.instance.logs.LogEventListener;
 import me.cylorun.instance.logs.LogHandler;
 import me.cylorun.instance.player.Inventory;
 import me.cylorun.utils.Vec2i;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
+import org.lwjgl.system.CallbackI;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -28,7 +30,8 @@ import java.util.regex.Pattern;
 
 public class WorldFile extends File implements WorldEventListener, LogEventListener {
     private CompletionHandler completionHandler;
-    private final NBTReader reader;
+    private final PathTracker pathTracker;
+    public final NBTReader reader;
     public final WorldEventHandler eventHandler;
     public final HungerResetHandler hungerResetHandler;
     public final DistanceTracker strongholdTracker;
@@ -47,7 +50,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         this.hungerResetHandler = new HungerResetHandler(this);
         this.strongholdTracker = new DistanceTracker(this, SpeedrunEventType.FIRST_PORTAL, SpeedrunEventType.ENTER_STRONGHOLD);
         this.reader = NBTReader.from(this);
-
+        this.pathTracker = new PathTracker(this);
         this.playerPath = new ArrayList<>();
         this.playerLocations = new ArrayList<>();
 
