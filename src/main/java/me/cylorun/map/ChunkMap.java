@@ -168,6 +168,8 @@ public class ChunkMap {
 
     private List<Pair<String, CPos>> generateStructures() {
         int searchRad = Math.max(this.size.height, this.size.width) * 16;
+        this.structureCoords.clear();
+
         for (StructureProvider search : this.structures) {
             RegionStructure<?, ?> structure = search.structureSupplier.create(MCVersion.v1_16_1);
 
