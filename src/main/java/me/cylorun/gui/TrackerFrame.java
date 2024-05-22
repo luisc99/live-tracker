@@ -79,7 +79,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
         JButton manualButton = new JButton("Open Tracker Folder");
         manualButton.addActionListener((e) -> {
             try {
-                Desktop.getDesktop().open(TrackerOptions.getTrackerPath().toFile());
+                Desktop.getDesktop().open(TrackerOptions.getTrackerDir().toFile());
             } catch (Exception ex) {
                 ExceptionUtil.showError(ex);
             }

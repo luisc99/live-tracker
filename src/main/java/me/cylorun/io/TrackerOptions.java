@@ -30,7 +30,7 @@ public class TrackerOptions {
     public int game_save_interval = 5; // seconds
     public int path_interval = 5; //secs
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
-    public static final Path CONFIG_PATH = getTrackerPath().resolve("config.json");
+    public static final Path CONFIG_PATH = getTrackerDir().resolve("config.json");
     private static TrackerOptions instance;
 
     private TrackerOptions() {
@@ -56,12 +56,12 @@ public class TrackerOptions {
     }
 
     public static void ensureTrackerDir() {
-        if (!getTrackerPath().toFile().exists()) {
-            getTrackerPath().toFile().mkdirs();
+        if (!getTrackerDir().toFile().exists()) {
+            getTrackerDir().toFile().mkdirs();
         }
     }
 
-    public static Path getTrackerPath() {
+    public static Path getTrackerDir() {
         return Paths.get(System.getProperty("user.home"), ".LiveTracker");
     }
 
