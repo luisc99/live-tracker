@@ -187,6 +187,14 @@ public class ChunkMap {
             }
 
         }
+
+        Stronghold sh = new Stronghold(MCVersion.v1_16_1);
+        for (CPos cpos : sh.getAllStarts(this.getBiomeSource(), this.rand)) {
+            if (cpos.distanceTo(Vec3i.ZERO, DistanceMetric.CHEBYSHEV) > (double) searchRad / 16) continue;
+            Pair<String, CPos> pair = Pair.of("icons/stronghold.png", cpos);
+            this.structureCoords.add(pair);
+        }
+
         return this.structureCoords;
     }
 
