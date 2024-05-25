@@ -1,10 +1,7 @@
 package me.cylorun.gui;
 
 import me.cylorun.Tracker;
-import me.cylorun.gui.components.BooleanOptionField;
-import me.cylorun.gui.components.MultiChoiceOptionField;
-import me.cylorun.gui.components.NumberOptionField;
-import me.cylorun.gui.components.TextOptionField;
+import me.cylorun.gui.components.*;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.I18n;
@@ -50,49 +47,46 @@ public class TrackerFrame extends JFrame implements WindowListener {
         TrackerOptions options = TrackerOptions.getInstance();
 
         generalPanel.add(new TextOptionField("Sheet Name", options.sheet_name, (val) -> {
-                options.sheet_name = val;
-                TrackerOptions.save();
-
+            options.sheet_name = val;
+            TrackerOptions.save();
         }));
 
         generalPanel.add(new TextOptionField("Sheet ID", options.sheet_id, (val) -> {
-                options.sheet_id = val;
-                TrackerOptions.save();
+            options.sheet_id = val;
+            TrackerOptions.save();
 
         }));
 
-        generalPanel.add(new MultiChoiceOptionField(I18n.getSupported().toArray(new String[0]), options.lang, "Game lang",(val) -> {
+        generalPanel.add(new MultiChoiceOptionField(I18n.getSupported().toArray(new String[0]), options.lang, "Game lang", (val) -> {
             options.lang = val;
             TrackerOptions.save();
         }));
 
-        generalPanel.add(new BooleanOptionField("Generate Headers", options.gen_labels, (val)->{
+        generalPanel.add(new BooleanOptionField("Generate Headers", options.gen_labels, (val) -> {
             options.gen_labels = val;
             TrackerOptions.save();
         }));
 
-        generalPanel.add(new BooleanOptionField("Detect SSG", options.detect_ssg, (val)->{
+        generalPanel.add(new BooleanOptionField("Detect SSG", options.detect_ssg, (val) -> {
             options.detect_ssg = val;
             TrackerOptions.save();
         }));
 
-        JButton manualButton = new JButton("Open Tracker Folder");
-        manualButton.addActionListener((e) -> {
+
+        generalPanel.add(new ActionButton("Open Tracker Folder", (e) -> {
             try {
                 Desktop.getDesktop().open(TrackerOptions.getTrackerDir().toFile());
             } catch (Exception ex) {
                 ExceptionUtil.showError(ex);
             }
-        });
-        JButton validationButton = new JButton("Validate Settings");
-        validationButton.addActionListener(e -> TrackerOptions.validateSettings());
+        }));
 
-        generalPanel.add(manualButton);
-        generalPanel.add(validationButton);
+        generalPanel.add(new ActionButton("Validate Settings", (e) -> TrackerOptions.validateSettings()));
         advancedPanel.add(new NumberOptionField("Save interval (s)", "The interval which game files are updated at", options.game_save_interval, (val) -> {
             options.game_save_interval = val;
             TrackerOptions.save();
         }));
+
         advancedPanel.add(new NumberOptionField("Max respawn to hunger reset (s)", "The maximum time between a respawn point being set and a death for it to count as a hunger reset", options.max_respawn_to_hr_time, (val) -> {
             options.max_respawn_to_hr_time = val;
             TrackerOptions.save();
@@ -102,7 +96,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
-        advancedPanel.add(new BooleanOptionField("Debug messages", options.show_debug, (val)->{
+        advancedPanel.add(new BooleanOptionField("Debug messages", options.show_debug, (val) -> {
             options.show_debug = val;
             TrackerOptions.save();
         }));
