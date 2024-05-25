@@ -31,17 +31,17 @@ import java.util.List;
 public class ChunkMap {
     private final long seed;
     private Dimension dim;
-    private final java.awt.Dimension size;
+    private final int rad;
     private final WorldFile world;
     private List<StructureProvider> structures;
     private List<Pair<String, CPos>> structureCoords;
     private List<Pair<String, Vec2i>> mapExtras;
     private ChunkRand rand;
 
-    public ChunkMap(long seed, java.awt.Dimension size, Dimension dim, WorldFile world) {
+    public ChunkMap(long seed, int rad, Dimension dim, WorldFile world) {
         this.seed = seed;
         this.dim = dim;
-        this.size = size;
+        this.rad = rad;
         this.world = world;
 
         this.structures = new ArrayList<>();
@@ -53,6 +53,7 @@ public class ChunkMap {
     }
 
     public void setDimension(Dimension dim) {
+        this.structureCoords.clear();
         this.dim = dim;
     }
 
@@ -70,14 +71,14 @@ public class ChunkMap {
     public synchronized void generate() {
         long start = System.currentTimeMillis();
         BiomeSource source = this.getBiomeSource();
-        BufferedImage image = new BufferedImage(this.size.width * 16, this.size.height * 16, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(this.rad * 16, this.rad * 16, BufferedImage.TYPE_INT_RGB);
         this.generateStructures();
 
-        for (int i = 0; i < this.size.width; i++) {
-            for (int j = 0; j < this.size.height; j++) {
+        for (int i = 0; i < this.rad; i++) {
+            for (int j = 0; j < this.rad; j++) {
                 Graphics2D g = image.createGraphics();
 
-                Biome biomeId = source.getBiome(i * 16 - (this.size.width * 8), 63, j * 16 - (this.size.height * 8));
+                Biome biomeId = source.getBiome(i * 16 - (this.rad * 8), 63, j * 16 - (this.rad * 8));
                 Color color = this.mapBiomeToColor(biomeId.getName());
                 g.setColor(color);
                 g.fillRect(i * 16, j * 16, 16, 16);
@@ -91,8 +92,8 @@ public class ChunkMap {
             int x = p.getRight().getX();
             int z = p.getRight().getZ();
 
-            int pixelX = (x + (this.size.width / 2)) * 16;
-            int pixelZ = (z + (this.size.height / 2)) * 16;
+            int pixelX = (x + (this.rad / 2)) * 16;
+            int pixelZ = (z + (this.rad / 2)) * 16;
 
             g.setFont(new Font("default", Font.BOLD, 40));
             g.drawImage(img, pixelX, pixelZ, 48, 48, null);
@@ -117,12 +118,16 @@ public class ChunkMap {
 
 
     private void drawPath(BufferedImage i) {
+        if (this.world == null) {
+            return;
+        }
+
         for (Pair<Pair<Vec2i, Vec2i>, Dimension> p : this.world.playerPath) {
             if (!p.getRight().equals(this.dim)) continue;
             Graphics2D g = i.createGraphics();
 
-            int xOff = (this.size.width * 8);
-            int zOff = (this.size.height * 8);
+            int xOff = (this.rad * 8);
+            int zOff = (this.rad * 8);
 
             int x1 = p.getLeft().getLeft().getX() + xOff;
             int z1 = p.getLeft().getLeft().getZ() + zOff;
@@ -138,6 +143,10 @@ public class ChunkMap {
     }
 
     private void drawPlayerEvents(BufferedImage i) {
+        if (this.world == null) {
+            return;
+        }
+
         for (Pair<Pair<String, Vec2i>, Dimension> p : this.world.playerLocations) {
             if (!p.getRight().equals(this.dim)) continue;
             Graphics2D g = i.createGraphics();
@@ -145,8 +154,8 @@ public class ChunkMap {
             int x = p.getLeft().getRight().getX();
             int z = p.getLeft().getRight().getZ();
 
-            int pixelX = x + (this.size.width * 8);
-            int pixelZ = z + (this.size.height * 8);
+            int pixelX = x + (this.rad * 8);
+            int pixelZ = z + (this.rad * 8);
 
             g.setFont(new Font("default", Font.BOLD, 40));
             g.drawImage(img, pixelX, pixelZ, 64, 64, null);
@@ -167,20 +176,18 @@ public class ChunkMap {
     }
 
     private List<Pair<String, CPos>> generateStructures() {
-        int searchRad = Math.max(this.size.height, this.size.width) * 16;
-        this.structureCoords.clear();
-
+        int searchrad = rad * 16;
         for (StructureProvider search : this.structures) {
             RegionStructure<?, ?> structure = search.structureSupplier.create(MCVersion.v1_16_1);
 
-            RegionStructure.Data<?> lowerBound = structure.at(-searchRad / 16, -searchRad / 16);
-            RegionStructure.Data<?> upperBound = structure.at(searchRad / 16, searchRad / 16);
+            RegionStructure.Data<?> lowerBound = structure.at(-searchrad / 16, -searchrad / 16);
+            RegionStructure.Data<?> upperBound = structure.at(searchrad / 16, searchrad / 16);
             for (int regionX = lowerBound.regionX; regionX <= upperBound.regionX; regionX++) {
                 for (int regionZ = lowerBound.regionZ; regionZ <= upperBound.regionZ; regionZ++) {
                     CPos cpos = structure.getInRegion(this.seed, regionX, regionZ, rand);
 
                     if (cpos == null) continue;
-                    if (cpos.distanceTo(Vec3i.ZERO, DistanceMetric.CHEBYSHEV) > (double) searchRad / 16) continue;
+                    if (cpos.distanceTo(Vec3i.ZERO, DistanceMetric.CHEBYSHEV) > (double) searchrad / 16) continue;
                     if (!structure.canSpawn(cpos.getX(), cpos.getZ(), this.getBiomeSource()) || !this.dim.equals(search.dimension))
                         continue;
                     Pair<String, CPos> pair = Pair.of(search.asset, cpos);
@@ -192,7 +199,7 @@ public class ChunkMap {
 
         Stronghold sh = new Stronghold(MCVersion.v1_16_1);
         for (CPos cpos : sh.getAllStarts(this.getBiomeSource(), this.rand)) {
-            if (cpos.distanceTo(Vec3i.ZERO, DistanceMetric.CHEBYSHEV) > (double) searchRad / 16) continue;
+            if (cpos.distanceTo(Vec3i.ZERO, DistanceMetric.CHEBYSHEV) > (double) rad / 16) continue;
             Pair<String, CPos> pair = Pair.of("icons/stronghold.png", cpos);
             this.structureCoords.add(pair);
         }

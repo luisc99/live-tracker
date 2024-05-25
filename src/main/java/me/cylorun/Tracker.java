@@ -67,7 +67,7 @@ public class Tracker {
                     log(Level.ERROR, "Failed to upload run to google sheets\n" + e);
                 }
             }
-            ChunkMap cm = new ChunkMap(world.getSeed(), new Dimension(500, 500), kaptainwutax.mcutils.state.Dimension.OVERWORLD, world);
+            ChunkMap cm = new ChunkMap(world.getSeed(), 500, kaptainwutax.mcutils.state.Dimension.OVERWORLD, world);
             cm.generate();
             cm.setDimension(kaptainwutax.mcutils.state.Dimension.NETHER);
             cm.generate();
