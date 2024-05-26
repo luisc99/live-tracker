@@ -63,7 +63,7 @@ public class UpdateUtil {
             Tracker.log(Level.WARN, "Latest release does not have a .jar asset");
             return false;
         }
-        Tracker.log(Level.DEBUG, latestVersion);
+
         return !latestVersion.equals(currentVersion);
     }
 

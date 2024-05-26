@@ -362,6 +362,8 @@ public class ChunkMap {
                 return new Color(210, 180, 100);
             case "wooded_badlands_plateau":
                 return new Color(145, 120, 87);
+            case "modified_wooded_badlands_plateau":
+                return new Color(145, 120, 87);
             case "badlands":
                 return new Color(154, 103, 82);
             case "badlands_plateau":
