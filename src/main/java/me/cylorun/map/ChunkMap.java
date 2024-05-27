@@ -31,22 +31,22 @@ import java.util.List;
 public class ChunkMap {
     private final long seed;
     private Dimension dim;
-    private final int rad;
+    private final int radius;
     private final WorldFile world;
     private List<StructureProvider> structures;
     private List<Pair<String, CPos>> structureCoords;
-    private List<Pair<String, Vec2i>> mapExtras;
     private ChunkRand rand;
+    private final int ICON_SIZE = 48;
+    private final Font FONT = new Font("default", Font.BOLD, 40);
 
-    public ChunkMap(long seed, int rad, Dimension dim, WorldFile world) {
+    public ChunkMap(long seed, int radius, Dimension dim, WorldFile world) {
         this.seed = seed;
         this.dim = dim;
-        this.rad = rad;
+        this.radius = radius;
         this.world = world;
 
         this.structures = new ArrayList<>();
         this.structureCoords = new ArrayList<>();
-        this.mapExtras = new ArrayList<>();
 
         this.rand = new ChunkRand(this.seed);
         this.registerAll();
@@ -71,14 +71,14 @@ public class ChunkMap {
     public synchronized void generate() {
         long start = System.currentTimeMillis();
         BiomeSource source = this.getBiomeSource();
-        BufferedImage image = new BufferedImage(this.rad * 16, this.rad * 16, BufferedImage.TYPE_INT_RGB);
+        BufferedImage image = new BufferedImage(this.radius * 16, this.radius * 16, BufferedImage.TYPE_INT_RGB);
         this.generateStructures();
 
-        for (int i = 0; i < this.rad; i++) {
-            for (int j = 0; j < this.rad; j++) {
+        for (int i = 0; i < this.radius; i++) {
+            for (int j = 0; j < this.radius; j++) {
                 Graphics2D g = image.createGraphics();
 
-                Biome biomeId = source.getBiome(i * 16 - (this.rad * 8), 63, j * 16 - (this.rad * 8));
+                Biome biomeId = source.getBiome(i * 16 - (this.radius * 8), 63, j * 16 - (this.radius * 8));
                 Color color = this.mapBiomeToColor(biomeId.getName());
                 g.setColor(color);
                 g.fillRect(i * 16, j * 16, 16, 16);
@@ -92,11 +92,11 @@ public class ChunkMap {
             int x = p.getRight().getX();
             int z = p.getRight().getZ();
 
-            int pixelX = (x + (this.rad / 2)) * 16;
-            int pixelZ = (z + (this.rad / 2)) * 16;
+            int pixelX = (x + (this.radius / 2)) * 16;
+            int pixelZ = (z + (this.radius / 2)) * 16;
 
-            g.setFont(new Font("default", Font.BOLD, 40));
-            g.drawImage(img, pixelX, pixelZ, 48, 48, null);
+            g.setFont(this.FONT);
+            g.drawImage(img, pixelX, pixelZ, this.ICON_SIZE, this.ICON_SIZE, null);
             g.setColor(Color.BLACK);
             g.drawString(String.format("%s | %s", x * 16, z * 16), pixelX, pixelZ - 16);
             g.dispose();
@@ -126,8 +126,8 @@ public class ChunkMap {
             if (!p.getRight().equals(this.dim)) continue;
             Graphics2D g = i.createGraphics();
 
-            int xOff = (this.rad * 8);
-            int zOff = (this.rad * 8);
+            int xOff = (this.radius * 8);
+            int zOff = (this.radius * 8);
 
             int x1 = p.getLeft().getLeft().getX() + xOff;
             int z1 = p.getLeft().getLeft().getZ() + zOff;
@@ -154,8 +154,8 @@ public class ChunkMap {
             int x = p.getLeft().getRight().getX();
             int z = p.getLeft().getRight().getZ();
 
-            int pixelX = x + (this.rad * 8);
-            int pixelZ = z + (this.rad * 8);
+            int pixelX = x + (this.radius * 8);
+            int pixelZ = z + (this.radius * 8);
 
             g.setFont(new Font("default", Font.BOLD, 40));
             g.drawImage(img, pixelX, pixelZ, 64, 64, null);
@@ -176,7 +176,7 @@ public class ChunkMap {
     }
 
     private List<Pair<String, CPos>> generateStructures() {
-        int searchrad = rad * 16;
+        int searchrad = radius * 16;
         for (StructureProvider search : this.structures) {
             RegionStructure<?, ?> structure = search.structureSupplier.create(MCVersion.v1_16_1);
 
@@ -199,7 +199,7 @@ public class ChunkMap {
 
         Stronghold sh = new Stronghold(MCVersion.v1_16_1);
         for (CPos cpos : sh.getAllStarts(this.getBiomeSource(), this.rand)) {
-            if (cpos.distanceTo(Vec3i.ZERO, DistanceMetric.CHEBYSHEV) > (double) rad / 16) continue;
+            if (cpos.distanceTo(Vec3i.ZERO, DistanceMetric.CHEBYSHEV) > (double) radius / 16) continue;
             Pair<String, CPos> pair = Pair.of("icons/stronghold.png", cpos);
             this.structureCoords.add(pair);
         }

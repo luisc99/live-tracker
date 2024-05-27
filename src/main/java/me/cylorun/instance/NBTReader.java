@@ -6,7 +6,6 @@ import kaptainwutax.mcutils.state.Dimension;
 import me.cylorun.Tracker;
 import me.cylorun.instance.world.WorldFile;
 import me.cylorun.utils.Assert;
-import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.Vec2i;
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.io.NamedTag;
@@ -14,7 +13,6 @@ import org.apache.logging.log4j.Level;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 
 public class NBTReader {
@@ -35,12 +33,12 @@ public class NBTReader {
     }
 
     public static NBTReader from(WorldFile file) {
-        Assert.isNotNull(file,"Worldfile object null");
+        Assert.isNotNull(file, "Worldfile object null");
         return new NBTReader(file.getLevelDatPath());
     }
 
     public static NBTReader from(Path path) {
-        Assert.isNotNull(path,"Worldfile object null");
+        Assert.isNotNull(path, "Worldfile object null");
         return new NBTReader(path);
     }
 
@@ -49,7 +47,7 @@ public class NBTReader {
         try {
             tag = NBTUtil.read(this.path.toFile());
         } catch (IOException e) {
-            Tracker.log(Level.ERROR,"Failed to read a nbt file");
+            Tracker.log(Level.ERROR, "Failed to read a nbt file");
             return null;
         }
         return JsonParser.parseString(tag.getTag().toString()).getAsJsonObject();
@@ -69,7 +67,7 @@ public class NBTReader {
     }
 
     public Dimension getPlayerDimension() {
-        String data = this.get(NBTReader.PLAYER_DIMENSION).replace("\"","");
+        String data = this.get(NBTReader.PLAYER_DIMENSION).replace("\"", "");
         String[] split = data.split(":");
         Assert.isTrue(split.length == 2);
 

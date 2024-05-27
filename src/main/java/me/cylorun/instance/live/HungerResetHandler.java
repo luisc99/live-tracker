@@ -33,7 +33,6 @@ public class HungerResetHandler implements WorldEventListener, LogEventListener 
 
 
     private void updateDiff() {
-        System.out.println(this.tmpInv);
         for (InventoryItem item : this.tmpInv) {
             int prev = 0;
             if (this.itemDiffs.containsKey(item.name)) {
