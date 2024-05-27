@@ -52,7 +52,8 @@ public class ResourceUtil {
         list.add("Seed");
         return list;
     }
-    public static BufferedImage loadImageFromResources(String path) throws IOException {
+
+    public static BufferedImage loadImageResource(String path) throws IOException {
         ClassLoader classLoader = ResourceUtil.class.getClassLoader();
         try (InputStream inputStream = classLoader.getResourceAsStream(path)) {
             if (inputStream == null) {

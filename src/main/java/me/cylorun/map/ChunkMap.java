@@ -168,7 +168,7 @@ public class ChunkMap {
     private BufferedImage getResourceImage(String path) {
         BufferedImage image;
         try {
-            image = ResourceUtil.loadImageFromResources(path);
+            image = ResourceUtil.loadImageResource(path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

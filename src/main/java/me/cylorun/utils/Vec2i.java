@@ -21,7 +21,7 @@ public class Vec2i {
     }
 
     public int distanceTo(Vec2i vec) {
-        return (int) Math.sqrt(Math.pow(this.getX() - vec.getX(), 2) + Math.pow(this.getZ() - vec.getZ(), 0));
+        return (int) Math.sqrt(Math.pow(this.getX() - vec.getX(), 2) + Math.pow(this.getZ() - vec.getZ(), 2));
     }
 
     @Override

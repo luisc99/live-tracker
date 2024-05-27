@@ -1,5 +1,6 @@
 package me.cylorun.instance.live;
 
+import me.cylorun.Tracker;
 import me.cylorun.enums.SpeedrunEventType;
 import me.cylorun.instance.NBTReader;
 import me.cylorun.instance.SpeedrunEvent;
@@ -7,6 +8,7 @@ import me.cylorun.instance.world.WorldEventListener;
 import me.cylorun.instance.world.WorldFile;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.Vec2i;
+import org.apache.logging.log4j.Level;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -45,14 +47,16 @@ public class DistanceTracker implements WorldEventListener {
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.schedule(() -> {
                 this.endPoint = reader.getPlayerLocation();
-            }, TrackerOptions.getInstance().game_save_interval, TimeUnit.SECONDS);
+                Tracker.log(Level.DEBUG, this.endEvent + " reached at: " + this.endPoint);
+            }, TrackerOptions.getInstance().game_save_interval + 2, TimeUnit.SECONDS);
         }
 
         if (e.type.equals(this.startEvent)) {
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.schedule(() -> {
                 this.startPoint = reader.getPlayerLocation();
-            }, TrackerOptions.getInstance().game_save_interval, TimeUnit.SECONDS);
+                Tracker.log(Level.DEBUG, this.startEvent + " reached at: " + this.startPoint);
+            }, TrackerOptions.getInstance().game_save_interval + 2, TimeUnit.SECONDS);
         }
     }
 }
