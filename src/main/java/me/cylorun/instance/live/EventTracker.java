@@ -16,6 +16,8 @@ public class EventTracker implements WorldEventListener, LogEventListener {
 
     public EventTracker(WorldFile world) {
         this.world = world;
+        this.world.eventHandler.addListener(this);
+        this.world.logHandler.addListener(this);
     }
 
     private void addEvent(String asset) {
@@ -39,6 +41,7 @@ public class EventTracker implements WorldEventListener, LogEventListener {
 
         return this.world.reader.getPlayerLocation(); // shouldnt happen
     }
+
     @Override
     public void onLogEvent(LogEvent e) {
         if (this.world.track && !this.world.finished) {

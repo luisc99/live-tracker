@@ -2,7 +2,6 @@ package me.cylorun.instance.world;
 
 import me.cylorun.Tracker;
 import me.cylorun.instance.SpeedrunEvent;
-import me.cylorun.utils.ExceptionUtil;
 import org.apache.logging.log4j.Level;
 
 import java.io.BufferedReader;
@@ -56,7 +55,7 @@ public class WorldEventHandler extends Thread {
     }
 
     private boolean hasChanges(List<SpeedrunEvent> list) {
-        if (this.events.size() != list.size()){
+        if (this.events.size() != list.size()) {
             return true;
         }
         for (int i = 0; i < this.events.size(); i++) {
@@ -98,7 +97,6 @@ public class WorldEventHandler extends Thread {
                     }
 
                     this.events = eventLog;
-
                 }
 
                 Thread.sleep(2000);
