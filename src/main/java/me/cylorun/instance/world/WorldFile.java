@@ -14,10 +14,10 @@ import me.cylorun.instance.live.PathTracker;
 import me.cylorun.instance.logs.LogEventListener;
 import me.cylorun.instance.logs.LogHandler;
 import me.cylorun.instance.player.Inventory;
+import me.cylorun.utils.Assert;
 import me.cylorun.utils.Vec2i;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
-import org.lwjgl.system.CallbackI;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -82,7 +83,26 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
             return 0;
         }
     }
+    public Vec2i getPlayerLocation() {
+        String stringData = this.reader.get(NBTReader.PLAYER_POS);
+        if (stringData == null) {
+            return null;
+        }
 
+        String[] s = stringData.replaceAll("[\\[\\]]", "").split(",");
+        Integer[] loc = Arrays.stream(s)
+                .map((l) -> (int) Double.parseDouble(l))
+                .toArray(Integer[]::new);
+        return new Vec2i(loc[0], loc[2]);
+    }
+
+    public Dimension getPlayerDimension() {
+        String data = this.reader.get(NBTReader.PLAYER_DIMENSION).replace("\"", "");
+        String[] split = data.split(":");
+        Assert.isTrue(split.length == 2);
+
+        return Dimension.fromString(split[1]);
+    }
     public Path getLevelDatPath() {
         return Paths.get(this.getAbsolutePath()).resolve("level.dat");
     }
@@ -145,8 +165,8 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         if (!this.finished) {
             if (this.track) {
                 if (e.type.equals(LogEventType.DEATH)) {
-                    Vec2i loc = this.reader.getPlayerLocation();
-                    Dimension dim = this.reader.getPlayerDimension();
+                    Vec2i loc = this.getPlayerLocation();
+                    Dimension dim = this.getPlayerDimension();
                     this.playerLocations.add(Pair.of(Pair.of("icons/death.png", loc), dim));
                 }
             }

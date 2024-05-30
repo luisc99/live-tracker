@@ -136,7 +136,7 @@ public class ChunkMap {
             int z2 = p.getLeft().getRight().getZ() + zOff;
 
             g.setColor(Color.RED);
-            g.setStroke(new BasicStroke(10));
+            g.setStroke(new BasicStroke(10, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, new float[]{2, 10f}, 0f));
             g.drawLine(x1, z1, x2, z2);
             g.dispose();
         }

@@ -53,26 +53,7 @@ public class NBTReader {
         return JsonParser.parseString(tag.getTag().toString()).getAsJsonObject();
     }
 
-    public Vec2i getPlayerLocation() {
-        String stringData = this.get(NBTReader.PLAYER_POS);
-        if (stringData == null) {
-            return null;
-        }
 
-        String[] s = stringData.replaceAll("[\\[\\]]", "").split(",");
-        Integer[] loc = Arrays.stream(s)
-                .map((l) -> (int) Double.parseDouble(l))
-                .toArray(Integer[]::new);
-        return new Vec2i(loc[0], loc[2]);
-    }
-
-    public Dimension getPlayerDimension() {
-        String data = this.get(NBTReader.PLAYER_DIMENSION).replace("\"", "");
-        String[] split = data.split(":");
-        Assert.isTrue(split.length == 2);
-
-        return Dimension.fromString(split[1]);
-    }
 
 
     public String get(String[] tags) {

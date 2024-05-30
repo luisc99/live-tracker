@@ -13,16 +13,16 @@ import java.util.List;
 import java.util.Map;
 
 public class LogHandler extends Thread {
-    public final WorldFile file;
+    public final WorldFile world;
     public List<LogEventListener> listeners;
     public Map<LogEvent, Integer> logEventMap;
     private String lastLine = "";
     private long lastSize;
 
-    public LogHandler(WorldFile file) {
-        this.file = file;
+    public LogHandler(WorldFile world) {
+        this.world = world;
         this.logEventMap = new HashMap<>();
-        this.lastSize = this.file.getLogPath().toFile().length();
+        this.lastSize = this.world.getLogPath().toFile().length();
         this.listeners = new ArrayList<>();
         this.start();
     }
@@ -66,7 +66,7 @@ public class LogHandler extends Thread {
 
     @Override
     public void run() {
-        File logFile = this.file.getLogPath().toFile();
+        File logFile = this.world.getLogPath().toFile();
         List<String> t = null;
         try {
             t = this.getChanges(this.readFile(logFile));
@@ -82,7 +82,7 @@ public class LogHandler extends Thread {
                     this.lastSize = logFile.length();
 
                     List<String> newLines = this.getChanges(this.readFile(logFile));
-                    List<LogEvent> events = parser.getAllEvents(newLines, this.file);
+                    List<LogEvent> events = parser.getAllEvents(newLines, this.world);
                     this.lastLine = newLines.isEmpty() ? this.lastLine : newLines.get(newLines.size() - 1);
 
                     for (LogEvent e : events) {

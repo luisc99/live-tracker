@@ -21,8 +21,8 @@ public class EventTracker implements WorldEventListener, LogEventListener {
     }
 
     private void addEvent(String asset) {
-        Vec2i loc = this.world.reader.getPlayerLocation();
-        Dimension dim = this.world.reader.getPlayerDimension();
+        Vec2i loc = this.world.getPlayerLocation();
+        Dimension dim = this.world.getPlayerDimension();
         Pair<Pair<String, Vec2i>, Dimension> p = Pair.of(Pair.of(asset, loc), dim);
 
         this.world.playerLocations.add(p);
@@ -39,7 +39,7 @@ public class EventTracker implements WorldEventListener, LogEventListener {
             return this.world.playerPath.get(this.world.playerPath.size() - 1).getLeft().getRight();
         }
 
-        return this.world.reader.getPlayerLocation(); // shouldnt happen
+        return this.world.getPlayerLocation(); // shouldnt happen
     }
 
     @Override
@@ -59,18 +59,18 @@ public class EventTracker implements WorldEventListener, LogEventListener {
         if (this.world.track && !this.world.finished) {
             if (e.type.equals(SpeedrunEventType.ENTER_NETHER)) {
                 Vec2i loc = this.getPrevLoc();
-                Dimension dim = this.world.reader.getPlayerDimension();
+                Dimension dim = this.world.getPlayerDimension();
                 System.out.printf("NE: loc: %s, dim: %s",loc, dim);
                 this.addEvent(loc, dim, "icons/enter_portal.png");
             }
             if (e.type.equals(SpeedrunEventType.FIRST_PORTAL)) {
                 Vec2i loc = this.getPrevLoc();
-                Dimension dim = this.world.reader.getPlayerDimension();
+                Dimension dim = this.world.getPlayerDimension();
                 this.addEvent(loc, dim, "icons/first_portal.png");
             }
             if (e.type.equals(SpeedrunEventType.SECOND_PORTAL)) {
                 Vec2i loc = this.getPrevLoc();
-                Dimension dim = this.world.reader.getPlayerDimension();
+                Dimension dim = this.world.getPlayerDimension();
                 this.addEvent(loc, dim, "icons/second_portal.png");
             }
         }
