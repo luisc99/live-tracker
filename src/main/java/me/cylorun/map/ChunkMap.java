@@ -173,6 +173,7 @@ public class ChunkMap {
         g.dispose();
     }
 
+
     private void drawCoords(Graphics2D g, int x, int y, int pixelX, int pixelY) {
         Color borderColor = Color.BLACK;
         Color backgroundColor = Color.WHITE;
