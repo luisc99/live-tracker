@@ -22,6 +22,7 @@ import org.apache.logging.log4j.Level;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.geom.GeneralPath;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class ChunkMap {
     private List<Pair<String, CPos>> structureCoords;
     private ChunkRand rand;
     private final int ICON_SIZE = 48;
-    private final Font FONT = new Font("default", Font.BOLD, 40);
+    private final Font FONT = new Font("Arial", Font.BOLD, 40);
 
     public ChunkMap(long seed, int radius, Dimension dim, WorldFile world) {
         this.seed = seed;
@@ -117,17 +118,19 @@ public class ChunkMap {
     }
 
 
-    private void drawPath(BufferedImage i) {
+    public void drawPath(BufferedImage i) {
         if (this.world == null) {
             return;
         }
 
+        GeneralPath path = new GeneralPath();
+
+        int xOff = (this.radius * 8);
+        int zOff = (this.radius * 8);
+
+        boolean firstPoint = true;
         for (Pair<Pair<Vec2i, Vec2i>, Dimension> p : this.world.playerPath) {
             if (!p.getRight().equals(this.dim)) continue;
-            Graphics2D g = i.createGraphics();
-
-            int xOff = (this.radius * 8);
-            int zOff = (this.radius * 8);
 
             int x1 = p.getLeft().getLeft().getX() + xOff;
             int z1 = p.getLeft().getLeft().getZ() + zOff;
@@ -135,11 +138,19 @@ public class ChunkMap {
             int x2 = p.getLeft().getRight().getX() + xOff;
             int z2 = p.getLeft().getRight().getZ() + zOff;
 
-            g.setColor(Color.RED);
-            g.setStroke(new BasicStroke(10, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10f, new float[]{2, 10f}, 0f));
-            g.drawLine(x1, z1, x2, z2);
-            g.dispose();
+            if (firstPoint) {
+                path.moveTo(x1, z1);
+                firstPoint = false;
+            } else {
+                path.curveTo(x1, z1, x2, z2, x2, z2);
+            }
         }
+
+        Graphics2D g = i.createGraphics();
+        g.setColor(Color.RED);
+        g.setStroke(new BasicStroke(10, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f, new float[]{2f, 10f}, 0f));
+        g.draw(path);
+        g.dispose();
     }
 
     private void drawPlayerEvents(BufferedImage i) {
