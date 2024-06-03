@@ -189,7 +189,7 @@ public class ChunkMap {
 
         g.setStroke(new BasicStroke(7));
         g.setColor(borderColor);
-        pixelX-=64;
+        pixelX -= 64;
         g.drawRoundRect(pixelX, pixelY - 64, rectWidth, rectHeight, 5, 5);
 
         g.setColor(backgroundColor);
