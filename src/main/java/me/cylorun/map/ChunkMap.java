@@ -149,26 +149,40 @@ public class ChunkMap {
         int zOff = (this.radius * 8);
 
         boolean firstPoint = true;
+        Vec2i prevPoint = null;
+        Vec2i prevControlPoint = null;
+
         for (Pair<Pair<Vec2i, Vec2i>, Dimension> p : this.world.playerPath) {
             if (!p.getRight().equals(this.dim)) continue;
 
-            int x1 = p.getLeft().getLeft().getX() + xOff;
-            int z1 = p.getLeft().getLeft().getZ() + zOff;
+            Vec2i point1 = p.getLeft().getLeft();
+            Vec2i point2 = p.getLeft().getRight();
 
-            int x2 = p.getLeft().getRight().getX() + xOff;
-            int z2 = p.getLeft().getRight().getZ() + zOff;
+            int x1 = point1.getX() + xOff;
+            int z1 = point1.getZ() + zOff;
+
+            int x2 = point2.getX() + xOff;
+            int z2 = point2.getZ() + zOff;
 
             if (firstPoint) {
                 path.moveTo(x1, z1);
                 firstPoint = false;
             } else {
-                path.curveTo(x1, z1, x2, z2, x2, z2);
+                int ctrl1X = (prevPoint.getX() + point1.getX()) / 2 + xOff;
+                int ctrl1Z = (prevPoint.getZ() + point1.getZ()) / 2 + zOff;
+
+                int ctrl2X = (point1.getX() + point2.getX()) / 2 + xOff;
+                int ctrl2Z = (point1.getZ() + point2.getZ()) / 2 + zOff;
+
+                path.curveTo(ctrl1X, ctrl1Z, ctrl2X, ctrl2Z, x2, z2);
             }
+
+            prevPoint = point2;
         }
 
         Graphics2D g = i.createGraphics();
         g.setColor(Color.RED);
-        g.setStroke(new BasicStroke(10));
+        g.setStroke(new BasicStroke(10, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
         g.draw(path);
         g.dispose();
     }
@@ -191,15 +205,25 @@ public class ChunkMap {
         g.setStroke(new BasicStroke(7));
         g.setColor(borderColor);
         pixelX -= 64;
-        g.drawRoundRect(pixelX, pixelY - 64, rectWidth, rectHeight, 5, 5);
+        pixelY -= 70;
+        g.drawRoundRect(pixelX, pixelY, rectWidth, rectHeight, 5, 5);
 
         g.setColor(backgroundColor);
-        g.fillRoundRect(pixelX, pixelY - 64, rectWidth, rectHeight, 5, 5);
+        g.fillRoundRect(pixelX, pixelY, rectWidth, rectHeight, 5, 5);
 
         g.setColor(textColor);
         int textX = pixelX + (rectWidth - textWidth) / 2;
-        int textY = pixelY - 64 + (rectHeight - textHeight) / 2 + fontMetrics.getAscent();
+        int textY = pixelY + (rectHeight - textHeight) / 2 + fontMetrics.getAscent();
         g.drawString(coordsText, textX, textY);
+
+        int triangleWidth = 20;
+        int triangleHeight = 20;
+        int triangleX = pixelX + rectWidth / 2;
+        int[] xPoints = {triangleX - triangleWidth / 2, triangleX + triangleWidth / 2, triangleX};
+        int[] yPoints = {pixelY + rectHeight, pixelY + rectHeight, pixelY + rectHeight + triangleHeight};
+
+        g.setColor(borderColor);
+        g.fillPolygon(xPoints, yPoints, 3);
     }
 
 
