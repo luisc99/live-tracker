@@ -38,7 +38,7 @@ public class ChunkMap {
     private List<Pair<String, CPos>> structureCoords;
     private ChunkRand rand;
     private final int ICON_SIZE = 48;
-    private final Font FONT = new Font("Arial", Font.BOLD, 40);
+    private final Font FONT = new Font("Arial", Font.BOLD, 30);
 
     public ChunkMap(long seed, int radius, Dimension dim, WorldFile world) {
         this.seed = seed;
@@ -69,7 +69,7 @@ public class ChunkMap {
         this.registerFeature(new StructureProvider(Fortress::new, Dimension.NETHER, "icons/fortress.png"));
     }
 
-    public synchronized void generate() {
+    public void generate() {
         long start = System.currentTimeMillis();
         BiomeSource source = this.getBiomeSource();
         BufferedImage image = new BufferedImage(this.radius * 16, this.radius * 16, BufferedImage.TYPE_INT_RGB);
@@ -78,7 +78,6 @@ public class ChunkMap {
         for (int i = 0; i < this.radius; i++) {
             for (int j = 0; j < this.radius; j++) {
                 Graphics2D g = image.createGraphics();
-
                 Biome biomeId = source.getBiome(i * 16 - (this.radius * 8), 63, j * 16 - (this.radius * 8));
                 Color color = this.mapBiomeToColor(biomeId.getName());
                 g.setColor(color);
@@ -98,14 +97,13 @@ public class ChunkMap {
 
             g.setFont(this.FONT);
             g.drawImage(img, pixelX, pixelZ, this.ICON_SIZE, this.ICON_SIZE, null);
-            g.setColor(Color.BLACK);
-            g.drawString(String.format("%s | %s", x * 16, z * 16), pixelX, pixelZ - 16);
+            this.drawCoords(g, x, z, pixelX, pixelZ);
             g.dispose();
         }
 
 
-        drawPlayerEvents(image);
-        drawPath(image);
+        this.drawPath(image);
+        this.drawPlayerEvents(image);
 
         try {
             File output = new File(dim.getName().toLowerCase() + ".png");
@@ -115,6 +113,28 @@ public class ChunkMap {
         }
 
         Tracker.log(Level.DEBUG, String.format("Generated chunk map for %s in %s ms", this.dim, System.currentTimeMillis() - start));
+    }
+
+    private void drawPlayerEvents(BufferedImage i) {
+        if (this.world == null) {
+            return;
+        }
+
+        for (Pair<Pair<String, Vec2i>, Dimension> p : this.world.playerLocations) {
+            if (!p.getRight().equals(this.dim)) continue;
+            Graphics2D g = i.createGraphics();
+            Image img = this.getResourceImage(p.getLeft().getLeft());
+            int x = p.getLeft().getRight().getX();
+            int z = p.getLeft().getRight().getZ();
+
+            int pixelX = x + (this.radius * 8);
+            int pixelZ = z + (this.radius * 8);
+
+            g.setFont(this.FONT);
+            g.drawImage(img, pixelX, pixelZ, 64, 64, null);
+            this.drawCoords(g, x, z, pixelX, pixelZ);
+            g.dispose();
+        }
     }
 
 
@@ -148,33 +168,39 @@ public class ChunkMap {
 
         Graphics2D g = i.createGraphics();
         g.setColor(Color.RED);
-        g.setStroke(new BasicStroke(10, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 10f, new float[]{2f, 10f}, 0f));
+        g.setStroke(new BasicStroke(10));
         g.draw(path);
         g.dispose();
     }
 
-    private void drawPlayerEvents(BufferedImage i) {
-        if (this.world == null) {
-            return;
-        }
+    private void drawCoords(Graphics2D g, int x, int y, int pixelX, int pixelY) {
+        Color borderColor = Color.BLACK;
+        Color backgroundColor = Color.WHITE;
+        Color textColor = Color.BLACK;
 
-        for (Pair<Pair<String, Vec2i>, Dimension> p : this.world.playerLocations) {
-            if (!p.getRight().equals(this.dim)) continue;
-            Graphics2D g = i.createGraphics();
-            Image img = this.getResourceImage(p.getLeft().getLeft());
-            int x = p.getLeft().getRight().getX();
-            int z = p.getLeft().getRight().getZ();
+        FontMetrics fontMetrics = g.getFontMetrics();
+        String coordsText = String.format("%s | %s", x * 16, y * 16);
+        g.setFont(this.FONT);
+        int textWidth = fontMetrics.stringWidth(coordsText);
+        int textHeight = fontMetrics.getHeight();
 
-            int pixelX = x + (this.radius * 8);
-            int pixelZ = z + (this.radius * 8);
+        int rectWidth = textWidth + 40;
+        int rectHeight = textHeight + 20;
 
-            g.setFont(new Font("default", Font.BOLD, 40));
-            g.drawImage(img, pixelX, pixelZ, 64, 64, null);
-            g.setColor(Color.BLACK);
-            g.drawString(String.format("%s | %s", x, z), pixelX, pixelZ - 16);
-            g.dispose();
-        }
+        g.setStroke(new BasicStroke(7));
+        g.setColor(borderColor);
+        pixelX-=64;
+        g.drawRoundRect(pixelX, pixelY - 64, rectWidth, rectHeight, 5, 5);
+
+        g.setColor(backgroundColor);
+        g.fillRoundRect(pixelX, pixelY - 64, rectWidth, rectHeight, 5, 5);
+
+        g.setColor(textColor);
+        int textX = pixelX + (rectWidth - textWidth) / 2;
+        int textY = pixelY - 64 + (rectHeight - textHeight) / 2 + fontMetrics.getAscent();
+        g.drawString(coordsText, textX, textY);
     }
+
 
     private BufferedImage getResourceImage(String path) {
         BufferedImage image;
@@ -314,6 +340,8 @@ public class ChunkMap {
             case "jungle":
                 return new Color(0, 153, 0);
             case "jungle_edge":
+                return new Color(0, 102, 0);
+            case "modified_jungle_edge":
                 return new Color(0, 102, 0);
             case "jungle_hills":
                 return new Color(0, 76, 0);
