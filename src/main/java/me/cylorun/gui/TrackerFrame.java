@@ -21,7 +21,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
         super("Live-Tracker " + Tracker.VERSION);
 
 
-        this.setSize(700, 300);
+        this.setSize(700, 400);
         this.setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(this);
@@ -42,7 +42,13 @@ public class TrackerFrame extends JFrame implements WindowListener {
     private JTabbedPane getTabbedPane() {
         this.tabbedPane = new JTabbedPane();
         JPanel generalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        JPanel advancedPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        generalPanel.setLayout(new BoxLayout(generalPanel, BoxLayout.Y_AXIS));
+        generalPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
+        JPanel advancedPanel = new JPanel();
+        advancedPanel.setLayout(new BoxLayout(advancedPanel, BoxLayout.Y_AXIS));
+        advancedPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+
         JPanel editorPanel = new RunEditorPanel();
         TrackerOptions options = TrackerOptions.getInstance();
 
@@ -54,7 +60,6 @@ public class TrackerFrame extends JFrame implements WindowListener {
         generalPanel.add(new TextOptionField("Sheet ID", options.sheet_id, (val) -> {
             options.sheet_id = val;
             TrackerOptions.save();
-
         }));
 
         generalPanel.add(new MultiChoiceOptionField(I18n.getSupported().toArray(new String[0]), options.lang, "Game lang", (val) -> {
@@ -62,6 +67,8 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
+        generalPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        generalPanel.add(new JSeparator(JSeparator.HORIZONTAL));
         generalPanel.add(new BooleanOptionField("Generate Headers", options.gen_labels, (val) -> {
             options.gen_labels = val;
             TrackerOptions.save();
@@ -72,16 +79,18 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
-
+        generalPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        generalPanel.add(new JSeparator(JSeparator.HORIZONTAL));
         generalPanel.add(new ActionButton("Open Tracker Folder", (e) -> {
             try {
                 Desktop.getDesktop().open(TrackerOptions.getTrackerDir().toFile());
             } catch (Exception ex) {
-                ExceptionUtil.showError(ex);
+                ExceptionUtil.showError("Failed to open folder");
             }
         }));
 
         generalPanel.add(new ActionButton("Validate Settings", (e) -> TrackerOptions.validateSettings()));
+
         advancedPanel.add(new NumberOptionField("Save interval (s)", "The interval which game files are updated at", options.game_save_interval, (val) -> {
             options.game_save_interval = val;
             TrackerOptions.save();
@@ -96,8 +105,15 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
+        advancedPanel.add(Box.createRigidArea(new Dimension(0, 10)));
+        advancedPanel.add(new JSeparator(JSeparator.HORIZONTAL));
         advancedPanel.add(new BooleanOptionField("Debug messages", options.show_debug, (val) -> {
             options.show_debug = val;
+            TrackerOptions.save();
+        }));
+
+        advancedPanel.add(new BooleanOptionField("Generate Map", options.generate_chunkmap, (val) -> {
+            options.generate_chunkmap = val;
             TrackerOptions.save();
         }));
 

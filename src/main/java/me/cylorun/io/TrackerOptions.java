@@ -23,9 +23,10 @@ public class TrackerOptions {
     public String api_key;
     public Integer last_win_x = 0;
     public Integer last_win_y = 0;
-    public Boolean gen_labels = true;
+    public boolean gen_labels = true;
     public boolean detect_ssg = true;
     public boolean show_debug = false;
+    public boolean generate_chunkmap = true;
     public int max_respawn_to_hr_time = 30; // seconds
     public int game_save_interval = 5; // seconds
     public int path_interval = 5; //secs

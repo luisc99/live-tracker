@@ -5,6 +5,7 @@ import me.cylorun.instance.RecordFile;
 import me.cylorun.instance.Run;
 import me.cylorun.instance.world.WorldCreationEventHandler;
 import me.cylorun.instance.world.WorldFile;
+import me.cylorun.io.TrackerOptions;
 import me.cylorun.io.sheets.GoogleSheetsClient;
 import me.cylorun.map.ChunkMap;
 import me.cylorun.utils.LogReceiver;
@@ -67,10 +68,13 @@ public class Tracker {
                     log(Level.ERROR, "Failed to upload run to google sheets\n" + e);
                 }
             }
-            ChunkMap cm = new ChunkMap(world.getSeed(), 500, kaptainwutax.mcutils.state.Dimension.OVERWORLD, world);
-            cm.generate();
-            cm.setDimension(kaptainwutax.mcutils.state.Dimension.NETHER);
-            cm.generate();
+
+            if (TrackerOptions.getInstance().generate_chunkmap) {
+                ChunkMap cm = new ChunkMap(world.getSeed(), 500, kaptainwutax.mcutils.state.Dimension.OVERWORLD, world);
+                cm.generate();
+                cm.setDimension(kaptainwutax.mcutils.state.Dimension.NETHER);
+                cm.generate();
+            }
         });
     }
 

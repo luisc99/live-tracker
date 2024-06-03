@@ -11,9 +11,10 @@ public class TextOptionField extends JPanel {
         this.setLayout(new FlowLayout(FlowLayout.CENTER));
 
         JTextField textField = new JTextField(value);
-        textField.setPreferredSize(new Dimension(170, 25));
+        textField.setPreferredSize(new Dimension(200, 25));
         this.add(new JLabel(label));
         this.add(textField);
+
         textField.getDocument().addDocumentListener(new DocumentListener() {
             @Override
             public void insertUpdate(DocumentEvent e) {
