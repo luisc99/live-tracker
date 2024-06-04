@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Run extends ArrayList<Object> {
-
     public final WorldFile worldFile;
     public final RecordFile recordFile;
     public JsonObject stats;

@@ -44,7 +44,6 @@ public class DistanceTracker implements WorldEventListener {
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.schedule(() -> {
                 this.endPoint = this.world.getPlayerLocation();
-                Tracker.log(Level.DEBUG, this.endEvent + " reached at: " + this.endPoint);
             }, TrackerOptions.getInstance().game_save_interval + 2, TimeUnit.SECONDS);
         }
 
@@ -52,7 +51,6 @@ public class DistanceTracker implements WorldEventListener {
             ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
             scheduler.schedule(() -> {
                 this.startPoint = this.world.getPlayerLocation();
-                Tracker.log(Level.DEBUG, this.startEvent + " reached at: " + this.startPoint);
             }, TrackerOptions.getInstance().game_save_interval + 2, TimeUnit.SECONDS);
         }
     }

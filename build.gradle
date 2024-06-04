@@ -57,7 +57,7 @@ test {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'me.cylorun.Tracker'
+        attributes 'Main-Class': 'me.cylorun.TrackerAppLaunch'
         attributes 'Implementation-Version': project.version
     }
 }

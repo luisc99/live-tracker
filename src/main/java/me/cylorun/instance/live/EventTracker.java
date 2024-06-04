@@ -60,7 +60,6 @@ public class EventTracker implements WorldEventListener, LogEventListener {
             if (e.type.equals(SpeedrunEventType.ENTER_NETHER)) {
                 Vec2i loc = this.getPrevLoc();
                 Dimension dim = this.world.getPlayerDimension();
-                System.out.printf("NE: loc: %s, dim: %s",loc, dim);
                 this.addEvent(loc, dim, "icons/enter_portal.png");
             }
             if (e.type.equals(SpeedrunEventType.FIRST_PORTAL)) {

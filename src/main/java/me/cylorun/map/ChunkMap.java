@@ -109,7 +109,9 @@ public class ChunkMap {
             File output = new File(dim.getName().toLowerCase() + ".png");
             ImageIO.write(image, "png", output);
         } catch (IOException e) {
-            e.printStackTrace();
+            Tracker.log(Level.ERROR, String.format("Failed to generate chunkmap for %s trying again: %s", this.dim, e.getMessage()));
+            this.generate();
+            return;
         }
 
         Tracker.log(Level.DEBUG, String.format("Generated chunk map for %s in %s ms", this.dim, System.currentTimeMillis() - start));

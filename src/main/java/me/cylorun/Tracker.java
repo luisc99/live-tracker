@@ -8,6 +8,7 @@ import me.cylorun.instance.world.WorldFile;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.io.sheets.GoogleSheetsClient;
 import me.cylorun.map.ChunkMap;
+import me.cylorun.utils.APIUtil;
 import me.cylorun.utils.LogReceiver;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -32,10 +33,9 @@ public class Tracker {
 
         List<WorldFile> worlds = new ArrayList<>();
         TrackerFrame.getInstance().open();
-
         GoogleSheetsClient.setup();
         Tracker.log(Level.INFO, "Running Live-Tracker-" + VERSION);
-
+        System.out.println(TrackerOptions.getInstance().api_key);
         WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object is created per world path
         worldHandler.addListener(world -> {
             Tracker.log(Level.DEBUG, "New world detected: " + world);
@@ -67,6 +67,8 @@ public class Tracker {
                 } catch (IOException | GeneralSecurityException e) {
                     log(Level.ERROR, "Failed to upload run to google sheets\n" + e);
                 }
+
+                APIUtil.tryUploadRun(run);
             }
 
             if (TrackerOptions.getInstance().generate_chunkmap) {
