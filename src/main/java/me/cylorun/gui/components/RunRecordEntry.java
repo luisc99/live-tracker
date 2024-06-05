@@ -1,23 +1,30 @@
 package me.cylorun.gui.components;
 
+import me.cylorun.Tracker;
 import me.cylorun.gui.RunEditorPanel;
+import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.APIUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.Response;
+import org.apache.logging.log4j.Level;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class RunRecordEntry extends JPanel {
     private final JButton deleteButton;
     private final JButton editButton;
+    private final RunEditorPanel.RunRecord record;
 
     public RunRecordEntry(RunEditorPanel.RunRecord record) {
         this.setLayout(new BorderLayout());
         this.deleteButton = new JButton("Delete");
         this.editButton = new JButton("Edit");
+        this.record = record;
         Date date = new Date(record.getDatePlayedEst());
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd HH:mm:ss");
 
@@ -36,14 +43,39 @@ public class RunRecordEntry extends JPanel {
         contentPanel.add(buttonPanel, BorderLayout.EAST);
 
         this.add(contentPanel, BorderLayout.CENTER);
+
+        this.deleteButton.addActionListener((e -> {
+            int option = JOptionPane.showConfirmDialog(
+                    null,
+                    "Are you sure you want to delete run " + this.record.getRunId(),
+                    "Confirmation",
+                    JOptionPane.YES_NO_OPTION);
+            if (option == JOptionPane.YES_OPTION) {
+                if (!this.deleteRun()) {
+                    JOptionPane.showMessageDialog(null, "Failed to delete run");
+                }
+            }
+
+        }));
     }
 
     private boolean deleteRun() {
         OkHttpClient client = new OkHttpClient();
 
         Request req = new Request.Builder()
-                .url(APIUtil.API_URL + "/delete")
+                .url(APIUtil.API_URL + "/delete?id=" + this.record.getRunId())
+                .addHeader("authorization", TrackerOptions.getInstance().api_key)
                 .build();
-        return true;
+
+        Response res;
+
+        try {
+            res = client.newCall(req).execute();
+        } catch (IOException e) {
+            Tracker.log(Level.WARN, "Failed to delete run " + this.record.getRunId());
+            return false;
+        }
+
+        return res.code() == 200;
     }
 }

@@ -4,7 +4,6 @@ import me.cylorun.Tracker;
 import me.cylorun.gui.components.*;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.APIUtil;
-import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.I18n;
 
 import javax.swing.*;
@@ -89,7 +88,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
             try {
                 Desktop.getDesktop().open(TrackerOptions.getTrackerDir().toFile());
             } catch (Exception ex) {
-                ExceptionUtil.showError("Failed to open folder");
+                JOptionPane.showMessageDialog(this,"Failed to open folder");
             }
         }));
 

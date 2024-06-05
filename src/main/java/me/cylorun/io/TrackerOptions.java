@@ -5,10 +5,10 @@ import com.google.gson.GsonBuilder;
 import me.cylorun.Tracker;
 import me.cylorun.io.sheets.GoogleSheetsClient;
 import me.cylorun.io.sheets.GoogleSheetsService;
-import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.I18n;
 import org.apache.logging.log4j.Level;
 
+import javax.swing.*;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -45,7 +45,6 @@ public class TrackerOptions {
                 try {
                     instance = GSON.fromJson(new String((Files.readAllBytes(CONFIG_PATH))), TrackerOptions.class);
                 } catch (IOException e) {
-                    ExceptionUtil.showError(e);
                     throw new RuntimeException(e);
                 }
             } else {
@@ -73,7 +72,7 @@ public class TrackerOptions {
             GSON.toJson(instance, writer);
             writer.close();
         } catch (IOException e) {
-            ExceptionUtil.showError(e);
+            Tracker.log(Level.ERROR, "Failed to write to config file");
             throw new RuntimeException();
         }
     }
@@ -82,16 +81,16 @@ public class TrackerOptions {
     public static void validateSettings() {
         Tracker.log(Level.INFO, "Verifying settings");
         if (!Files.exists(Paths.get(GoogleSheetsService.CREDENTIALS_FILE))) {
-            ExceptionUtil.showError("credentials.json file not found");
+            JOptionPane.showMessageDialog(null,"credentials.json file not found");
         } else if (getInstance().sheet_name == null || getInstance().sheet_name.isEmpty()) {
-            ExceptionUtil.showError("sheet_name is not defined");
+            JOptionPane.showMessageDialog(null,"sheet_name is not defined");
         } else if (getInstance().lang == null || getInstance().lang.isEmpty()) {
-            ExceptionUtil.showError("Language not set");
+            JOptionPane.showMessageDialog(null,"Language not set");
         } else if (!I18n.isValidLanguage(getInstance().lang)) {
-            ExceptionUtil.showError(getInstance().lang + " is not a supported language");
+            JOptionPane.showMessageDialog(null,getInstance().lang + " is not a supported language");
 
         } else if (!GoogleSheetsClient.isValidSheet(getInstance().sheet_id, getInstance().sheet_name)) {
-            ExceptionUtil.showError("Invalid sheet_id or sheet_name");
+            JOptionPane.showMessageDialog(null,"Invalid sheet_id or sheet_name");
         } else {
             Tracker.log(Level.INFO, "Settings good");
         }
