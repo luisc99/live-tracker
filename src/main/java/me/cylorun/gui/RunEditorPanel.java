@@ -24,18 +24,18 @@ public class RunEditorPanel extends JPanel {
 
     public RunEditorPanel() {
         this.runRecordPanel = new JPanel();
-        this.runRecordPanel.setLayout(new BoxLayout(runRecordPanel, BoxLayout.Y_AXIS));
+        this.runRecordPanel.setLayout(new BoxLayout(this.runRecordPanel, BoxLayout.Y_AXIS));
 
         JScrollPane scrollPane = new JScrollPane(this.runRecordPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         scrollPane.getVerticalScrollBar().setUnitIncrement(8);
-        scrollPane.setPreferredSize(new Dimension(300, 200));
+        scrollPane.setPreferredSize(new Dimension(300, 300));
 
         this.add(scrollPane);
         this.runRecordPanel.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 
-        fetchData();
+        this.fetchData();
     }
 
     private void fetchData() {
@@ -59,11 +59,10 @@ public class RunEditorPanel extends JPanel {
                         return null;
                     }
 
-                    Gson gson = new Gson();
                     Type runListType = new TypeToken<List<RunRecord>>() {}.getType();
                     String jsonString = response.body().string();
 
-                    return gson.fromJson(jsonString, runListType);
+                    return new Gson().fromJson(jsonString, runListType);
                 } catch (Exception e) {
                     Tracker.log(Level.WARN, "Failed to fetch run data: " + e.getMessage());
                     return null;
