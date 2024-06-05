@@ -172,7 +172,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
                 if (e.type.equals(LogEventType.DEATH)) {
                     Vec2i loc = this.getPlayerLocation();
                     Dimension dim = this.getPlayerDimension();
-                    this.playerLocations.add(Pair.of(Pair.of("icons/death.png", loc), dim));
+                    this.playerLocations.add(Pair.of(Pair.of("icons/map/death.png", loc), dim));
                 }
             }
         }

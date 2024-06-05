@@ -7,6 +7,7 @@ import me.cylorun.Tracker;
 import me.cylorun.gui.components.ActionButton;
 import me.cylorun.gui.components.RunRecordEntry;
 import me.cylorun.utils.APIUtil;
+import me.cylorun.utils.ResourceUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -14,6 +15,7 @@ import org.apache.logging.log4j.Level;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -30,6 +32,12 @@ public class RunEditorPanel extends JPanel {
     public RunEditorPanel() {
         this.runRecordPanel = new JPanel();
         this.refreshButton = new JButton("Reload");
+        try {
+            this.refreshButton.setIcon(new ImageIcon(ResourceUtil.loadImageResource("icons/reload.png")));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
         this.add(this.refreshButton);
         this.runRecordPanel.setLayout(new BoxLayout(this.runRecordPanel, BoxLayout.Y_AXIS));
 
@@ -49,12 +57,22 @@ public class RunEditorPanel extends JPanel {
         this.fetchData();
     }
 
+    private void toggleButtonLoading() {
+        if (this.isFetching){
+            this.refreshButton.setText("Loading...");
+            this.refreshButton.setEnabled(false);
+        } else {
+            this.refreshButton.setText("Reload");
+            this.refreshButton.setEnabled(true);
+        }
+    }
     private void fetchData() {
         if (this.isFetching) {
             return;
         }
-
         this.isFetching = true;
+        this.toggleButtonLoading();
+
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
@@ -100,6 +118,7 @@ public class RunEditorPanel extends JPanel {
                     }
                     runRecordPanel.revalidate();
                     runRecordPanel.repaint();
+                    toggleButtonLoading();
                 } catch (Exception e) {
                     Tracker.log(Level.WARN, "Failed to process fetched data: " + e.getMessage());
                 }

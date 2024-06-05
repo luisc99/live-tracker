@@ -46,10 +46,10 @@ public class EventTracker implements WorldEventListener, LogEventListener {
     public void onLogEvent(LogEvent e) {
         if (this.world.track && !this.world.finished) {
             if (e.type.equals(LogEventType.DEATH)) {
-                this.addEvent("icons/death.png");
+                this.addEvent("icons/map/death.png");
             }
             if (e.type.equals(LogEventType.HUNGER_RESET)) {
-                this.addEvent("icons/hunger_reset.png");
+                this.addEvent("icons/map/hunger_reset.png");
             }
         }
     }
@@ -60,17 +60,17 @@ public class EventTracker implements WorldEventListener, LogEventListener {
             if (e.type.equals(SpeedrunEventType.ENTER_NETHER)) {
                 Vec2i loc = this.getPrevLoc();
                 Dimension dim = this.world.getPlayerDimension();
-                this.addEvent(loc, dim, "icons/enter_portal.png");
+                this.addEvent(loc, dim, "icons/map/enter_portal.png");
             }
             if (e.type.equals(SpeedrunEventType.FIRST_PORTAL)) {
                 Vec2i loc = this.getPrevLoc();
                 Dimension dim = this.world.getPlayerDimension();
-                this.addEvent(loc, dim, "icons/first_portal.png");
+                this.addEvent(loc, dim, "icons/map/first_portal.png");
             }
             if (e.type.equals(SpeedrunEventType.SECOND_PORTAL)) {
                 Vec2i loc = this.getPrevLoc();
                 Dimension dim = this.world.getPlayerDimension();
-                this.addEvent(loc, dim, "icons/second_portal.png");
+                this.addEvent(loc, dim, "icons/map/second_portal.png");
             }
         }
     }

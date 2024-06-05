@@ -59,14 +59,14 @@ public class ChunkMap {
     }
 
     private void registerAll() {
-        this.registerFeature(new StructureProvider((version -> new RuinedPortal(Dimension.NETHER, version)), Dimension.NETHER, "icons/ruined_portal.png"));
-        this.registerFeature(new StructureProvider((version -> new RuinedPortal(Dimension.OVERWORLD, version)), kaptainwutax.mcutils.state.Dimension.OVERWORLD, "icons/ruined_portal.png"));
-        this.registerFeature(new StructureProvider(BuriedTreasure::new, Dimension.OVERWORLD, "icons/buried_treasure.png"));
-        this.registerFeature(new StructureProvider(Village::new, Dimension.OVERWORLD, "icons/village.png"));
-        this.registerFeature(new StructureProvider(Shipwreck::new, Dimension.OVERWORLD, "icons/shipwreck.png"));
-        this.registerFeature(new StructureProvider(Mansion::new, Dimension.OVERWORLD, "icons/mansion.png"));
-        this.registerFeature(new StructureProvider(BastionRemnant::new, Dimension.NETHER, "icons/bastion.png"));
-        this.registerFeature(new StructureProvider(Fortress::new, Dimension.NETHER, "icons/fortress.png"));
+        this.registerFeature(new StructureProvider((version -> new RuinedPortal(Dimension.NETHER, version)), Dimension.NETHER, "icons/map/ruined_portal.png"));
+        this.registerFeature(new StructureProvider((version -> new RuinedPortal(Dimension.OVERWORLD, version)), kaptainwutax.mcutils.state.Dimension.OVERWORLD, "icons/map/ruined_portal.png"));
+        this.registerFeature(new StructureProvider(BuriedTreasure::new, Dimension.OVERWORLD, "icons/map/buried_treasure.png"));
+        this.registerFeature(new StructureProvider(Village::new, Dimension.OVERWORLD, "icons/map/village.png"));
+        this.registerFeature(new StructureProvider(Shipwreck::new, Dimension.OVERWORLD, "icons/map/shipwreck.png"));
+        this.registerFeature(new StructureProvider(Mansion::new, Dimension.OVERWORLD, "icons/map/mansion.png"));
+        this.registerFeature(new StructureProvider(BastionRemnant::new, Dimension.NETHER, "icons/map/bastion.png"));
+        this.registerFeature(new StructureProvider(Fortress::new, Dimension.NETHER, "icons/map/fortress.png"));
     }
 
     public void generate() {
@@ -264,7 +264,7 @@ public class ChunkMap {
         Stronghold sh = new Stronghold(MCVersion.v1_16_1);
         for (CPos cpos : sh.getAllStarts(this.getBiomeSource(), this.rand)) {
             if (cpos.distanceTo(Vec3i.ZERO, DistanceMetric.CHEBYSHEV) > (double) radius / 16) continue;
-            Pair<String, CPos> pair = Pair.of("icons/stronghold.png", cpos);
+            Pair<String, CPos> pair = Pair.of("icons/map/stronghold.png", cpos);
             this.structureCoords.add(pair);
         }
 
