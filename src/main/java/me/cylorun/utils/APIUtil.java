@@ -72,6 +72,11 @@ public class APIUtil {
             return false;
         }
 
+        if (res.code() == 429) {
+            Tracker.log(Level.WARN, "Ratelimit exceeded, try again in 15 minutes");
+            return false;
+        }
+
         return res.code() == 200;
     }
 }

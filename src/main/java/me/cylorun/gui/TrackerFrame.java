@@ -66,7 +66,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
-        generalPanel.add(new MultiChoiceOptionField(I18n.getSupported().toArray(new String[0]), options.lang, "Game lang", (val) -> {
+        generalPanel.add(new MultiChoiceOptionField(I18n.getSupported().toArray(new String[0]), options.lang, "Game language", (val) -> {
             options.lang = val;
             TrackerOptions.save();
         }));
@@ -108,10 +108,10 @@ public class TrackerFrame extends JFrame implements WindowListener {
             options.path_interval = val;
             TrackerOptions.save();
         }));
-        advancedPanel.add(new TextOptionField("API key", TrackerOptions.getInstance().api_key, (val) -> {
-           options.api_key = val;
-           TrackerOptions.save();
-           this.onApiKeyChange(val);
+        advancedPanel.add(new TextOptionField("API key", TrackerOptions.getInstance().api_key, true, (val) -> {
+            options.api_key = val;
+            TrackerOptions.save();
+            this.onApiKeyChange(val);
         }));
 
         advancedPanel.add(Box.createRigidArea(new Dimension(0, 10)));
@@ -156,10 +156,13 @@ public class TrackerFrame extends JFrame implements WindowListener {
                 this.tabbedPane.add("Runs", editorPanel);
             } else {
                 int idx = this.tabbedPane.indexOfTab("Runs");
-                this.tabbedPane.remove(idx);
+                if (idx != -1) {
+                    this.tabbedPane.remove(idx);
+                }
             }
         });
     }
+
     @Override
     public void windowOpened(WindowEvent e) {
 
