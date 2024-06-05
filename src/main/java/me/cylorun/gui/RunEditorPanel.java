@@ -85,12 +85,13 @@ public class RunEditorPanel extends JPanel {
                 try (Response response = client.newCall(request).execute()) {
                     if (!response.isSuccessful()) {
                         Tracker.log(Level.WARN, "Failed to fetch run data, status code: " + response.code());
+                        response.close();
                         return null;
                     }
 
                     Type runListType = new TypeToken<List<RunRecord>>() {}.getType();
                     String jsonString = response.body().string();
-
+                    response.close();
                     return new Gson().fromJson(jsonString, runListType);
                 } catch (Exception e) {
                     Tracker.log(Level.WARN, "Failed to fetch run data: " + e.getMessage());

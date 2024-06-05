@@ -34,7 +34,9 @@ public class APIUtil {
             Tracker.log(Level.ERROR, "Failed to upload run, trying again");
             return 502;
         }
-        return response.code();
+        int code = response.code();
+        response.close();
+        return code;
     }
 
     public static void tryUploadRun(Run run) {
