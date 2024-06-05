@@ -4,6 +4,7 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 import me.cylorun.Tracker;
+import me.cylorun.gui.components.ActionButton;
 import me.cylorun.gui.components.RunRecordEntry;
 import me.cylorun.utils.APIUtil;
 import okhttp3.OkHttpClient;
@@ -18,63 +19,84 @@ import java.util.List;
 
 public class RunEditorPanel extends JPanel {
 
-    private JPanel runRecordPanel;
+    private final JPanel runRecordPanel;
+    private boolean isFetching = false;
 
     public RunEditorPanel() {
         this.runRecordPanel = new JPanel();
         this.runRecordPanel.setLayout(new BoxLayout(runRecordPanel, BoxLayout.Y_AXIS));
 
-        JScrollPane scrollPane = new JScrollPane(runRecordPanel);
+        JScrollPane scrollPane = new JScrollPane(this.runRecordPanel);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         scrollPane.getVerticalScrollBar().setUnitIncrement(8);
         scrollPane.setPreferredSize(new Dimension(300, 200));
 
         this.add(scrollPane);
-        this.runRecordPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
+        this.runRecordPanel.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
 
-        List<RunRecord> runs = this.fetchData();
-        if (runs == null) {
-            this.add(new JLabel("Something went wrong"));
+        fetchData();
+    }
+
+    private void fetchData() {
+        if (this.isFetching) {
             return;
         }
 
-        for (RunRecord run : runs) {
-            RunRecordEntry entry = new RunRecordEntry(run);
-            JPanel entryPanel = new JPanel(new BorderLayout());
-
-            entryPanel.add(entry, BorderLayout.NORTH);
-            entryPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
-
-            this.runRecordPanel.add(entryPanel);
-        }
-    }
-
-    private List<RunRecord> fetchData() {
+        this.isFetching = true;
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
                 .url(APIUtil.API_URL + "/runs/recent")
                 .build();
 
-        try {
-            Response response = client.newCall(request).execute();
+        new SwingWorker<List<RunRecord>, Void>() {
+            @Override
+            protected List<RunRecord> doInBackground() {
+                try (Response response = client.newCall(request).execute()) {
+                    if (!response.isSuccessful()) {
+                        Tracker.log(Level.WARN, "Failed to fetch run data, status code: " + response.code());
+                        return null;
+                    }
 
-            if (!response.isSuccessful()) {
-                Tracker.log(Level.WARN, "Failed to fetch run data, status code: "+response.code());
-                return null;
+                    Gson gson = new Gson();
+                    Type runListType = new TypeToken<List<RunRecord>>() {}.getType();
+                    String jsonString = response.body().string();
+
+                    return gson.fromJson(jsonString, runListType);
+                } catch (Exception e) {
+                    Tracker.log(Level.WARN, "Failed to fetch run data: " + e.getMessage());
+                    return null;
+                }
             }
 
-            Gson gson = new Gson();
-            Type runListType = new TypeToken<List<RunRecord>>() {}.getType();
-            String jsonString = response.body().string();
-
-            return gson.fromJson(jsonString, runListType);
-        } catch (Exception e) {
-            Tracker.log(Level.WARN, "Failed to fetch run data\n"+e);
-            return null;
-        }
+            @Override
+            protected void done() {
+                isFetching = false;
+                try {
+                    List<RunRecord> runs = get();
+                    runRecordPanel.removeAll();
+                    if (runs == null) {
+                        runRecordPanel.add(new JLabel("Something went wrong"));
+                        runRecordPanel.add(new ActionButton("Try again", e -> fetchData()));
+                    } else {
+                        for (RunRecord run : runs) {
+                            RunRecordEntry entry = new RunRecordEntry(run);
+                            JPanel entryPanel = new JPanel(new BorderLayout());
+                            entryPanel.add(entry, BorderLayout.NORTH);
+                            entryPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
+                            runRecordPanel.add(entryPanel);
+                        }
+                    }
+                    runRecordPanel.revalidate();
+                    runRecordPanel.repaint();
+                } catch (Exception e) {
+                    Tracker.log(Level.WARN, "Failed to process fetched data: " + e.getMessage());
+                }
+            }
+        }.execute();
     }
+
     public static class RunRecord {
         @SerializedName("run_id")
         private int runId;
@@ -88,9 +110,11 @@ public class RunEditorPanel extends JPanel {
         public int getRunId() {
             return runId;
         }
+
         public long getDatePlayedEst() {
             return datePlayedEst;
         }
+
         public String getWorldName() {
             return worldName;
         }

@@ -134,7 +134,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
         this.setVisible(true);
     }
 
-    public static TrackerFrame getInstance() {
+    public static synchronized TrackerFrame getInstance() {
         if (instance == null) {
             instance = new TrackerFrame();
         }
