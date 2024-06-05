@@ -3,6 +3,7 @@ package me.cylorun.gui;
 import me.cylorun.Tracker;
 import me.cylorun.gui.components.*;
 import me.cylorun.io.TrackerOptions;
+import me.cylorun.utils.APIUtil;
 import me.cylorun.utils.ExceptionUtil;
 import me.cylorun.utils.I18n;
 
@@ -16,6 +17,8 @@ public class TrackerFrame extends JFrame implements WindowListener {
     private static TrackerFrame instance;
     private JTextArea logArea;
     private JTabbedPane tabbedPane;
+    private JPanel editorPanel;
+
 
     public TrackerFrame() {
         super("Live-Tracker " + Tracker.VERSION);
@@ -29,6 +32,8 @@ public class TrackerFrame extends JFrame implements WindowListener {
         this.add(this.getTextArea());
         this.add(this.getTabbedPane());
         this.setVisible(true);
+
+        this.editorPanel = new RunEditorPanel();
     }
 
     private JScrollPane getTextArea() {
@@ -49,7 +54,6 @@ public class TrackerFrame extends JFrame implements WindowListener {
         advancedPanel.setLayout(new BoxLayout(advancedPanel, BoxLayout.Y_AXIS));
         advancedPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
-        JPanel editorPanel = new RunEditorPanel();
         TrackerOptions options = TrackerOptions.getInstance();
 
         generalPanel.add(new TextOptionField("Sheet Name", options.sheet_name, (val) -> {
@@ -104,6 +108,11 @@ public class TrackerFrame extends JFrame implements WindowListener {
             options.path_interval = val;
             TrackerOptions.save();
         }));
+        advancedPanel.add(new TextOptionField("API key", TrackerOptions.getInstance().api_key, (val) -> {
+           options.api_key = val;
+           TrackerOptions.save();
+           this.onApiKeyChange(val);
+        }));
 
         advancedPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         advancedPanel.add(new JSeparator(JSeparator.HORIZONTAL));
@@ -119,7 +128,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
 
         this.tabbedPane.add("General", generalPanel);
         this.tabbedPane.add("Advanced", advancedPanel);
-        this.tabbedPane.add("Runs", editorPanel);
+        this.onApiKeyChange(TrackerOptions.getInstance().api_key);
         return this.tabbedPane;
     }
 
@@ -141,6 +150,16 @@ public class TrackerFrame extends JFrame implements WindowListener {
         return instance;
     }
 
+    private void onApiKeyChange(String newKey) {
+        SwingUtilities.invokeLater(() -> {
+            if (APIUtil.verifyKey(newKey)) {
+                this.tabbedPane.add("Runs", editorPanel);
+            } else {
+                int idx = this.tabbedPane.indexOfTab("Runs");
+                this.tabbedPane.remove(idx);
+            }
+        });
+    }
     @Override
     public void windowOpened(WindowEvent e) {
 

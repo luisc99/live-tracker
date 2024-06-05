@@ -8,11 +8,9 @@ import okhttp3.*;
 import org.apache.logging.log4j.Level;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class APIUtil {
-//    public static final String API_URL = "https://100k-backend.vercel.app";
+    //    public static final String API_URL = "https://100k-backend.vercel.app";
     public static final String API_URL = "http://localhost:5000";
 
     private static int uploadRun(Run run) {
@@ -23,9 +21,10 @@ public class APIUtil {
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
         Request request = new Request.Builder()
-                .url(API_URL + "/upload?apikey=" + options.api_key)
+                .url(API_URL + "/upload")
                 .post(requestBody)
                 .addHeader("Content-Type", "application/json")
+                .addHeader("authorization", options.api_key)
                 .build();
 
         Response response;
@@ -39,8 +38,8 @@ public class APIUtil {
     }
 
     public static void tryUploadRun(Run run) {
-        if (TrackerOptions.getInstance().api_key == null) {
-            Tracker.log(Level.WARN, "No API key provided, will not upload run");
+        if (!APIUtil.verifyKey(TrackerOptions.getInstance().api_key)) {
+            Tracker.log(Level.WARN, "Invalid API key or none provided, will not upload run");
             return;
         }
 
@@ -56,5 +55,23 @@ public class APIUtil {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    public static boolean verifyKey(String key) {
+        OkHttpClient client = new OkHttpClient();
+
+        Request req = new Request.Builder()
+                .url(API_URL + "/verify")
+                .addHeader("authorization", key)
+                .build();
+        Response res;
+        try {
+            res = client.newCall(req).execute();
+        } catch (IOException e) {
+            Tracker.log(Level.WARN, "Invalid API key");
+            return false;
+        }
+
+        return res.code() == 200;
     }
 }
