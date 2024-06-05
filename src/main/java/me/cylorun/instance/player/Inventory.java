@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.Tracker;
 import me.cylorun.instance.NBTReader;
-import me.cylorun.instance.world.WorldFile;
+import me.cylorun.instance.WorldFile;
 import org.apache.logging.log4j.Level;
 
 import java.util.ArrayList;

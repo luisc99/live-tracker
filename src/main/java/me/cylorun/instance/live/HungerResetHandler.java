@@ -5,7 +5,7 @@ import me.cylorun.instance.SpeedrunEvent;
 import me.cylorun.instance.logs.LogEventListener;
 import me.cylorun.instance.player.InventoryItem;
 import me.cylorun.instance.world.WorldEventListener;
-import me.cylorun.instance.world.WorldFile;
+import me.cylorun.instance.WorldFile;
 import me.cylorun.io.TrackerOptions;
 
 import java.util.ArrayList;

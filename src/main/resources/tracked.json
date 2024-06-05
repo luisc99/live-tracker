@@ -7,60 +7,60 @@
     "enter_stronghold",
     "enter_end"
   ],
-  "MISC_CHECKS": [
-    [
+  "MISC_CHECKS": {
+    "blaze_rods": [
       "minecraft:picked_up",
       "minecraft:blaze_rod"
     ],
-    [
+    "blazes_killed": [
       "minecraft:killed",
       "minecraft:blaze"
     ],
-    [
+    "flint_picked_up": [
       "minecraft:picked_up",
       "minecraft:flint"
     ],
-    [
+    "gravel_mined": [
       "minecraft:mined",
       "minecraft:gravel"
     ],
-    [
+    "deaths_total": [
       "minecraft:custom",
       "minecraft:deaths"
     ],
-    [
+    "jumps": [
       "minecraft:custom",
       "minecraft:jump"
     ],
-    [
+    "eyes_used": [
       "minecraft:used",
       "minecraft:ender_eye"
     ],
-    [
+    "diamond_picks_crafted": [
       "minecraft:crafted",
       "minecraft:diamond_pickaxe"
     ],
-    [
+    "ender_pearls_used": [
       "minecraft:used",
       "minecraft:ender_pearl"
     ],
-    [
+    "obsidian_placed": [
       "minecraft:used",
       "minecraft:obsidian"
     ],
-    [
+    "diamond_sword_crafted": [
       "minecraft:crafted",
       "minecraft:diamond_sword"
     ],
-    [
+    "stone_mined": [
       "minecraft:mined",
       "minecraft:stone"
     ],
-    [
+    "netherrack_mined": [
       "minecraft:mined",
       "minecraft:netherrack"
     ]
-  ],
+  },
   "TRACKED_BLOCKS": [
     "minecraft:gravel",
     "minecraft:dirt",

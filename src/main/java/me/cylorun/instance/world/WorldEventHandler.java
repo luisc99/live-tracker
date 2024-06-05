@@ -2,6 +2,7 @@ package me.cylorun.instance.world;
 
 import me.cylorun.Tracker;
 import me.cylorun.instance.SpeedrunEvent;
+import me.cylorun.instance.WorldFile;
 import org.apache.logging.log4j.Level;
 
 import java.io.BufferedReader;

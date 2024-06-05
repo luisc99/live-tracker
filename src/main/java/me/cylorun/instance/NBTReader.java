@@ -2,18 +2,14 @@ package me.cylorun.instance;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import kaptainwutax.mcutils.state.Dimension;
 import me.cylorun.Tracker;
-import me.cylorun.instance.world.WorldFile;
 import me.cylorun.utils.Assert;
-import me.cylorun.utils.Vec2i;
 import net.querz.nbt.io.NBTUtil;
 import net.querz.nbt.io.NamedTag;
 import org.apache.logging.log4j.Level;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.Arrays;
 
 public class NBTReader {
     private Path path;

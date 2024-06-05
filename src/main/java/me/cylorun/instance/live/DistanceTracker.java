@@ -1,13 +1,11 @@
 package me.cylorun.instance.live;
 
-import me.cylorun.Tracker;
 import me.cylorun.enums.SpeedrunEventType;
 import me.cylorun.instance.SpeedrunEvent;
 import me.cylorun.instance.world.WorldEventListener;
-import me.cylorun.instance.world.WorldFile;
+import me.cylorun.instance.WorldFile;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.Vec2i;
-import org.apache.logging.log4j.Level;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;

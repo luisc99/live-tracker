@@ -7,7 +7,7 @@ import me.cylorun.instance.LogEvent;
 import me.cylorun.instance.SpeedrunEvent;
 import me.cylorun.instance.logs.LogEventListener;
 import me.cylorun.instance.world.WorldEventListener;
-import me.cylorun.instance.world.WorldFile;
+import me.cylorun.instance.WorldFile;
 import me.cylorun.utils.Vec2i;
 import org.apache.commons.lang3.tuple.Pair;
 

@@ -4,7 +4,7 @@ import kaptainwutax.mcutils.state.Dimension;
 import me.cylorun.enums.LogEventType;
 import me.cylorun.instance.LogEvent;
 import me.cylorun.instance.logs.LogEventListener;
-import me.cylorun.instance.world.WorldFile;
+import me.cylorun.instance.WorldFile;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.Vec2i;
 import org.apache.commons.lang3.tuple.Pair;

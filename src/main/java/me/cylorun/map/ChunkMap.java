@@ -14,7 +14,7 @@ import kaptainwutax.mcutils.util.pos.CPos;
 import kaptainwutax.mcutils.version.MCVersion;
 import kaptainwutax.terrainutils.TerrainGenerator;
 import me.cylorun.Tracker;
-import me.cylorun.instance.world.WorldFile;
+import me.cylorun.instance.WorldFile;
 import me.cylorun.utils.ResourceUtil;
 import me.cylorun.utils.Vec2i;
 import org.apache.commons.lang3.tuple.Pair;

@@ -4,7 +4,7 @@ import me.cylorun.gui.TrackerFrame;
 import me.cylorun.instance.RecordFile;
 import me.cylorun.instance.Run;
 import me.cylorun.instance.world.WorldCreationEventHandler;
-import me.cylorun.instance.world.WorldFile;
+import me.cylorun.instance.WorldFile;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.io.sheets.GoogleSheetsClient;
 import me.cylorun.map.ChunkMap;
@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -35,7 +34,7 @@ public class Tracker {
         TrackerFrame.getInstance().open();
         GoogleSheetsClient.setup();
         Tracker.log(Level.INFO, "Running Live-Tracker-" + VERSION);
-        System.out.println(TrackerOptions.getInstance().api_key);
+
         WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object is created per world path
         worldHandler.addListener(world -> {
             Tracker.log(Level.DEBUG, "New world detected: " + world);
@@ -58,7 +57,7 @@ public class Tracker {
 
             RecordFile record = new RecordFile(world.getRecordPath().toFile());
             Run run = new Run(world, record);
-            List<Object> runData = run.gatherAll();
+            List<Object> runData = new ArrayList<>(run.values());
 
             if (run.shouldPush()) {
                 try {

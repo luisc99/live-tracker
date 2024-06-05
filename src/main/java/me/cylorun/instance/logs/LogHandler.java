@@ -1,7 +1,7 @@
 package me.cylorun.instance.logs;
 
 import me.cylorun.instance.LogEvent;
-import me.cylorun.instance.world.WorldFile;
+import me.cylorun.instance.WorldFile;
 
 import java.io.BufferedReader;
 import java.io.File;

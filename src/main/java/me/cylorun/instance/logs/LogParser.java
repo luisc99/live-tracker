@@ -3,7 +3,7 @@ package me.cylorun.instance.logs;
 import com.google.gson.JsonObject;
 import me.cylorun.enums.LogEventType;
 import me.cylorun.instance.LogEvent;
-import me.cylorun.instance.world.WorldFile;
+import me.cylorun.instance.WorldFile;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.I18n;
 

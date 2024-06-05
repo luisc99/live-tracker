@@ -1,12 +1,9 @@
-package me.cylorun.instance.world;
+package me.cylorun.instance;
 
 import kaptainwutax.mcutils.state.Dimension;
 import me.cylorun.Tracker;
 import me.cylorun.enums.LogEventType;
 import me.cylorun.enums.SpeedrunEventType;
-import me.cylorun.instance.LogEvent;
-import me.cylorun.instance.NBTReader;
-import me.cylorun.instance.SpeedrunEvent;
 import me.cylorun.instance.live.DistanceTracker;
 import me.cylorun.instance.live.EventTracker;
 import me.cylorun.instance.live.HungerResetHandler;
@@ -14,6 +11,9 @@ import me.cylorun.instance.live.PathTracker;
 import me.cylorun.instance.logs.LogEventListener;
 import me.cylorun.instance.logs.LogHandler;
 import me.cylorun.instance.player.Inventory;
+import me.cylorun.instance.world.CompletionHandler;
+import me.cylorun.instance.world.WorldEventHandler;
+import me.cylorun.instance.world.WorldEventListener;
 import me.cylorun.utils.Assert;
 import me.cylorun.utils.Vec2i;
 import org.apache.commons.lang3.tuple.Pair;
@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -47,6 +48,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
 
     public WorldFile(String path) {
         super(path);
+        Assert.isTrue(Files.exists(this.toPath()), "Worldfile doesnt exist: " + this.getAbsolutePath());
         this.playerPath = new ArrayList<>();
         this.playerLocations = new ArrayList<>();
 
@@ -75,14 +77,16 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     public Path getLogPath() {
         return Paths.get(this.getAbsolutePath()).getParent().getParent().resolve("logs").resolve("latest.log");
     }
+
     public long getSeed() {
         try {
-            return  Long.parseLong(NBTReader.from(this).get(NBTReader.SEED_PATH));
+            return Long.parseLong(NBTReader.from(this).get(NBTReader.SEED_PATH));
         } catch (NumberFormatException e) {
             Tracker.log(Level.WARN, "Failed to get the seed");
             return 0;
         }
     }
+
     public Vec2i getPlayerLocation() {
         String stringData = this.reader.get(NBTReader.PLAYER_POS);
         if (stringData == null) {
@@ -103,6 +107,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
 
         return Dimension.fromString(split[1]);
     }
+
     public Path getLevelDatPath() {
         return Paths.get(this.getAbsolutePath()).resolve("level.dat");
     }

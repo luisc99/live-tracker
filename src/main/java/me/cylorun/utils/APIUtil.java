@@ -8,6 +8,8 @@ import okhttp3.*;
 import org.apache.logging.log4j.Level;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class APIUtil {
 //    public static final String API_URL = "https://100k-backend.vercel.app";
@@ -21,9 +23,8 @@ public class APIUtil {
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
         Request request = new Request.Builder()
-                .url(API_URL + "/upload")
+                .url(API_URL + "/upload?apikey=" + options.api_key)
                 .post(requestBody)
-                .addHeader("authorization", options.api_key)
                 .addHeader("Content-Type", "application/json")
                 .build();
 
@@ -34,7 +35,6 @@ public class APIUtil {
             Tracker.log(Level.ERROR, "Failed to upload run, trying again");
             return 502;
         }
-
         return response.code();
     }
 
