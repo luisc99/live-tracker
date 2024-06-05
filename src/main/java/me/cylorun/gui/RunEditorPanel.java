@@ -16,14 +16,21 @@ import javax.swing.*;
 import java.awt.*;
 import java.lang.reflect.Type;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 public class RunEditorPanel extends JPanel {
 
     private final JPanel runRecordPanel;
+    private final JButton refreshButton;
     private boolean isFetching = false;
 
     public RunEditorPanel() {
         this.runRecordPanel = new JPanel();
+        this.refreshButton = new JButton("Reload");
+        this.add(this.refreshButton);
         this.runRecordPanel.setLayout(new BoxLayout(this.runRecordPanel, BoxLayout.Y_AXIS));
 
         JScrollPane scrollPane = new JScrollPane(this.runRecordPanel);
@@ -34,6 +41,10 @@ public class RunEditorPanel extends JPanel {
 
         this.add(scrollPane);
         this.runRecordPanel.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));
+
+        this.refreshButton.addActionListener((e -> {
+            this.fetchData();
+        }));
 
         this.fetchData();
     }
