@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Level;
 import java.io.IOException;
 
 public class APIUtil {
-    public static final String API_URL = Tracker.VERSION.equals("DEV") ? "http://localhost:5000" : "https://100k-backend.vercel.app";
+    public static final String API_URL = Tracker.VERSION.equals("DEV") ? "http://localhost:5000" : "https://couri100k.com/api";
 
     private static int uploadRun(Run run) {
         TrackerOptions options = TrackerOptions.getInstance();

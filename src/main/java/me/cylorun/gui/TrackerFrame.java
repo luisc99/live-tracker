@@ -15,24 +15,25 @@ public class TrackerFrame extends JFrame implements WindowListener {
 
     private static TrackerFrame instance;
     private JTextArea logArea;
-    private JTabbedPane tabbedPane;
     private JPanel editorPanel;
-
+    public JTabbedPane tabbedPane;
+    private Container initialView;
 
     public TrackerFrame() {
         super("Live-Tracker " + Tracker.VERSION);
-
 
         this.setSize(750, 400);
         this.setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(this);
         this.setLayout(new GridLayout(1, 2));
+
+        this.initialView = this.getContentPane();  // Store the initial view
+
         this.add(this.getTextArea());
         this.add(this.getTabbedPane());
-        this.setVisible(true);
 
-        this.editorPanel = new RunEditor();
+        this.editorPanel = new RunPanel();
     }
 
     private JScrollPane getTextArea() {
@@ -88,7 +89,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
             try {
                 Desktop.getDesktop().open(TrackerOptions.getTrackerDir().toFile());
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this,"Failed to open folder");
+                JOptionPane.showMessageDialog(this, "Failed to open folder");
             }
         }));
 
@@ -135,7 +136,6 @@ public class TrackerFrame extends JFrame implements WindowListener {
         SwingUtilities.invokeLater(() -> this.logArea.append(o.toString()));
     }
 
-
     public void open() {
         TrackerOptions options = TrackerOptions.getInstance();
         this.setLocation(options.last_win_x, options.last_win_y);
@@ -160,6 +160,16 @@ public class TrackerFrame extends JFrame implements WindowListener {
                 }
             }
         });
+    }
+
+    public void setView(Container container) {
+        this.setContentPane(container);
+        this.revalidate();
+        this.repaint();
+    }
+
+    public void resetToInitialView() {
+        this.setView(this.initialView);
     }
 
     @Override

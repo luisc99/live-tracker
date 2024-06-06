@@ -2,6 +2,7 @@ package me.cylorun.gui.components;
 
 import me.cylorun.Tracker;
 import me.cylorun.gui.RunEditor;
+import me.cylorun.gui.RunPanel;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.APIUtil;
 import okhttp3.OkHttpClient;
@@ -19,9 +20,9 @@ public class RunRecordEntry extends JPanel {
     private final JButton deleteButton;
     private final JButton editButton;
     private final JButton viewButton;
-    private final RunEditor.RunRecord record;
+    private final RunPanel.RunRecord record;
 
-    public RunRecordEntry(RunEditor.RunRecord record) {
+    public RunRecordEntry(RunPanel.RunRecord record) {
         this.setLayout(new BorderLayout());
         this.deleteButton = new JButton("Delete");
         this.editButton = new JButton("Edit");
@@ -61,6 +62,14 @@ public class RunRecordEntry extends JPanel {
                 }
             }
         }));
+
+        this.editButton.addActionListener((e)->{
+            this.editRun();
+        });
+    }
+
+    private void editRun() {
+        new RunEditor(this.record);
     }
 
     private boolean deleteRun() {
