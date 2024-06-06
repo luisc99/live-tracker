@@ -5,11 +5,12 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.Tracker;
 import me.cylorun.gui.components.MultiChoiceOptionField;
+import me.cylorun.gui.components.TextOptionField;
+import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.APIUtil;
+import me.cylorun.utils.JSONUtil;
 import me.cylorun.utils.ResourceUtil;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
+import okhttp3.*;
 import org.apache.logging.log4j.Level;
 
 import javax.swing.*;
@@ -24,9 +25,10 @@ public class RunEditor extends JPanel {
     private final JsonObject record;
     private final JPanel configPanel;
     private final MultiChoiceOptionField columnField;
+    private final TextOptionField valueField;
+    private final JButton saveButton;
     private JsonObject runData;
     private boolean isFetching = false;
-    private String[] columnValues = {};
 
     public RunEditor(JsonObject runRecord) {
         this.record = runRecord;
@@ -53,20 +55,60 @@ public class RunEditor extends JPanel {
         this.configPanel = new JPanel();
         this.configPanel.setLayout(new BoxLayout(this.configPanel, BoxLayout.Y_AXIS));
         this.add(this.configPanel, BorderLayout.SOUTH);
+        this.saveButton = new JButton("Save");
 
-        this.columnField = new MultiChoiceOptionField(this.columnValues, "run_id", "Column", (val) -> {
-
+        this.valueField = new TextOptionField("Value", this.record.get("run_id").getAsString(), (val) -> {
+            this.saveButton.setEnabled(true);
         });
 
-        this.configPanel.add(columnField);
+        this.columnField = new MultiChoiceOptionField(new String[]{}, "run_id", "Column", (val) -> {
+            this.valueField.setValue(this.runData.get(val).getAsString());
+            this.saveButton.setEnabled(false);
+        });
+
+        this.configPanel.add(this.columnField);
+        this.configPanel.add(this.valueField);
+        this.configPanel.add(this.saveButton);
+        this.saveButton.setEnabled(false);
+        this.saveButton.addActionListener((e -> {
+            this.saveButton.setEnabled(false);
+            if (this.editRun(this.columnField.getValue(), this.valueField.getValue())) {
+                Tracker.log(Level.INFO, "Successfully edited run " + this.record.get("run_id").getAsString());
+            } else {
+                Tracker.log(Level.ERROR, "Failed to edit run " + this.record.get("run_id").getAsString());
+            }
+        }));
+
         this.fetchData();
+
         TrackerFrame.getInstance().setView(this);
     }
 
-    public List<String> getAllKeys() {
+    public List<String> getAllValueKeys() {
         List<String> keys = new ArrayList<>();
         extractKeys(this.runData, keys);
         return keys;
+    }
+
+    private boolean editRun(String column, String value) {
+        OkHttpClient client = new OkHttpClient();
+        JsonObject o = new JsonObject();
+        o.addProperty("column", column);
+        o.addProperty("value", value);
+        o.addProperty("run_id", this.record.get("run_id").getAsString());
+
+        RequestBody body = RequestBody.create(o.toString(), MediaType.get("application/json; charset=utf-8"));
+        Request req = new Request.Builder()
+                .url(APIUtil.API_URL + "/edit")
+                .post(body)
+                .addHeader("authorization", TrackerOptions.getInstance().api_key)
+                .build();
+
+        try (Response res = client.newCall(req).execute()) {
+            return res.code() == 200;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     private void extractKeys(JsonObject jsonObject, List<String> keys) {
@@ -108,8 +150,8 @@ public class RunEditor extends JPanel {
             protected void done() {
                 isFetching = false;
                 try {
-                    runData = this.get();
-                    String[] values = getAllKeys().toArray(new String[0]);
+                    runData = JSONUtil.flatten(this.get());
+                    String[] values = getAllValueKeys().toArray(new String[0]);
                     columnField.setOptions(values);
 
                 } catch (InterruptedException | ExecutionException e) {

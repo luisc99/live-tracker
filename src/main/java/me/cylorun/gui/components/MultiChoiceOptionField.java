@@ -17,9 +17,13 @@ public class MultiChoiceOptionField extends JPanel {
     }
 
     public void setOptions(String[] newOptions) {
-        comboBox.removeAllItems();
+        this.comboBox.removeAllItems();
         for (String option : newOptions) {
-            comboBox.addItem(option);
+            this.comboBox.addItem(option);
         }
+    }
+
+    public String getValue() {
+        return this.comboBox.getSelectedItem().toString();
     }
 }

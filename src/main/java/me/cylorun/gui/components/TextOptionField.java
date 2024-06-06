@@ -7,7 +7,7 @@ import java.awt.*;
 import java.util.function.Consumer;
 
 public class TextOptionField extends JPanel {
-
+    private JComponent textField;
     public TextOptionField(String label, String value, Consumer<String> consumer) {
         this(label, value, false, consumer);
     }
@@ -15,11 +15,19 @@ public class TextOptionField extends JPanel {
     public TextOptionField(String label, String value, boolean isPasswordField, Consumer<String> consumer) {
         this.setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        JComponent textField = isPasswordField ? createPasswordField(value) : createTextField(value);
+        this.textField = isPasswordField ? createPasswordField(value) : createTextField(value);
         this.add(new JLabel(label));
-        this.add(textField);
+        this.add(this.textField);
 
-        addChangeListener(textField, consumer);
+        addChangeListener(this.textField, consumer);
+    }
+
+    public void setValue(String newValue) {
+        ((JTextField) this.textField).setText(newValue);
+    }
+
+    public String getValue() {
+        return ((JTextField) this.textField).getText();
     }
 
     private JComponent createTextField(String value) {

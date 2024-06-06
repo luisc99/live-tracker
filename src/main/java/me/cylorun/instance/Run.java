@@ -42,7 +42,7 @@ public class Run extends HashMap<String, Object> {
                 "rsg.enter_stronghold",
                 "rsg.enter_end"};
         String[] splitNames = {"iron_pick", "nether", "bastion", "fortress", "first_portal", "second_portal", "stronghold", "end_enter"}; // add
-        this.put("date_played_EST", this.getDate());
+        this.put("date_played_est", this.getDate());
         this.put("iron_source", this.getIronSource());
         this.put("enter_type", this.getEnterType());
         this.put("gold_source", this.getGoldSource());
