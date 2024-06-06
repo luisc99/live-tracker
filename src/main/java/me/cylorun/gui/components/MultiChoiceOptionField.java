@@ -5,12 +5,21 @@ import java.awt.*;
 import java.util.function.Consumer;
 
 public class MultiChoiceOptionField extends JPanel {
+    private JComboBox<String> comboBox;
+
     public MultiChoiceOptionField(String[] options, String value, String label, Consumer<String> consumer) {
         this.setLayout(new FlowLayout(FlowLayout.CENTER));
-        JComboBox<String> comboBox = new JComboBox<>(options);
+        this.comboBox = new JComboBox<>(options);
         SwingUtilities.invokeLater(() -> comboBox.setSelectedItem(value));
         comboBox.addActionListener(e -> consumer.accept((String) comboBox.getSelectedItem()));
         this.add(new JLabel(label));
         this.add(comboBox);
+    }
+
+    public void setOptions(String[] newOptions) {
+        comboBox.removeAllItems();
+        for (String option : newOptions) {
+            comboBox.addItem(option);
+        }
     }
 }
