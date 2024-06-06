@@ -28,7 +28,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
         this.addWindowListener(this);
         this.setLayout(new GridLayout(1, 2));
 
-        this.initialView = this.getContentPane();  // Store the initial view
+        this.initialView = this.getContentPane();
 
         this.add(this.getTextArea());
         this.add(this.getTabbedPane());

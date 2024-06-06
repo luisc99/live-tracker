@@ -1,5 +1,7 @@
 package me.cylorun.gui.components;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import me.cylorun.Tracker;
 import me.cylorun.gui.RunEditor;
 import me.cylorun.gui.RunPanel;
@@ -20,19 +22,19 @@ public class RunRecordEntry extends JPanel {
     private final JButton deleteButton;
     private final JButton editButton;
     private final JButton viewButton;
-    private final RunPanel.RunRecord record;
+    private final JsonObject record;
 
-    public RunRecordEntry(RunPanel.RunRecord record) {
+    public RunRecordEntry(JsonObject record) {
         this.setLayout(new BorderLayout());
         this.deleteButton = new JButton("Delete");
         this.editButton = new JButton("Edit");
         this.viewButton = new JButton("View");
         this.record = record;
-        Date date = new Date(record.getDatePlayedEst());
+        Date date = new Date(record.get("date_played_est").getAsInt());
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd HH:mm:ss");
 
-        JLabel runIdLabel = new JLabel(String.format("<html>Run Id: <b>%s<b> </html>", record.getRunId()));
-        runIdLabel.setToolTipText(String.format("Date Played: %s\n World Name: %s", dateFormat.format(date), record.getWorldName()));
+        JLabel runIdLabel = new JLabel(String.format("<html>Run Id: <b>%s<b> </html>", record.get("run_id").getAsInt()));
+        runIdLabel.setToolTipText(String.format("Date Played: %s\n World Name: %s", dateFormat.format(date), record.get("world_name").getAsString()));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -51,13 +53,13 @@ public class RunRecordEntry extends JPanel {
         this.deleteButton.addActionListener((e -> {
             int option = JOptionPane.showConfirmDialog(
                     null,
-                    "Are you sure you want to delete run " + this.record.getRunId(),
+                    "Are you sure you want to delete run " + this.record.get("run_id").getAsInt(),
                     "Confirmation",
                     JOptionPane.YES_NO_OPTION);
 
             if (option == JOptionPane.YES_OPTION) {
                 if (!this.deleteRun()) {
-                    Tracker.log(Level.WARN, "Failed to delete run " + this.record.getRunId());
+                    Tracker.log(Level.WARN, "Failed to delete run " + this.record.get("run_id").getAsInt());
                     JOptionPane.showMessageDialog(null, "Failed to delete run");
                 }
             }
@@ -76,7 +78,7 @@ public class RunRecordEntry extends JPanel {
         OkHttpClient client = new OkHttpClient();
 
         Request req = new Request.Builder()
-                .url(APIUtil.API_URL + "/delete?id=" + this.record.getRunId())
+                .url(APIUtil.API_URL + "/delete?id=" + this.record.get("run_id").getAsInt())
                 .addHeader("authorization", TrackerOptions.getInstance().api_key)
                 .build();
 

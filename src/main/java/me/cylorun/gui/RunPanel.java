@@ -1,8 +1,8 @@
 package me.cylorun.gui;
 
-import com.google.common.reflect.TypeToken;
-import com.google.gson.Gson;
-import com.google.gson.annotations.SerializedName;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import me.cylorun.Tracker;
 import me.cylorun.gui.components.ActionButton;
 import me.cylorun.gui.components.RunRecordEntry;
@@ -16,11 +16,8 @@ import org.apache.logging.log4j.Level;
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.List;
 
 public class RunPanel extends JPanel {
-
     private final JPanel runRecordPanel;
     private final JButton refreshButton;
     private boolean isFetching = false;
@@ -54,7 +51,7 @@ public class RunPanel extends JPanel {
     }
 
     private void toggleButtonLoading() {
-        if (this.isFetching){
+        if (this.isFetching) {
             this.refreshButton.setText("Loading...");
             this.refreshButton.setEnabled(false);
         } else {
@@ -62,6 +59,7 @@ public class RunPanel extends JPanel {
             this.refreshButton.setEnabled(true);
         }
     }
+
     private void fetchData() {
         if (this.isFetching) {
             return;
@@ -75,22 +73,21 @@ public class RunPanel extends JPanel {
                 .url(APIUtil.API_URL + "/runs/recent")
                 .build();
 
-        new SwingWorker<List<RunRecord>, Void>() {
+        new SwingWorker<JsonArray, Void>() {
             @Override
-            protected List<RunRecord> doInBackground() {
+            protected JsonArray doInBackground() {
                 try (Response response = client.newCall(request).execute()) {
                     if (!response.isSuccessful()) {
-                        Tracker.log(Level.WARN, "Failed to fetch run data, status code: " + response.code());
+                        Tracker.log(Level.ERROR, "Failed to fetch run data, status code: " + response.code());
                         response.close();
                         return null;
                     }
 
-                    Type runListType = new TypeToken<List<RunRecord>>() {}.getType();
                     String jsonString = response.body().string();
                     response.close();
-                    return new Gson().fromJson(jsonString, runListType);
+                    return JsonParser.parseString(jsonString).getAsJsonArray();
                 } catch (Exception e) {
-                    Tracker.log(Level.WARN, "Failed to fetch run data: " + e.getMessage());
+                    Tracker.log(Level.ERROR, "Failed to fetch run data: " + e.getMessage());
                     return null;
                 }
             }
@@ -99,14 +96,14 @@ public class RunPanel extends JPanel {
             protected void done() {
                 isFetching = false;
                 try {
-                    List<RunRecord> runs = get();
+                    JsonArray runs = get();
                     runRecordPanel.removeAll();
                     if (runs == null) {
                         runRecordPanel.add(new JLabel("Something went wrong"));
                         runRecordPanel.add(new ActionButton("Try again", e -> fetchData()));
                     } else {
-                        for (RunRecord run : runs) {
-                            RunRecordEntry entry = new RunRecordEntry(run);
+                        for (JsonElement run : runs) {
+                            RunRecordEntry entry = new RunRecordEntry(run.getAsJsonObject());
                             JPanel entryPanel = new JPanel(new BorderLayout());
                             entryPanel.add(entry, BorderLayout.NORTH);
                             entryPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
@@ -117,41 +114,10 @@ public class RunPanel extends JPanel {
                     runRecordPanel.repaint();
                     toggleButtonLoading();
                 } catch (Exception e) {
-                    Tracker.log(Level.WARN, "Failed to process fetched data: " + e.getMessage());
+                    Tracker.log(Level.ERROR, "Failed to process fetched data: " + e);
                 }
             }
         }.execute();
     }
 
-    public static class RunRecord {
-        @SerializedName("run_id")
-        private int runId;
-
-        @SerializedName("date_played_est")
-        private long datePlayedEst;
-
-        @SerializedName("world_name")
-        private String worldName;
-
-        public int getRunId() {
-            return runId;
-        }
-
-        public long getDatePlayedEst() {
-            return datePlayedEst;
-        }
-
-        public String getWorldName() {
-            return worldName;
-        }
-
-        @Override
-        public String toString() {
-            return "Run{" +
-                    "runId=" + runId +
-                    ", datePlayedEst=" + datePlayedEst +
-                    ", worldName='" + worldName + '\'' +
-                    '}';
-        }
-    }
 }
