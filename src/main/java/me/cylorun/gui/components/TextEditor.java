@@ -1,13 +1,12 @@
-package me.cylorun.gui;
+package me.cylorun.gui.components;
 
 import javax.swing.*;
 import javax.swing.text.*;
-import java.awt.*;
 
 
-public class TextFieldPanel extends JScrollPane {
+public class TextEditor extends JScrollPane {
     private final JTextPane textPane;
-    public TextFieldPanel() {
+    public TextEditor() {
         super(new JTextPane());
         this.textPane = (JTextPane) this.getViewport().getView();
         setupKeyBindings();

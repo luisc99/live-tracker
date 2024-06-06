@@ -18,18 +18,14 @@ import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.List;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-public class RunEditorPanel extends JPanel {
+public class RunEditor extends JPanel {
 
     private final JPanel runRecordPanel;
     private final JButton refreshButton;
     private boolean isFetching = false;
 
-    public RunEditorPanel() {
+    public RunEditor() {
         this.runRecordPanel = new JPanel();
         this.refreshButton = new JButton("Reload");
         try {
@@ -45,7 +41,7 @@ public class RunEditorPanel extends JPanel {
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
 
         scrollPane.getVerticalScrollBar().setUnitIncrement(8);
-        scrollPane.setPreferredSize(new Dimension(300, 300));
+        scrollPane.setPreferredSize(new Dimension(370, 300));
 
         this.add(scrollPane);
         this.runRecordPanel.setBorder(BorderFactory.createEmptyBorder(10, 5, 10, 5));

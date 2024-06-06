@@ -10,6 +10,7 @@ import me.cylorun.io.sheets.GoogleSheetsClient;
 import me.cylorun.map.ChunkMap;
 import me.cylorun.utils.APIUtil;
 import me.cylorun.utils.LogReceiver;
+import okhttp3.OkHttpClient;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -29,7 +30,7 @@ public class Tracker {
     private static final Logger LOGGER = LogManager.getLogger(Tracker.class);
 
     public static void run() {
-
+        java.util.logging.Logger.getLogger(OkHttpClient.class.getName()).setLevel(java.util.logging.Level.FINE);
         List<WorldFile> worlds = new ArrayList<>();
         TrackerFrame.getInstance().open();
         GoogleSheetsClient.setup();

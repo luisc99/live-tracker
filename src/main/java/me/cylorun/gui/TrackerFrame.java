@@ -23,7 +23,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
         super("Live-Tracker " + Tracker.VERSION);
 
 
-        this.setSize(700, 400);
+        this.setSize(750, 400);
         this.setResizable(false);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.addWindowListener(this);
@@ -32,7 +32,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
         this.add(this.getTabbedPane());
         this.setVisible(true);
 
-        this.editorPanel = new RunEditorPanel();
+        this.editorPanel = new RunEditor();
     }
 
     private JScrollPane getTextArea() {

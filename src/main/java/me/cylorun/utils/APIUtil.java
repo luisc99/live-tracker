@@ -10,8 +10,7 @@ import org.apache.logging.log4j.Level;
 import java.io.IOException;
 
 public class APIUtil {
-    //    public static final String API_URL = "https://100k-backend.vercel.app";
-    public static final String API_URL = "http://localhost:5000";
+    public static final String API_URL = Tracker.VERSION.equals("DEV") ? "http://localhost:5000" : "https://100k-backend.vercel.app";
 
     private static int uploadRun(Run run) {
         TrackerOptions options = TrackerOptions.getInstance();
@@ -66,19 +65,18 @@ public class APIUtil {
                 .url(API_URL + "/verify")
                 .addHeader("authorization", key)
                 .build();
-        Response res;
-        try {
-            res = client.newCall(req).execute();
+        try (Response res = client.newCall(req).execute()) {
+            if (res.code() == 429) {
+                Tracker.log(Level.WARN, "Ratelimit exceeded, try again in 15 minutes");
+                return false;
+            }
+            if (res.code() != 200) {
+                Tracker.log(Level.WARN, "Invalid API key");
+            }
+            return res.code() == 200;
         } catch (IOException e) {
-            Tracker.log(Level.WARN, "Invalid API key");
+            Tracker.log(Level.ERROR, "Failed to verify key");
             return false;
         }
-
-        if (res.code() == 429) {
-            Tracker.log(Level.WARN, "Ratelimit exceeded, try again in 15 minutes");
-            return false;
-        }
-
-        return res.code() == 200;
     }
 }
