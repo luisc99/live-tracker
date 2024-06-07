@@ -150,10 +150,15 @@ public class RunEditor extends JPanel {
             protected void done() {
                 isFetching = false;
                 try {
-                    runData = JSONUtil.flatten(this.get());
+                    JsonObject r = this.get();
+                    if (r == null) {
+                        Tracker.log(Level.ERROR, "Failed to fetch data");
+                        return;
+                    }
+
+                    runData = JSONUtil.flatten(r);
                     String[] values = getAllValueKeys().toArray(new String[0]);
                     columnField.setOptions(values);
-
                 } catch (InterruptedException | ExecutionException e) {
                     Tracker.log(Level.ERROR, "Failed to process run data: " + e);
                 }
