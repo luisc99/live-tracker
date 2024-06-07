@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.Tracker;
 import me.cylorun.gui.components.MultiChoiceOptionField;
+import me.cylorun.gui.components.TextEditor;
 import me.cylorun.gui.components.TextOptionField;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.APIUtil;
@@ -25,7 +26,8 @@ public class RunEditor extends JPanel {
     private final JsonObject record;
     private final JPanel configPanel;
     private final MultiChoiceOptionField columnField;
-    private final TextOptionField valueField;
+    private TextOptionField valueField;
+    private TextEditor textEditorField;
     private final JButton saveButton;
     private JsonObject runData;
     private boolean isFetching = false;
@@ -61,18 +63,45 @@ public class RunEditor extends JPanel {
             this.saveButton.setEnabled(true);
         });
 
+        this.textEditorField = new TextEditor((val)->{
+            this.saveButton.setEnabled(true);
+            System.out.println(this.textEditorField.getHtmlText());
+        });
+
+        this.textEditorField.setSize(new Dimension(200,200));
+        this.textEditorField.setVisible(false);
+
+
         this.columnField = new MultiChoiceOptionField(new String[]{}, "run_id", "Column", (val) -> {
-            this.valueField.setValue(this.runData.get(val).getAsString());
+            this.configPanel.remove(valueField);
+            this.configPanel.remove(textEditorField);
+
+            if (val.equals("notes")) {
+                this.textEditorField.setValue(this.runData.get(val).getAsString());
+                this.configPanel.add(this.textEditorField);
+                this.textEditorField.setVisible(true);
+                this.valueField.setVisible(false);
+            } else {
+                this.valueField.setValue(this.runData.get(val).getAsString());
+                this.configPanel.add(this.valueField);
+                this.valueField.setVisible(true);
+                this.textEditorField.setVisible(false);
+            }
+
             this.saveButton.setEnabled(false);
+            this.configPanel.revalidate();
+            this.configPanel.repaint();
         });
 
         this.configPanel.add(this.columnField);
         this.configPanel.add(this.valueField);
+        this.configPanel.add(this.textEditorField);
         this.configPanel.add(this.saveButton);
         this.saveButton.setEnabled(false);
         this.saveButton.addActionListener((e -> {
             this.saveButton.setEnabled(false);
-            if (this.editRun(this.columnField.getValue(), this.valueField.getValue())) {
+            String value = columnField.getValue().equals("notes") ? this.textEditorField.getHtmlText() : this.valueField.getValue();
+            if (this.editRun(this.columnField.getValue(), value)) {
                 Tracker.log(Level.INFO, "Successfully edited run " + this.record.get("run_id").getAsString());
             } else {
                 Tracker.log(Level.ERROR, "Failed to edit run " + this.record.get("run_id").getAsString());
