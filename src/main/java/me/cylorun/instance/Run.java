@@ -41,7 +41,7 @@ public class Run extends HashMap<String, Object> {
                 "rsg.second_portal",
                 "rsg.enter_stronghold",
                 "rsg.enter_end"};
-        String[] splitNames = {"iron_pick", "nether", "bastion", "fortress", "first_portal", "second_portal", "stronghold", "end_enter"}; // add
+        String[] splitNames = {"time_iron_pick", "time_nether", "time_bastion", "time_fortress", "time_first_portal", "time_second_portal", "time_stronghold", "time_end"}; // add
         this.put("date_played_est", this.getDate());
         this.put("iron_source", this.getIronSource());
         this.put("enter_type", this.getEnterType());
@@ -349,9 +349,9 @@ public class Run extends HashMap<String, Object> {
         for (JsonElement mob : mobs) {
             try {
                 String val = this.stats.getAsJsonObject("minecraft:killed").get(mob.getAsString()).getAsString();
-                res.put(mob.getAsString().split(":")[1], val);
+                res.put("killed_" + mob.getAsString().split(":")[1], val);
             } catch (Exception e) {
-                res.put(mob.getAsString().split(":")[1], "0");
+                res.put("killed_" + mob.getAsString().split(":")[1], "0");
             }
         }
         return res;
@@ -364,9 +364,9 @@ public class Run extends HashMap<String, Object> {
         for (JsonElement food : foods) {
             try {
                 String val = this.stats.getAsJsonObject("minecraft:used").get(food.getAsString()).getAsString();
-                res.put(foods.getAsString().split(":")[1], val);
+                res.put("eaten_" + foods.getAsString().split(":")[1], val);
             } catch (Exception e) {
-                res.put(foods.getAsString().split(":")[1], "0");
+                res.put("eaten_" + foods.getAsString().split(":")[1], "0");
             }
         }
         return res;
@@ -379,9 +379,9 @@ public class Run extends HashMap<String, Object> {
         for (JsonElement method : methods) {
             try {
                 String val = this.stats.getAsJsonObject("minecraft:custom").get(method.getAsString()).getAsString();
-                res.put(method.getAsString().split(":")[1], val);
+                res.put("travel_" + method.getAsString().split(":")[1], val);
             } catch (Exception e) {
-                res.put(method.getAsString().split(":")[1], "0");
+                res.put("travel_" + method.getAsString().split(":")[1], "0");
             }
         }
         return res;
