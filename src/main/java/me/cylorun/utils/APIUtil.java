@@ -59,6 +59,10 @@ public class APIUtil {
     }
 
     public static boolean verifyKey(String key) {
+        if (key == null) {
+            Tracker.log(Level.WARN, "No API key added");
+            return false;
+        }
         OkHttpClient client = new OkHttpClient();
 
         Request req = new Request.Builder()

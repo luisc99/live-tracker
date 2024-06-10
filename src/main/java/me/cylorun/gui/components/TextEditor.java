@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.*;
+import java.awt.*;
 import java.util.Stack;
 import java.util.function.Consumer;
 
@@ -13,7 +14,18 @@ public class TextEditor extends JScrollPane {
 
     public TextEditor(Consumer<String> consumer) {
         super(new JTextPane());
+        int h = 200, w = 250;
         this.textPane = (JTextPane) this.getViewport().getView();
+        this.textPane.setPreferredSize(new Dimension(w, h));
+        this.textPane.setMinimumSize(new Dimension(w, h));
+        this.textPane.setMaximumSize(new Dimension(w, h));
+        this.setPreferredSize(new Dimension(w, h));
+        this.setMinimumSize(new Dimension(w, h));
+        this.setMaximumSize(new Dimension(w, h));
+        this.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+        this.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+        this.getVerticalScrollBar().setUnitIncrement(8);
+
         this.consumer = consumer;
         setupKeyBindings();
 

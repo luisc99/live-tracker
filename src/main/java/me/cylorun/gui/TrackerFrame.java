@@ -34,6 +34,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
         this.add(this.getTabbedPane());
 
         this.editorPanel = new RunPanel();
+        this.setVisible(true);
     }
 
     private JScrollPane getTextArea() {

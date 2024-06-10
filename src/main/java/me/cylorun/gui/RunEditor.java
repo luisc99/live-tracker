@@ -19,6 +19,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -39,6 +40,7 @@ public class RunEditor extends JPanel {
         this.record = runRecord;
 
         this.setLayout(new BorderLayout());
+
         JPanel topBar = new JPanel();
         topBar.setLayout(new BoxLayout(topBar, BoxLayout.X_AXIS));
         JButton backButton = new JButton("Back");
@@ -59,31 +61,29 @@ public class RunEditor extends JPanel {
 
         this.configPanel = new JPanel();
         this.configPanel.setLayout(new BoxLayout(this.configPanel, BoxLayout.Y_AXIS));
-        this.add(this.configPanel, BorderLayout.SOUTH);
+        this.add(new JScrollPane(this.configPanel), BorderLayout.CENTER);
+
         this.saveButton = new JButton("Save");
         this.colorChooser = new ColorPicker();
 
         this.valueField = new TextOptionField("Value", this.record.get("run_id").getAsString(), (val) -> this.saveButton.setEnabled(true));
-        this.textEditorField = new TextEditor((val)-> this.saveButton.setEnabled(true));
-        this.colorChooser.addConsumer((newCol -> {
-            this.saveButton.setEnabled(true);
-        }));
+        this.textEditorField = new TextEditor((val) -> this.saveButton.setEnabled(true));
+        this.colorChooser.addConsumer((newCol -> this.saveButton.setEnabled(true)));
 
-        this.textEditorField.setSize(new Dimension(200,200));
+        this.textEditorField.setSize(new Dimension(200, 200));
         this.textEditorField.setVisible(false);
 
         this.columnField = new MultiChoiceOptionField(new String[]{}, "run_id", "Column", (val) -> {
-            this.configPanel.remove(valueField);
-            this.configPanel.remove(textEditorField);
+
+            this.valueField.setVisible(false);
+            this.textEditorField.setVisible(false);
 
             if (val.equals("notes")) {
                 this.textEditorField.setValue(this.runData.get(val).getAsString());
-                this.configPanel.add(this.textEditorField);
                 this.textEditorField.setVisible(true);
                 this.valueField.setVisible(false);
             } else {
                 this.valueField.setValue(this.runData.get(val).getAsString());
-                this.configPanel.add(this.valueField);
                 this.valueField.setVisible(true);
                 this.textEditorField.setVisible(false);
             }
@@ -96,8 +96,13 @@ public class RunEditor extends JPanel {
         this.configPanel.add(this.columnField);
         this.configPanel.add(this.valueField);
         this.configPanel.add(this.textEditorField);
+        this.configPanel.add(new JSeparator(JSeparator.HORIZONTAL));
+        this.configPanel.add(new JLabel("Run Color"));
         this.configPanel.add(this.colorChooser);
+        this.configPanel.add(new JSeparator(JSeparator.HORIZONTAL));
+        this.configPanel.add(Box.createVerticalStrut(10));
         this.configPanel.add(this.saveButton);
+        this.configPanel.add(Box.createVerticalStrut(10));
         this.saveButton.setEnabled(false);
         this.saveButton.addActionListener((e -> {
             this.saveButton.setEnabled(false);
@@ -108,8 +113,8 @@ public class RunEditor extends JPanel {
                 Tracker.log(Level.ERROR, "Failed to edit run " + this.record.get("run_id").getAsString());
             }
 
-            if (!this.prevColor.equals(this.colorChooser.getColor())) {
-                this.prevColor = this.colorChooser.getColor();
+            if (!this.prevColor.equals(this.colorChooser.getCurrentColor())) {
+                this.prevColor = this.colorChooser.getCurrentColor();
                 this.editRun("color", this.colorChooser.getColorString());
                 Tracker.log(Level.INFO, "Successfully edited color for run " + this.record.get("run_id").getAsString());
             }
@@ -195,6 +200,11 @@ public class RunEditor extends JPanel {
                     runData = JSONUtil.flatten(r);
                     String[] values = getAllValueKeys().toArray(new String[0]);
                     columnField.setOptions(values);
+                    Integer[] rgb = Arrays.stream(runData.get("color").getAsString().split(",")).map((e)->{
+                        return Integer.parseInt(e.strip());
+                    }).toArray(Integer[]::new);
+                    Color color = new Color(rgb[0], rgb[1], rgb[2]);
+                    colorChooser.setColor(color);
                 } catch (InterruptedException | ExecutionException e) {
                     Tracker.log(Level.ERROR, "Failed to process run data: " + e);
                 }
