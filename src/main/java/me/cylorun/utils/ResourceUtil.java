@@ -69,8 +69,7 @@ public class ResourceUtil {
         StringBuilder stringBuilder = new StringBuilder();
 
         try (InputStream inputStream = url.openStream();
-             InputStreamReader inputStreamReader = new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-             BufferedReader reader = new BufferedReader(inputStreamReader)) {
+             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 stringBuilder.append(line);

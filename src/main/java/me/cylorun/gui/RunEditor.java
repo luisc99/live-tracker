@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.Tracker;
+import me.cylorun.gui.components.ColorPicker;
 import me.cylorun.gui.components.MultiChoiceOptionField;
 import me.cylorun.gui.components.TextEditor;
 import me.cylorun.gui.components.TextOptionField;
@@ -28,9 +29,11 @@ public class RunEditor extends JPanel {
     private final MultiChoiceOptionField columnField;
     private TextOptionField valueField;
     private TextEditor textEditorField;
+    private ColorPicker colorChooser;
     private final JButton saveButton;
     private JsonObject runData;
     private boolean isFetching = false;
+    private Color prevColor = Color.WHITE;
 
     public RunEditor(JsonObject runRecord) {
         this.record = runRecord;
@@ -58,19 +61,16 @@ public class RunEditor extends JPanel {
         this.configPanel.setLayout(new BoxLayout(this.configPanel, BoxLayout.Y_AXIS));
         this.add(this.configPanel, BorderLayout.SOUTH);
         this.saveButton = new JButton("Save");
+        this.colorChooser = new ColorPicker();
 
-        this.valueField = new TextOptionField("Value", this.record.get("run_id").getAsString(), (val) -> {
+        this.valueField = new TextOptionField("Value", this.record.get("run_id").getAsString(), (val) -> this.saveButton.setEnabled(true));
+        this.textEditorField = new TextEditor((val)-> this.saveButton.setEnabled(true));
+        this.colorChooser.addConsumer((newCol -> {
             this.saveButton.setEnabled(true);
-        });
-
-        this.textEditorField = new TextEditor((val)->{
-            this.saveButton.setEnabled(true);
-            System.out.println(this.textEditorField.getHtmlText());
-        });
+        }));
 
         this.textEditorField.setSize(new Dimension(200,200));
         this.textEditorField.setVisible(false);
-
 
         this.columnField = new MultiChoiceOptionField(new String[]{}, "run_id", "Column", (val) -> {
             this.configPanel.remove(valueField);
@@ -96,6 +96,7 @@ public class RunEditor extends JPanel {
         this.configPanel.add(this.columnField);
         this.configPanel.add(this.valueField);
         this.configPanel.add(this.textEditorField);
+        this.configPanel.add(this.colorChooser);
         this.configPanel.add(this.saveButton);
         this.saveButton.setEnabled(false);
         this.saveButton.addActionListener((e -> {
@@ -105,6 +106,12 @@ public class RunEditor extends JPanel {
                 Tracker.log(Level.INFO, "Successfully edited run " + this.record.get("run_id").getAsString());
             } else {
                 Tracker.log(Level.ERROR, "Failed to edit run " + this.record.get("run_id").getAsString());
+            }
+
+            if (!this.prevColor.equals(this.colorChooser.getColor())) {
+                this.prevColor = this.colorChooser.getColor();
+                this.editRun("color", this.colorChooser.getColorString());
+                Tracker.log(Level.INFO, "Successfully edited color for run " + this.record.get("run_id").getAsString());
             }
         }));
 
