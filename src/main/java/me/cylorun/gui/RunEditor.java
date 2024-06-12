@@ -136,7 +136,7 @@ public class RunEditor extends JPanel {
         JsonObject o = new JsonObject();
         o.addProperty("column", column);
         o.addProperty("value", value);
-        o.addProperty("run_id", this.record.get("run_id").getAsString());
+        o.addProperty("id", this.record.get("run_id").getAsString());
 
         RequestBody body = RequestBody.create(o.toString(), MediaType.get("application/json; charset=utf-8"));
         Request req = new Request.Builder()
