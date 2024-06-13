@@ -364,9 +364,9 @@ public class Run extends HashMap<String, Object> {
         for (JsonElement food : foods) {
             try {
                 String val = this.stats.getAsJsonObject("minecraft:used").get(food.getAsString()).getAsString();
-                res.put("eaten_" + foods.getAsString().split(":")[1], val);
+                res.put("eaten_" + food.getAsString().split(":")[1], val);
             } catch (Exception e) {
-                res.put("eaten_" + foods.getAsString().split(":")[1], "0");
+                res.put("eaten_" + food.getAsString().split(":")[1], "0");
             }
         }
         return res;

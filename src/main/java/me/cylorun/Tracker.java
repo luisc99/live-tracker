@@ -58,6 +58,8 @@ public class Tracker {
 
             RecordFile record = new RecordFile(world.getRecordPath().toFile());
             Run run = new Run(world, record);
+            run.gatherAll();
+
             List<Object> runData = new ArrayList<>(run.values());
 
             if (run.shouldPush()) {
@@ -67,7 +69,6 @@ public class Tracker {
                 } catch (IOException | GeneralSecurityException e) {
                     log(Level.ERROR, "Failed to upload run to google sheets\n" + e);
                 }
-
                 APIUtil.tryUploadRun(run);
             }
 

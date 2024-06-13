@@ -16,9 +16,11 @@ public class APIUtil {
         TrackerOptions options = TrackerOptions.getInstance();
         OkHttpClient client = new OkHttpClient();
 
-        String json = new Gson().toJson(run);
+        String runJson = new Gson().toJson(run);
+        String bodyJson = String.format("{\"run\":%s}", runJson);
+        Tracker.log(Level.DEBUG, "Uploading " + bodyJson);
 
-        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), json);
+        RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), bodyJson);
         Request request = new Request.Builder()
                 .url(API_URL + "/upload")
                 .post(requestBody)
