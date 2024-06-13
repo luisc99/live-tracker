@@ -3,12 +3,19 @@ package me.cylorun.instance;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import me.cylorun.Tracker;
 import me.cylorun.io.TrackerOptions;
+import me.cylorun.utils.APIUtil;
 import me.cylorun.utils.Assert;
 import me.cylorun.utils.ResourceUtil;
 import me.cylorun.utils.Vec2i;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import org.apache.logging.log4j.Level;
 
+import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -27,7 +34,6 @@ public class Run extends HashMap<String, Object> {
         this.eventLog = worldFile.eventHandler.events;
         this.adv = recordFile.getJson().get("advancements").getAsJsonObject();
         this.stats = this.getStats();
-
     }
 
     public Run gatherAll() {
@@ -41,7 +47,17 @@ public class Run extends HashMap<String, Object> {
                 "rsg.second_portal",
                 "rsg.enter_stronghold",
                 "rsg.enter_end"};
-        String[] splitNames = {"time_iron_pick", "time_nether", "time_bastion", "time_fortress", "time_first_portal", "time_second_portal", "time_stronghold", "time_end"}; // add
+
+        String[] splitNames = {"time_iron_pick",
+                "time_nether",
+                "time_bastion",
+                "time_fortress",
+                "time_first_portal",
+                "time_second_portal",
+                "time_stronghold",
+                "time_end"};
+
+        this.put("run_id", this.getNextRunID());
         this.put("date_played_est", this.getDate());
         this.put("iron_source", this.getIronSource());
         this.put("enter_type", this.getEnterType());
@@ -407,6 +423,26 @@ public class Run extends HashMap<String, Object> {
         long seconds = remainingSeconds % 60;
 
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+    }
+
+    public int getNextRunID() {
+        OkHttpClient client = new OkHttpClient();
+        Request req = new Request.Builder()
+                .get()
+                .url(APIUtil.API_URL + "/runs/latest")
+                .build();
+
+        try (Response res = client.newCall(req).execute()) {
+            String bodyJson = res.toString();
+            JsonObject jsonData = JsonParser.parseString(bodyJson).getAsJsonObject();
+            JsonElement runIdElement = jsonData.get("run_id");
+            if (runIdElement != null) {
+                return runIdElement.getAsInt() + 1;
+            }
+        } catch (IOException e) {
+            Tracker.log(Level.ERROR, "Something went wrong while trying to fetch the last run");
+        }
+        return 1;
     }
 
 }
