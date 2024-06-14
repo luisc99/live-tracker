@@ -81,7 +81,7 @@ public class Run extends HashMap<String, Object> {
         this.putAll(this.getFoods());
         this.putAll(this.getTravelled());
         this.put("_", "new session");
-        this.put("seed", this.seed == 0 ? "Failed to get seed" : this.seed);
+        this.put("seed", this.seed == 0 ? 0 : this.seed);
         return this;
     }
 
