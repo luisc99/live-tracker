@@ -99,7 +99,6 @@ public class RunEditor extends JPanel {
             }
 
             boolean b = !this.valueField.getValue().equals(this.runData.get(this.columnField.getValue()).getAsString());
-            System.out.printf("%s | %s\n",this.valueField.getValue(), this.runData.get(this.columnField.getValue()).getAsString());
             this.saveButton.setEnabled(b);
         });
 
