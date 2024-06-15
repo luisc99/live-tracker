@@ -66,7 +66,7 @@ public class RunEditor extends JPanel {
         this.saveButton = new JButton("Save");
         this.colorChooser = new ColorPicker();
 
-        this.valueField = new TextOptionField("Value", this.record.get("run_id").getAsString(), (val) -> this.saveButton.setEnabled(true));
+
         this.textEditorField = new TextEditor((val) -> this.saveButton.setEnabled(true));
         this.colorChooser.addConsumer((newCol -> this.saveButton.setEnabled(true)));
 
@@ -93,6 +93,16 @@ public class RunEditor extends JPanel {
             this.configPanel.repaint();
         });
 
+        this.valueField = new TextOptionField("Value", this.record.get("run_id").getAsString(), (val) -> {
+            if (this.runData == null) {
+                return;
+            }
+
+            boolean b = !this.valueField.getValue().equals(this.runData.get(this.columnField.getValue()).getAsString());
+            System.out.printf("%s | %s\n",this.valueField.getValue(), this.runData.get(this.columnField.getValue()).getAsString());
+            this.saveButton.setEnabled(b);
+        });
+
         this.configPanel.add(this.columnField);
         this.configPanel.add(this.valueField);
         this.configPanel.add(this.textEditorField);
@@ -105,18 +115,35 @@ public class RunEditor extends JPanel {
         this.configPanel.add(Box.createVerticalStrut(10));
         this.saveButton.setEnabled(false);
         this.saveButton.addActionListener((e -> {
-            this.saveButton.setEnabled(false);
-            String value = columnField.getValue().equals("notes") ? this.textEditorField.getHtmlText() : this.valueField.getValue();
-            if (this.editRun(this.columnField.getValue(), value)) {
-                Tracker.log(Level.INFO, "Successfully edited run " + this.record.get("run_id").getAsString());
-            } else {
-                Tracker.log(Level.ERROR, "Failed to edit run " + this.record.get("run_id").getAsString());
-            }
-
-            if (!this.prevColor.equals(this.colorChooser.getCurrentColor())) {
+            if (!this.prevColor.equals(this.colorChooser.getCurrentColor()) && JOptionPane.showConfirmDialog(
+                    null,
+                    "Change color for run " + this.record.get("run_id").getAsString(),
+                    "confirm",
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION
+            ) {
                 this.prevColor = this.colorChooser.getCurrentColor();
                 this.editRun("color", this.colorChooser.getColorString());
                 Tracker.log(Level.INFO, "Successfully edited color for run " + this.record.get("run_id").getAsString());
+            } else {
+                int option = JOptionPane.showConfirmDialog(
+                        null,
+                        String.format("Change %s from %s to %s for run %s?",
+                                this.columnField.getValue(),
+                                this.runData.get(this.columnField.getValue()).getAsString(),
+                                this.valueField.getValue(),
+                                this.record.get("run_id").getAsString()),
+                        "Confirmation",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (option == JOptionPane.YES_OPTION) {
+                    this.saveButton.setEnabled(false);
+                    String value = columnField.getValue().equals("notes") ? this.textEditorField.getHtmlText() : this.valueField.getValue();
+                    if (this.editRun(this.columnField.getValue(), value)) {
+                        Tracker.log(Level.INFO, "Successfully edited run " + this.record.get("run_id").getAsString());
+                    } else {
+                        Tracker.log(Level.ERROR, "Failed to edit run " + this.record.get("run_id").getAsString());
+                    }
+                }
             }
         }));
 
@@ -139,11 +166,7 @@ public class RunEditor extends JPanel {
         o.addProperty("id", this.record.get("run_id").getAsString());
 
         RequestBody body = RequestBody.create(o.toString(), MediaType.get("application/json; charset=utf-8"));
-        Request req = new Request.Builder()
-                .url(APIUtil.API_URL + "/edit")
-                .post(body)
-                .addHeader("authorization", TrackerOptions.getInstance().api_key)
-                .build();
+        Request req = new Request.Builder().url(APIUtil.API_URL + "/edit").post(body).addHeader("authorization", TrackerOptions.getInstance().api_key).build();
 
         try (Response res = client.newCall(req).execute()) {
             return res.code() == 200;
@@ -181,10 +204,7 @@ public class RunEditor extends JPanel {
             @Override
             protected JsonObject doInBackground() {
                 OkHttpClient client = new OkHttpClient();
-                Request req = new Request.Builder()
-                        .url(APIUtil.API_URL + "/runs?id=" + record.get("run_id").getAsString())
-                        .get()
-                        .build();
+                Request req = new Request.Builder().url(APIUtil.API_URL + "/runs?id=" + record.get("run_id").getAsString()).get().build();
 
                 try (Response res = client.newCall(req).execute()) {
                     String jsonData = res.body().string();
