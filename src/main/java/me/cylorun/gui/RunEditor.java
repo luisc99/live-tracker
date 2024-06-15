@@ -163,6 +163,14 @@ public class RunEditor extends JPanel {
         }
     }
 
+    private Color getColorFromRun(JsonObject run) {
+        if (run.get("color").isJsonNull()) {
+            return Color.WHITE;
+        }
+        Integer[] rgb = Arrays.stream(run.get("color").getAsString().split(",")).map((e) -> Integer.parseInt(e.strip())).toArray(Integer[]::new);
+        return new Color(rgb[0], rgb[1], rgb[2]);
+    }
+
     private void fetchData() {
         if (this.isFetching) {
             return;
@@ -200,10 +208,7 @@ public class RunEditor extends JPanel {
                     runData = JSONUtil.flatten(r);
                     String[] values = getAllValueKeys().toArray(new String[0]);
                     columnField.setOptions(values);
-                    Integer[] rgb = Arrays.stream(runData.get("color").getAsString().split(",")).map((e)->{
-                        return Integer.parseInt(e.strip());
-                    }).toArray(Integer[]::new);
-                    Color color = new Color(rgb[0], rgb[1], rgb[2]);
+                    Color color = getColorFromRun(runData);
                     colorChooser.setColor(color);
                 } catch (InterruptedException | ExecutionException e) {
                     Tracker.log(Level.ERROR, "Failed to process run data: " + e);
