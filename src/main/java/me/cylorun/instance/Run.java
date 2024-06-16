@@ -31,13 +31,12 @@ public class Run extends HashMap<String, Object> {
     public Run(WorldFile worldFile, RecordFile recordFile) {
         this.worldFile = worldFile;
         this.recordFile = recordFile;
-        this.eventLog = worldFile.eventHandler.events;
+        this.eventLog = this.worldFile.eventHandler.events;
         this.adv = recordFile.getJson().get("advancements").getAsJsonObject();
         this.stats = this.getStats();
     }
 
     public Run gatherAll() {
-        Assert.isNotNull(this.stats);
 
         String[] majorSplits = {"rsg.obtain_iron_pickaxe",
                 "rsg.enter_nether",
@@ -73,15 +72,14 @@ public class Run extends HashMap<String, Object> {
         this.put("sh_dist", this.worldFile.strongholdTracker.getFinalData());
         this.put("sh_ring", getStrongholdRing(this.worldFile.strongholdTracker.endPoint));
         this.put("explosives_used", String.valueOf(this.getExplosivesUsed()));
-        this.put("gold_dropped", "Gold");
+        this.put("gold_dropped", this.getGoldDropped());
         this.putAll(this.getMiscStats());
         this.put("world_name", worldFile.getName());
         this.putAll(this.getFinalBarters());
         this.putAll(this.getMobKills());
         this.putAll(this.getFoods());
         this.putAll(this.getTravelled());
-        this.put("_", "new session");
-        this.put("seed", this.seed == 0 ? 0 : this.seed);
+        this.put("seed", this.seed == 0 ? -1 : this.seed);
         return this;
     }
 
@@ -118,10 +116,18 @@ public class Run extends HashMap<String, Object> {
         return explUsed - this.worldFile.hungerResetHandler.respawnPointsSet;
     }
 
+    private int getGoldDropped() {
+        if (this.stats.has("minecraft:dropped") && this.stats.getAsJsonObject("minecraft:dropped").has("minecraft:gold_ingot")) {
+            int pickedup = this.stats.getAsJsonObject("minecraft:picked_up").has("minecraft:gold_ingot") ? this.stats.getAsJsonObject("minecraft:picked_up").get("minecraft:gold_ingot").getAsInt() : 0;
+            return this.stats.getAsJsonObject("minecraft:dropped").get("minecraft:gold_ingot").getAsInt() - pickedup;
+        }
+        return -1;
+    }
+
     public static String getStrongholdRing(Vec2i strongholdLoc) {
-        // 0 if not found
+        // -1 if not found
         if (strongholdLoc == null) {
-            return "0";
+            return "-1";
         }
 
         int dist = strongholdLoc.distanceTo(Vec2i.ZERO);
@@ -433,7 +439,7 @@ public class Run extends HashMap<String, Object> {
                 .build();
 
         try (Response res = client.newCall(req).execute()) {
-            String bodyJson = res.toString();
+            String bodyJson = res.body().string();
             JsonObject jsonData = JsonParser.parseString(bodyJson).getAsJsonObject();
             JsonElement runIdElement = jsonData.get("run_id");
             if (runIdElement != null) {
