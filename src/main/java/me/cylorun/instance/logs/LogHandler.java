@@ -20,6 +20,7 @@ public class LogHandler extends Thread {
     private long lastSize;
 
     public LogHandler(WorldFile world) {
+        super("LogEventHandler");
         this.world = world;
         this.logEventMap = new HashMap<>();
         this.lastSize = this.world.getLogPath().toFile().length();
