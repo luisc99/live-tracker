@@ -73,10 +73,12 @@ public class Tracker {
             }
 
             if (TrackerOptions.getInstance().generate_chunkmap) {
-                ChunkMap cm = new ChunkMap(world.getSeed(), 500, kaptainwutax.mcutils.state.Dimension.OVERWORLD, world);
-                cm.generate();
-                cm.setDimension(kaptainwutax.mcutils.state.Dimension.NETHER);
-                cm.generate();
+                new Thread(()->{
+                    ChunkMap cm = new ChunkMap(world.getSeed(), 500, kaptainwutax.mcutils.state.Dimension.OVERWORLD, world);
+                    cm.generate();
+                    cm.setDimension(kaptainwutax.mcutils.state.Dimension.NETHER);
+                    cm.generate();
+                }, "ChunkMapGen").start();
             }
         });
     }

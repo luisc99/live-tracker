@@ -68,10 +68,7 @@ public class ChunkMap {
         this.registerFeature(new StructureProvider(BastionRemnant::new, Dimension.NETHER, "icons/map/bastion.png"));
         this.registerFeature(new StructureProvider(Fortress::new, Dimension.NETHER, "icons/map/fortress.png"));
     }
-    public void generate(){
-        new Thread(this::createMap,"ChunkMapGenerator").start();
-    }
-    private synchronized void createMap() {
+    public void generate() {
         long start = System.currentTimeMillis();
         BiomeSource source = this.getBiomeSource();
         BufferedImage image = new BufferedImage(this.radius * 16, this.radius * 16, BufferedImage.TYPE_INT_RGB);
