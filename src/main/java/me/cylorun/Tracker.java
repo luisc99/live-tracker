@@ -76,8 +76,7 @@ public class Tracker {
                 new Thread(()->{
                     ChunkMap cm = new ChunkMap(world.getSeed(), 500, kaptainwutax.mcutils.state.Dimension.OVERWORLD, world);
                     cm.generate();
-                    cm.setDimension(kaptainwutax.mcutils.state.Dimension.NETHER);
-                    cm.generate();
+                    cm.setDimension(kaptainwutax.mcutils.state.Dimension.NETHER).generate();
                 }, "ChunkMapGen").start();
             }
         });

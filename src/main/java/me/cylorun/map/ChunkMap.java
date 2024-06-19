@@ -53,9 +53,10 @@ public class ChunkMap {
         this.registerAll();
     }
 
-    public void setDimension(Dimension dim) {
+    public ChunkMap setDimension(Dimension dim) {
         this.structureCoords.clear();
         this.dim = dim;
+        return this;
     }
 
     private void registerAll() {
@@ -68,6 +69,7 @@ public class ChunkMap {
         this.registerFeature(new StructureProvider(BastionRemnant::new, Dimension.NETHER, "icons/map/bastion.png"));
         this.registerFeature(new StructureProvider(Fortress::new, Dimension.NETHER, "icons/map/fortress.png"));
     }
+
     public void generate() {
         long start = System.currentTimeMillis();
         BiomeSource source = this.getBiomeSource();
@@ -85,22 +87,7 @@ public class ChunkMap {
             }
         }
 
-        for (Pair<String, CPos> p : this.structureCoords) {
-            Graphics2D g = image.createGraphics();
-            Image img = this.getResourceImage(p.getLeft());
-            int x = p.getRight().getX();
-            int z = p.getRight().getZ();
-
-            int pixelX = (x + (this.radius / 2)) * 16;
-            int pixelZ = (z + (this.radius / 2)) * 16;
-
-            g.setFont(this.FONT);
-            g.drawImage(img, pixelX, pixelZ, this.ICON_SIZE, this.ICON_SIZE, null);
-            this.drawCoords(g, x, z, pixelX, pixelZ);
-            g.dispose();
-        }
-
-
+        this.drawStructures(image);
         this.drawPath(image);
         this.drawPlayerEvents(image);
 
@@ -114,6 +101,23 @@ public class ChunkMap {
         }
 
         Tracker.log(Level.DEBUG, String.format("Generated chunk map for %s in %s ms", this.dim, System.currentTimeMillis() - start));
+    }
+
+    private void drawStructures(BufferedImage i) {
+        for (Pair<String, CPos> p : this.structureCoords) {
+            Graphics2D g = i.createGraphics();
+            Image img = this.getResourceImage(p.getLeft());
+            int x = p.getRight().getX();
+            int z = p.getRight().getZ();
+
+            int pixelX = (x + (this.radius / 2)) * 16;
+            int pixelZ = (z + (this.radius / 2)) * 16;
+
+            g.setFont(this.FONT);
+            g.drawImage(img, pixelX, pixelZ, this.ICON_SIZE, this.ICON_SIZE, null);
+//            this.drawCoords(g, x, z, pixelX, pixelZ);
+            g.dispose();
+        }
     }
 
     private void drawPlayerEvents(BufferedImage i) {
