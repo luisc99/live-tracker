@@ -78,7 +78,7 @@ public class RunRecordEntry extends JPanel {
         OkHttpClient client = new OkHttpClient();
 
         Request req = new Request.Builder()
-                .url(APIUtil.API_URL + "/delete?id=" + this.record.get("run_id").getAsInt())
+                .url(TrackerOptions.getInstance().api_url + "/delete?id=" + this.record.get("run_id").getAsInt())
                 .addHeader("authorization", TrackerOptions.getInstance().api_key)
                 .build();
 

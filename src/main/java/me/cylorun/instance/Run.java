@@ -435,7 +435,7 @@ public class Run extends HashMap<String, Object> {
         OkHttpClient client = new OkHttpClient();
         Request req = new Request.Builder()
                 .get()
-                .url(APIUtil.API_URL + "/runs/latest")
+                .url(TrackerOptions.getInstance().api_url + "/runs/latest")
                 .build();
 
         try (Response res = client.newCall(req).execute()) {

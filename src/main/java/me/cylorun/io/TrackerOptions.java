@@ -19,6 +19,7 @@ public class TrackerOptions {
 
     public String sheet_id;
     public String api_key;
+    public String api_url;
     public String sheet_name = "Raw Data";
     public String lang = "en_us";
     public Integer last_win_x = 0;

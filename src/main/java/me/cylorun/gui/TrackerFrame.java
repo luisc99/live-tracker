@@ -5,7 +5,9 @@ import me.cylorun.gui.components.*;
 import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.APIUtil;
 import me.cylorun.utils.I18n;
+import org.apache.logging.log4j.Level;
 
+import javax.sound.midi.Track;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
@@ -109,11 +111,35 @@ public class TrackerFrame extends JFrame implements WindowListener {
             options.path_interval = val;
             TrackerOptions.save();
         }));
-        advancedPanel.add(new TextOptionField("API key", TrackerOptions.getInstance().api_key, true, (val) -> {
+
+        advancedPanel.add(new TextOptionField("API key", options.api_key, true, (val) -> {
             options.api_key = val;
             TrackerOptions.save();
             this.onApiKeyChange(val);
-        }));
+        }, (e) -> new Thread(() -> {
+            boolean res = APIUtil.isValidKey(options.api_key);
+            if (res) {
+                JOptionPane.showMessageDialog(this, "Valid Key", "Verification", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                Tracker.log(Level.INFO, "Valid API Key");
+                JOptionPane.showMessageDialog(this, "Invalid key", "Verification", JOptionPane.ERROR_MESSAGE);
+            }
+        }, "ApiKeyVerification").start()
+        ));
+
+        advancedPanel.add(new TextOptionField("API URL", options.api_url, false, (val) -> {
+            options.api_url = val;
+            TrackerOptions.save();
+        }, (e) -> new Thread(() -> {
+            boolean res = APIUtil.isValidUrl(options.api_url);
+            if (res) {
+                JOptionPane.showMessageDialog(this, "Valid URL", "Verification", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                Tracker.log(Level.INFO, "Valid API Url");
+                JOptionPane.showMessageDialog(this, "Invalid URL", "Verification", JOptionPane.ERROR_MESSAGE);
+            }
+        },"ApiUrlVerification").start()
+        ));
 
         advancedPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         advancedPanel.add(new JSeparator(JSeparator.HORIZONTAL));
@@ -152,7 +178,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
 
     private void onApiKeyChange(String newKey) {
         SwingUtilities.invokeLater(() -> {
-            if (APIUtil.verifyKey(newKey)) {
+            if (APIUtil.isValidKey(newKey)) {
                 this.tabbedPane.add("Runs", editorPanel);
             } else {
                 int idx = this.tabbedPane.indexOfTab("Runs");

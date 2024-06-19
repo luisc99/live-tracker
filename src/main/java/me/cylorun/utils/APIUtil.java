@@ -8,9 +8,9 @@ import okhttp3.*;
 import org.apache.logging.log4j.Level;
 
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 public class APIUtil {
-    public static final String API_URL = Tracker.VERSION.equals("DEV") ? "http://localhost:5000" : "https://couri100k.com/api";
 
     private static int uploadRun(Run run) {
         TrackerOptions options = TrackerOptions.getInstance();
@@ -22,7 +22,7 @@ public class APIUtil {
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), bodyJson);
         Request request = new Request.Builder()
-                .url(API_URL + "/upload")
+                .url(TrackerOptions.getInstance().api_url+ "/upload")
                 .post(requestBody)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("authorization", options.api_key)
@@ -41,7 +41,7 @@ public class APIUtil {
     }
 
     public static void tryUploadRun(Run run) {
-        if (!APIUtil.verifyKey(TrackerOptions.getInstance().api_key)) {
+        if (!APIUtil.isValidKey(TrackerOptions.getInstance().api_key)) {
             Tracker.log(Level.WARN, "Invalid API key or none provided, will not upload run");
             return;
         }
@@ -60,7 +60,17 @@ public class APIUtil {
         }
     }
 
-    public static boolean verifyKey(String key) {
+    public static boolean verifyUrl(String url) {
+        String regex = "\\bhttps?:\\/\\/((localhost:\\d+)|(localhost)|([\\w.-]+\\.[a-z]{2,}))(:\\d+)?(\\/[^\\s]*)?\\b";
+        Pattern p = Pattern.compile(regex);
+        return p.matcher(url).matches();
+    }
+
+    public static boolean isValidKey(String key) {
+        if (!isValidUrl(TrackerOptions.getInstance().api_url)) {
+            Tracker.log(Level.WARN, "Provided API url is invalid, can't verify key");
+            return false;
+        }
         if (key == null) {
             Tracker.log(Level.WARN, "No API key added");
             return false;
@@ -68,7 +78,7 @@ public class APIUtil {
         OkHttpClient client = new OkHttpClient();
 
         Request req = new Request.Builder()
-                .url(API_URL + "/verify")
+                .url(TrackerOptions.getInstance().api_url + "/verify")
                 .addHeader("authorization", key)
                 .build();
         try (Response res = client.newCall(req).execute()) {
@@ -82,6 +92,35 @@ public class APIUtil {
             return res.code() == 200;
         } catch (IOException e) {
             Tracker.log(Level.ERROR, "Failed to verify key");
+            return false;
+        }
+    }
+
+    public static boolean isValidUrl(String url) {
+        if (url == null) {
+            Tracker.log(Level.WARN, "No API Url provided");
+            return false;
+        }
+
+        if (!verifyUrl(url)) {
+            Tracker.log(Level.WARN, "Invalid URL Format");
+            return false;
+        }
+
+        OkHttpClient client = new OkHttpClient();
+        Request req = new Request.Builder()
+                .url(url + "/ping")
+                .get()
+                .build();
+
+        try (Response res = client.newCall(req).execute()) {
+            if (res.code() != 200) {
+                Tracker.log(Level.WARN, "Invalid API key");
+            }
+
+            return res.code() == 200;
+        } catch (IOException | IllegalArgumentException e) {
+            Tracker.log(Level.ERROR, "Failed to verify URL: " + e.getMessage());
             return false;
         }
     }

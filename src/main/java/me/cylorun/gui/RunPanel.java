@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import me.cylorun.Tracker;
 import me.cylorun.gui.components.ActionButton;
 import me.cylorun.gui.components.RunRecordEntry;
+import me.cylorun.io.TrackerOptions;
 import me.cylorun.utils.APIUtil;
 import me.cylorun.utils.ResourceUtil;
 import okhttp3.OkHttpClient;
@@ -70,7 +71,7 @@ public class RunPanel extends JPanel {
         OkHttpClient client = new OkHttpClient();
 
         Request request = new Request.Builder()
-                .url(APIUtil.API_URL + "/runs/recent")
+                .url(TrackerOptions.getInstance().api_url + "/runs/recent")
                 .build();
 
         new SwingWorker<JsonArray, Void>() {

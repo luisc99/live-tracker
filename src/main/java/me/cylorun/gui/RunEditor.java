@@ -165,7 +165,7 @@ public class RunEditor extends JPanel {
         o.addProperty("id", this.record.get("run_id").getAsString());
 
         RequestBody body = RequestBody.create(o.toString(), MediaType.get("application/json; charset=utf-8"));
-        Request req = new Request.Builder().url(APIUtil.API_URL + "/edit").post(body).addHeader("authorization", TrackerOptions.getInstance().api_key).build();
+        Request req = new Request.Builder().url(TrackerOptions.getInstance().api_url + "/edit").post(body).addHeader("authorization", TrackerOptions.getInstance().api_key).build();
 
         try (Response res = client.newCall(req).execute()) {
             return res.code() == 200;
@@ -203,7 +203,7 @@ public class RunEditor extends JPanel {
             @Override
             protected JsonObject doInBackground() {
                 OkHttpClient client = new OkHttpClient();
-                Request req = new Request.Builder().url(APIUtil.API_URL + "/runs?id=" + record.get("run_id").getAsString()).get().build();
+                Request req = new Request.Builder().url(TrackerOptions.getInstance().api_url + "/runs?id=" + record.get("run_id").getAsString()).get().build();
 
                 try (Response res = client.newCall(req).execute()) {
                     String jsonData = res.body().string();
