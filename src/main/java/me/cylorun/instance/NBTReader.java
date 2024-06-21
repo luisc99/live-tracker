@@ -78,7 +78,7 @@ public class NBTReader {
             if (i == tags.length - 1) {
                 return curr.get(tag).toString();
             }
-            if (curr.get(tag).isJsonNull()) {
+            if (curr.get(tag).isJsonNull() || curr.get(tag) == null) {
                 break;
             }
             curr = curr.get(tag).getAsJsonObject();
