@@ -9,7 +9,6 @@ import me.cylorun.gui.components.MultiChoiceOptionField;
 import me.cylorun.gui.components.TextEditor;
 import me.cylorun.gui.components.TextOptionField;
 import me.cylorun.io.TrackerOptions;
-import me.cylorun.utils.APIUtil;
 import me.cylorun.utils.JSONUtil;
 import me.cylorun.utils.ResourceUtil;
 import okhttp3.*;
@@ -57,49 +56,36 @@ public class RunEditor extends JPanel {
         backButton.addActionListener((e) -> TrackerFrame.getInstance().resetToInitialView());
 
         this.add(topBar, BorderLayout.NORTH);
-        this.add(new JSeparator(JSeparator.HORIZONTAL), BorderLayout.CENTER);
 
         this.configPanel = new JPanel();
         this.configPanel.setLayout(new BoxLayout(this.configPanel, BoxLayout.Y_AXIS));
         this.add(new JScrollPane(this.configPanel), BorderLayout.CENTER);
 
         this.saveButton = new JButton("Save");
+        this.saveButton.setEnabled(false);
+
         this.colorChooser = new ColorPicker();
-
-
-        this.textEditorField = new TextEditor((val) -> this.saveButton.setEnabled(true));
-        this.colorChooser.addConsumer((newCol -> this.saveButton.setEnabled(true)));
-
-        this.textEditorField.setSize(new Dimension(200, 200));
-        this.textEditorField.setVisible(false);
+        this.textEditorField = new TextEditor((val) -> this.checkForChanges());
+        this.colorChooser.addConsumer((newCol -> this.checkForChanges()));
 
         this.columnField = new MultiChoiceOptionField(new String[]{}, "run_id", "Column", (val) -> {
-
             this.valueField.setVisible(false);
             this.textEditorField.setVisible(false);
-
             if (val.equals("notes")) {
                 this.textEditorField.setValue(this.runData.get(val).getAsString());
                 this.textEditorField.setVisible(true);
-                this.valueField.setVisible(false);
             } else {
                 this.valueField.setValue(this.runData.get(val).getAsString());
                 this.valueField.setVisible(true);
-                this.textEditorField.setVisible(false);
             }
-
-            this.saveButton.setEnabled(false);
-            this.configPanel.revalidate();
-            this.configPanel.repaint();
+            this.checkForChanges();
         });
 
         this.valueField = new TextOptionField("Value", this.record.get("run_id").getAsString(), (val) -> {
             if (this.runData == null) {
                 return;
             }
-
-            boolean b = !this.valueField.getValue().equals(this.runData.get(this.columnField.getValue()).getAsString());
-            this.saveButton.setEnabled(b);
+            this.checkForChanges();
         });
 
         this.configPanel.add(this.columnField);
@@ -112,49 +98,70 @@ public class RunEditor extends JPanel {
         this.configPanel.add(Box.createVerticalStrut(10));
         this.configPanel.add(this.saveButton);
         this.configPanel.add(Box.createVerticalStrut(10));
-        this.saveButton.setEnabled(false);
-        this.saveButton.addActionListener((e -> {
-            if (!this.prevColor.equals(this.colorChooser.getCurrentColor()) && JOptionPane.showConfirmDialog(
-                    null,
-                    "Change color for run " + this.record.get("run_id").getAsString(),
-                    "confirm",
-                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION
-            ) {
-                this.prevColor = this.colorChooser.getCurrentColor();
-                this.editRun("color", this.colorChooser.getColorString());
-                Tracker.log(Level.INFO, "Successfully edited color for run " + this.record.get("run_id").getAsString());
-            } else {
-                int option = JOptionPane.showConfirmDialog(
-                        null,
-                        String.format("Change %s from %s to %s for run %s?",
-                                this.columnField.getValue(),
-                                this.runData.get(this.columnField.getValue()).getAsString(),
-                                this.valueField.getValue(),
-                                this.record.get("run_id").getAsString()),
-                        "Confirmation",
-                        JOptionPane.YES_NO_OPTION);
 
-                if (option == JOptionPane.YES_OPTION) {
-                    this.saveButton.setEnabled(false);
-                    String value = columnField.getValue().equals("notes") ? this.textEditorField.getHtmlText() : this.valueField.getValue();
-                    if (this.editRun(this.columnField.getValue(), value)) {
-                        Tracker.log(Level.INFO, "Successfully edited run " + this.record.get("run_id").getAsString());
-                    } else {
-                        Tracker.log(Level.ERROR, "Failed to edit run " + this.record.get("run_id").getAsString());
-                    }
-                }
-            }
-        }));
+        this.saveButton.addActionListener((e -> this.handleSaveButtonAction()));
 
         this.fetchData();
 
         TrackerFrame.getInstance().setView(this);
     }
 
+    private void checkForChanges() {
+        boolean hasColorChanged = !this.prevColor.equals(this.colorChooser.getCurrentColor());
+        boolean hasValueChanged = !this.valueField.getValue().equals(this.runData.get(this.columnField.getValue()).getAsString());
+        this.saveButton.setEnabled(hasColorChanged || hasValueChanged);
+    }
+
+    private void handleSaveButtonAction() {
+        if (!this.prevColor.equals(this.colorChooser.getCurrentColor()) && JOptionPane.showConfirmDialog(
+                null,
+                "Change color for run " + this.record.get("run_id").getAsString(),
+                "confirm",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION
+        ) {
+            this.prevColor = this.colorChooser.getCurrentColor();
+            System.out.println(this.prevColor);
+            this.editRun("color", this.colorChooser.getColorString());
+            Tracker.log(Level.INFO, "Successfully edited color for run " + this.record.get("run_id").getAsString());
+            this.checkForChanges();
+        } else {
+            int option = JOptionPane.showConfirmDialog(
+                    null,
+                    String.format("Change %s from %s to %s for run %s?",
+                            this.columnField.getValue(),
+                            this.runData.get(this.columnField.getValue()).getAsString(),
+                            this.valueField.getValue(),
+                            this.record.get("run_id").getAsString()),
+                    "Confirmation",
+                    JOptionPane.YES_NO_OPTION);
+
+            if (option == JOptionPane.YES_OPTION) {
+                this.saveButton.setEnabled(false);
+                String value = columnField.getValue().equals("notes") ? this.textEditorField.getHtmlText() : this.valueField.getValue();
+                if (this.editRun(this.columnField.getValue(), value)) {
+                    Tracker.log(Level.INFO, "Successfully edited run " + this.record.get("run_id").getAsString());
+                } else {
+                    Tracker.log(Level.ERROR, "Failed to edit run " + this.record.get("run_id").getAsString());
+                }
+            }
+        }
+    }
+
     public List<String> getAllValueKeys() {
         List<String> keys = new ArrayList<>();
         extractKeys(this.runData, keys);
         return keys;
+    }
+
+    private void extractKeys(JsonObject jsonObject, List<String> keys) {
+        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
+            if (entry.getValue().isJsonPrimitive()) {
+                keys.add(entry.getKey());
+            }
+            if (entry.getValue().isJsonObject()) {
+                extractKeys(entry.getValue().getAsJsonObject(), keys);
+            }
+        }
     }
 
     private boolean editRun(String column, String value) {
@@ -174,22 +181,19 @@ public class RunEditor extends JPanel {
         }
     }
 
-    private void extractKeys(JsonObject jsonObject, List<String> keys) {
-        for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-            if (entry.getValue().isJsonPrimitive()) {
-                keys.add(entry.getKey());
-            }
-            if (entry.getValue().isJsonObject()) {
-                extractKeys(entry.getValue().getAsJsonObject(), keys);
-            }
-        }
-    }
-
     private Color getColorFromRun(JsonObject run) {
-        if (run.get("color").isJsonNull()) {
+        if (run.get("color").isJsonNull() || run.get("color") == null) {
             return Color.WHITE;
         }
-        Integer[] rgb = Arrays.stream(run.get("color").getAsString().split(",")).map((e) -> Integer.parseInt(e.strip())).toArray(Integer[]::new);
+        return getColorFromString(run.get("color").getAsString());
+    }
+
+    private Color getColorFromString(String s) {
+        Integer[] rgb = Arrays.stream(s.split(",")).map((e) -> Integer.parseInt(e.strip())).toArray(Integer[]::new);
+        if (rgb.length != 3) {
+            Tracker.log(Level.ERROR, "Invalid color string: " + s);
+            return Color.WHITE;
+        }
         return new Color(rgb[0], rgb[1], rgb[2]);
     }
 
@@ -228,6 +232,7 @@ public class RunEditor extends JPanel {
                     String[] values = getAllValueKeys().toArray(new String[0]);
                     columnField.setOptions(values);
                     Color color = getColorFromRun(runData);
+                    prevColor = color;
                     colorChooser.setColor(color);
                 } catch (InterruptedException | ExecutionException e) {
                     Tracker.log(Level.ERROR, "Failed to process run data: " + e);
