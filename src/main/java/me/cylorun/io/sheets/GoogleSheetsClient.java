@@ -9,10 +9,7 @@ import org.apache.logging.log4j.Level;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 import static me.cylorun.io.sheets.GoogleSheetsService.getSheetsService;
 
@@ -50,8 +47,35 @@ public class GoogleSheetsClient {
         }
     }
 
-    public static void appendRowTop(List<Object> rowData) throws IOException, GeneralSecurityException {
-        insert(rowData, 3, false);
+    public static void appendRowTop(Map<String, Object> rowData) throws IOException, GeneralSecurityException {
+        // Get the headers
+        List<Object> headers = getSheetHeaders();
+
+        List<Object> rowList = convertMapToList(rowData, headers);
+
+        // Insert the rowList
+        insert(rowList, 3, false);
+    }
+
+    private static List<Object> getSheetHeaders() throws IOException, GeneralSecurityException {
+        Sheets sheetsService = getSheetsService();
+        String sheetId = TrackerOptions.getInstance().sheet_id.trim();
+        String sheetName = TrackerOptions.getInstance().sheet_name;
+        String range = sheetName + "!A1:CO1";
+
+        ValueRange response = sheetsService.spreadsheets().values()
+                .get(sheetId, range)
+                .execute();
+        return response.getValues().get(0);
+    }
+
+    private static List<Object> convertMapToList(Map<String, Object> map, List<Object> headers) {
+        List<Object> rowList = new ArrayList<>(Arrays.asList(new Object[headers.size()]));
+        for (int i = 0; i < headers.size(); i++) {
+            String header = (String) headers.get(i);
+            rowList.set(i, map.getOrDefault(header, null));
+        }
+        return rowList;
     }
 
     public static void insert(List<Object> rowData, int row, boolean overwrite) throws GeneralSecurityException, IOException {
