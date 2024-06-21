@@ -61,6 +61,9 @@ public class APIUtil {
     }
 
     public static boolean verifyUrl(String url) {
+        if (url == null) {
+            return false;
+        }
         String regex = "\\bhttps?:\\/\\/((localhost:\\d+)|(localhost)|([\\w.-]+\\.[a-z]{2,}))(:\\d+)?(\\/[^\\s]*)?\\b";
         Pattern p = Pattern.compile(regex);
         return p.matcher(url).matches();

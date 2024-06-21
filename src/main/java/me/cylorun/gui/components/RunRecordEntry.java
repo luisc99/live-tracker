@@ -1,12 +1,9 @@
 package me.cylorun.gui.components;
 
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import me.cylorun.Tracker;
 import me.cylorun.gui.RunEditor;
-import me.cylorun.gui.RunPanel;
 import me.cylorun.io.TrackerOptions;
-import me.cylorun.utils.APIUtil;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
@@ -30,11 +27,11 @@ public class RunRecordEntry extends JPanel {
         this.editButton = new JButton("Edit");
         this.viewButton = new JButton("View");
         this.record = record;
-        Date date = new Date(record.get("date_played_est").getAsInt());
+        Date date = new Date(this.record.get("date_played_est") == null || !this.record.get("date_played_est").isJsonPrimitive() ? 0 : this.record.get("date_played_est").getAsLong());
         SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd HH:mm:ss");
 
-        JLabel runIdLabel = new JLabel(String.format("<html>Run Id: <b>%s<b> </html>", record.get("run_id").getAsInt()));
-        runIdLabel.setToolTipText(String.format("Date Played: %s\n World Name: %s", dateFormat.format(date), record.get("world_name").getAsString()));
+        JLabel runIdLabel = new JLabel(String.format("<html>Run Id: <b>%s<b> </html>", this.record.get("run_id") == null || !this.record.get("run_id").isJsonPrimitive() ? "Unknown" : this.record.get("run_id").getAsInt()));
+        runIdLabel.setToolTipText(String.format("Date Played: %s\n World Name: %s", dateFormat.format(date), this.record.get("world_name") == null || !this.record.get("world_name").isJsonPrimitive() ? "Unknown" : this.record.get("world_name").getAsString()));
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
@@ -65,7 +62,7 @@ public class RunRecordEntry extends JPanel {
             }
         }));
 
-        this.editButton.addActionListener((e)->{
+        this.editButton.addActionListener((e) -> {
             this.editRun();
         });
     }

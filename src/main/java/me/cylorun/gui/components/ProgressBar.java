@@ -12,22 +12,22 @@ public class ProgressBar extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
-        label = new JLabel(labelText, SwingConstants.CENTER);
+        this.label = new JLabel(labelText, SwingConstants.CENTER);
 
-        progressBar = new JProgressBar(minVal, maxVal);
-        progressBar.setStringPainted(true);
+        this.progressBar = new JProgressBar(minVal, maxVal);
+        this.progressBar.setStringPainted(true);
 
         getContentPane().setLayout(new BoxLayout(getContentPane(), BoxLayout.Y_AXIS));
-        getContentPane().add(label);
-        getContentPane().add(progressBar);
+        getContentPane().add(this.label);
+        getContentPane().add(this.progressBar);
 
         setVisible(true);
     }
 
     public void setValue(int value) {
-        progressBar.setValue(value);
+        this.progressBar.setValue(value);
     }
     public int getValue() {
-        return progressBar.getValue();
+        return this.progressBar.getValue();
     }
 }

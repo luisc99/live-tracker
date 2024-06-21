@@ -4,6 +4,7 @@ import me.cylorun.gui.TrackerFrame;
 import me.cylorun.io.TrackerOptions;
 import org.apache.logging.log4j.Level;
 
+import javax.swing.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -11,7 +12,7 @@ public class LogReceiver {
     public static void log(Level level, Object o) {
         String s = String.format("[%s/%s]: %s\n", level.toString(), nowTime(), o.toString());
         if (level != Level.DEBUG || TrackerOptions.getInstance().show_debug) {
-            TrackerFrame.getInstance().appendLog(s);
+            SwingUtilities.invokeLater(()->{TrackerFrame.getInstance().appendLog(s);});
         }
     }
 
