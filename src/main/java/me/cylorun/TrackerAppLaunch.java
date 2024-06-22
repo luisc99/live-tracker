@@ -1,6 +1,7 @@
 package me.cylorun;
 
 import com.formdev.flatlaf.FlatDarculaLaf;
+import me.cylorun.utils.ThreadUtil;
 import me.cylorun.utils.UpdateUtil;
 import org.apache.logging.log4j.Level;
 
@@ -39,11 +40,7 @@ public class TrackerAppLaunch {
         Tracker.log(Level.INFO, "Deleting old jar " + toDelete.getName());
 
         for (int i = 0; i < 200 && !toDelete.delete(); i++) {
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
+            ThreadUtil.sleep(10);
         }
 
         if (toDelete.exists()) {
