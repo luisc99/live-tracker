@@ -40,28 +40,25 @@ public class GoogleSheetsClient {
         List<Object> headers = ResourceUtil.getHeaderLabels();
 
         try {
-            insert(headers, 1, true);
+            insert(headers, 2, true);
             Tracker.log(Level.INFO, "Generated header labels");
         } catch (GeneralSecurityException | IOException e) {
-            Tracker.log(Level.ERROR, "Failed to generate google sheets headers");
+            Tracker.log(Level.ERROR, "Failed to generate google sheets headers: " + e.getMessage());
         }
     }
 
     public static void appendRowTop(Map<String, Object> rowData) throws IOException, GeneralSecurityException {
-        // Get the headers
         List<Object> headers = getSheetHeaders();
 
         List<Object> rowList = convertMapToList(rowData, headers);
-
-        // Insert the rowList
-        insert(rowList, 3, false);
+        insert(rowList, 4, false);
     }
 
     private static List<Object> getSheetHeaders() throws IOException, GeneralSecurityException {
         Sheets sheetsService = getSheetsService();
         String sheetId = TrackerOptions.getInstance().sheet_id.trim();
         String sheetName = TrackerOptions.getInstance().sheet_name;
-        String range = sheetName + "!A1:CO1";
+        String range = sheetName + "!A1:CM1";
 
         ValueRange response = sheetsService.spreadsheets().values()
                 .get(sheetId, range)
@@ -81,11 +78,11 @@ public class GoogleSheetsClient {
     public static void insert(List<Object> rowData, int row, boolean overwrite) throws GeneralSecurityException, IOException {
         Sheets sheetsService = getSheetsService();
         String sheetName = TrackerOptions.getInstance().sheet_name;
-        String sheetId = TrackerOptions.getInstance().sheet_id.trim();
-        String range = String.format("A%s:CO", row);
+        String sheetId = TrackerOptions.getInstance().sheet_id.strip();
+        String range = String.format("A%s:CM", row);
 
         if (overwrite) {
-            ValueRange newRow = new ValueRange().setValues(Arrays.asList(rowData));
+            ValueRange newRow = new ValueRange().setValues(Collections.singletonList(rowData));
             UpdateValuesResponse res = sheetsService.spreadsheets().values()
                     .update(sheetId, range, newRow)
                     .setValueInputOption("RAW")

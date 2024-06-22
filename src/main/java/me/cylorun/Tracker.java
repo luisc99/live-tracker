@@ -60,7 +60,7 @@ public class Tracker {
             Run run = new Run(world, record);
             run.gatherAll();
 
-            if (run.shouldPush()) {
+            if (run.shouldPush() && false) {
                 try {
                     GoogleSheetsClient.appendRowTop(run);
                     Tracker.log(Level.INFO, "Run Tracked");
