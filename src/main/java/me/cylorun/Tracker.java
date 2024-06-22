@@ -60,13 +60,13 @@ public class Tracker {
             Run run = new Run(world, record);
             run.gatherAll();
 
-            if (run.shouldPush() && false) {
-                try {
-                    GoogleSheetsClient.appendRowTop(run);
-                    Tracker.log(Level.INFO, "Run Tracked");
-                } catch (IOException | GeneralSecurityException e) {
-                    Tracker.log(Level.ERROR, "Failed to upload run to google sheets\n" + e);
-                }
+            if (run.shouldPush()) {
+//                try {
+//                    GoogleSheetsClient.appendRowTop(run);
+//                    Tracker.log(Level.INFO, "Run Tracked");
+//                } catch (IOException | GeneralSecurityException e) {
+//                    Tracker.log(Level.ERROR, "Failed to upload run to google sheets\n" + e);
+//                }
                 APIUtil.tryUploadRun(run);
             }
 
