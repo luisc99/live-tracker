@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.util.Map;
+import java.util.Optional;
 
 public class JSONUtil {
     public static JsonObject parseFile(File file) {
@@ -42,5 +43,18 @@ public class JSONUtil {
         return flatJsonObject;
     }
 
+    public static Optional<String> getOptionalString(JsonObject obj, String member) {
+        return Optional.ofNullable(obj.get(member))
+                .map(JsonElement::getAsString);
+    }
 
+    public static Optional<Integer> getOptionalInt(JsonObject obj, String member) {
+        return Optional.ofNullable(obj.get(member))
+                .map(JsonElement::getAsInt);
+    }
+
+    public static Optional<JsonObject> getOptionalJsonObj(JsonObject obj, String member) {
+        return Optional.ofNullable(obj.get(member))
+                .map(JsonElement::getAsJsonObject);
+    }
 }
