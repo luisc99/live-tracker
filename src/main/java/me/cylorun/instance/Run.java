@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.Tracker;
 import me.cylorun.io.TrackerOptions;
-import me.cylorun.utils.APIUtil;
 import me.cylorun.utils.Assert;
 import me.cylorun.utils.ResourceUtil;
 import me.cylorun.utils.Vec2i;
@@ -37,6 +36,7 @@ public class Run extends HashMap<String, Object> {
     }
 
     public Run gatherAll() {
+        this.stats = this.getStats();
 
         String[] majorSplits = {"rsg.obtain_iron_pickaxe",
                 "rsg.enter_nether",
@@ -443,6 +443,7 @@ public class Run extends HashMap<String, Object> {
             JsonObject jsonData = JsonParser.parseString(bodyJson).getAsJsonObject();
             JsonElement runIdElement = jsonData.get("run_id");
             if (runIdElement != null) {
+                Tracker.log(Level.DEBUG, "This run id " + (runIdElement.getAsInt() + 1));
                 return runIdElement.getAsInt() + 1;
             }
         } catch (IOException e) {

@@ -32,7 +32,6 @@ public class APIUtil {
         try {
             response = client.newCall(request).execute();
         } catch (IOException e) {
-            Tracker.log(Level.ERROR, "Failed to upload run, trying again");
             return 502;
         }
         int code = response.code();
@@ -47,9 +46,11 @@ public class APIUtil {
         }
 
         int retries = 0;
-        while (uploadRun(run) != 200) {
-            if (retries++ > 50) {
-                Tracker.log(Level.ERROR, "Failed to upload run");
+        int a;
+        while ((a = uploadRun(run)) != 200) {
+            Tracker.log(Level.ERROR, "Failed to upload run, trying again. code: " + a);
+            if (retries++ > 5) {
+                Tracker.log(Level.ERROR, "Failed to upload run, NOT trying again");
                 break;
             }
             try {
