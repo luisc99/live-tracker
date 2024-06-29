@@ -82,7 +82,7 @@ public class Run extends HashMap<String, Object> {
         this.putAll(this.getMobKills());
         this.putAll(this.getFoods());
         this.putAll(this.getTravelled());
-        this.put("seed", this.getSeed());
+        this.put("seed", this.worldFile.getSeed());
 
         this.hasData = true;
         return this;
@@ -101,9 +101,6 @@ public class Run extends HashMap<String, Object> {
         return new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(date);
     }
 
-    private long getSeed() {
-        return -1; // TODO
-    }
 
     private String getWoodTime() {
         try {

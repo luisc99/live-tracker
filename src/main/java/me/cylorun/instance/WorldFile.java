@@ -83,7 +83,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
             return Long.parseLong(NBTReader.from(this).get(NBTReader.SEED_PATH));
         } catch (NumberFormatException e) {
             Tracker.log(Level.WARN, "Failed to get the seed");
-            return 0;
+            return -1;
         }
     }
 
