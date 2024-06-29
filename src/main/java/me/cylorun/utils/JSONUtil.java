@@ -1,8 +1,6 @@
 package me.cylorun.utils;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import me.cylorun.Tracker;
 import org.apache.logging.log4j.Level;
 
@@ -41,6 +39,12 @@ public class JSONUtil {
         }
 
         return flatJsonObject;
+    }
+
+    public static String prettify(String data) {
+        JsonElement e = JsonParser.parseString(data);
+        Gson pretty = new GsonBuilder().setPrettyPrinting().create();
+        return pretty.toJson(e);
     }
 
     public static Optional<String> getOptionalString(JsonObject obj, String member) {

@@ -8,6 +8,7 @@ import okhttp3.*;
 import org.apache.logging.log4j.Level;
 
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.regex.Pattern;
 
 public class APIUtil {
@@ -16,8 +17,7 @@ public class APIUtil {
         TrackerOptions options = TrackerOptions.getInstance();
         OkHttpClient client = new OkHttpClient();
 
-        String runJson = new Gson().toJson(run);
-        String bodyJson = String.format("{\"run\":%s}", runJson);
+        String bodyJson = getRunJson(run);
         Tracker.log(Level.DEBUG, "Uploading " + bodyJson);
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), bodyJson);
@@ -39,6 +39,10 @@ public class APIUtil {
         return code;
     }
 
+    public static String getRunJson(Run run) {
+        String runJson = new Gson().toJson(run);
+        return String.format("{\"run\":%s}", runJson);
+    }
     public static void tryUploadRun(Run run) {
         if (!APIUtil.isValidKey(TrackerOptions.getInstance().api_key)) {
             Tracker.log(Level.WARN, "Invalid API key or none provided, will not upload run");
@@ -50,18 +54,19 @@ public class APIUtil {
         while ((a = uploadRun(run)) != 200) {
             Tracker.log(Level.ERROR, "Failed to upload run, trying again. code: " + a);
             if (retries++ > 5) {
-                Tracker.log(Level.ERROR, "Failed to upload run, NOT trying again");
+                Tracker.log(Level.ERROR, "Failed to upload run, saving locally...");
+                Path savePath = TrackerOptions.getTrackerDir().resolve("local");
+                if (!run.save(savePath)) {
+                    Tracker.log(Level.ERROR, "Failed to save run locally");
+                } else {
+                    Tracker.log(Level.INFO, "Saved run locally");
+                }
                 break;
-            }
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
             }
         }
     }
 
-    public static boolean verifyUrl(String url) {
+    public static boolean isValidUrl(String url) {
         if (url == null) {
             return false;
         }
@@ -71,28 +76,32 @@ public class APIUtil {
     }
 
     public static boolean isValidKey(String key) {
-        if (!isValidUrl(TrackerOptions.getInstance().api_url)) {
+        if (!isValidApiUrl(TrackerOptions.getInstance().api_url)) {
             Tracker.log(Level.WARN, "Provided API url is invalid, can't verify key");
             return false;
         }
+
         if (key == null) {
-            Tracker.log(Level.WARN, "No API key added");
+            Tracker.log(Level.WARN, "No API key provided");
             return false;
         }
-        OkHttpClient client = new OkHttpClient();
 
+        OkHttpClient client = new OkHttpClient();
         Request req = new Request.Builder()
                 .url(TrackerOptions.getInstance().api_url + "/verify")
                 .addHeader("authorization", key)
                 .build();
+
         try (Response res = client.newCall(req).execute()) {
             if (res.code() == 429) {
                 Tracker.log(Level.WARN, "Ratelimit exceeded, try again in 15 minutes");
                 return false;
             }
+
             if (res.code() != 200) {
                 Tracker.log(Level.WARN, "Invalid API key");
             }
+
             return res.code() == 200;
         } catch (IOException e) {
             Tracker.log(Level.ERROR, "Failed to verify key");
@@ -100,13 +109,13 @@ public class APIUtil {
         }
     }
 
-    public static boolean isValidUrl(String url) {
+    public static boolean isValidApiUrl(String url) {
         if (url == null) {
             Tracker.log(Level.WARN, "No API Url provided");
             return false;
         }
 
-        if (!verifyUrl(url)) {
+        if (!isValidUrl(url)) {
             Tracker.log(Level.WARN, "Invalid URL Format");
             return false;
         }

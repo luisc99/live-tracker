@@ -7,7 +7,6 @@ import me.cylorun.utils.APIUtil;
 import me.cylorun.utils.I18n;
 import org.apache.logging.log4j.Level;
 
-import javax.sound.midi.Track;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowEvent;
@@ -131,7 +130,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
             options.api_url = val;
             TrackerOptions.save();
         }, (e) -> new Thread(() -> {
-            boolean res = APIUtil.isValidUrl(options.api_url);
+            boolean res = APIUtil.isValidApiUrl(options.api_url);
             if (res) {
                 JOptionPane.showMessageDialog(this, "Valid URL", "Verification", JOptionPane.INFORMATION_MESSAGE);
             } else {

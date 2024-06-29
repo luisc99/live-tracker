@@ -6,16 +6,18 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import me.cylorun.Tracker;
 import me.cylorun.io.TrackerOptions;
-import me.cylorun.utils.Assert;
-import me.cylorun.utils.ResourceUtil;
-import me.cylorun.utils.Vec2i;
+import me.cylorun.utils.*;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
 import org.apache.logging.log4j.Level;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -25,7 +27,8 @@ public class Run extends HashMap<String, Object> {
     public JsonObject stats;
     public JsonObject adv;
     private List<SpeedrunEvent> eventLog;
-    private long seed;
+    private boolean hasData = false;
+
 
     public Run(WorldFile worldFile, RecordFile recordFile) {
         this.worldFile = worldFile;
@@ -79,7 +82,9 @@ public class Run extends HashMap<String, Object> {
         this.putAll(this.getMobKills());
         this.putAll(this.getFoods());
         this.putAll(this.getTravelled());
-        this.put("seed", this.seed == 0 ? -1 : this.seed);
+        this.put("seed", this.getSeed());
+
+        this.hasData = true;
         return this;
     }
 
@@ -94,6 +99,10 @@ public class Run extends HashMap<String, Object> {
     private String getDate() {
         Date date = new Date(this.recordFile.getJson().get("date").getAsLong());
         return new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(date);
+    }
+
+    private long getSeed() {
+        return -1; // TODO
     }
 
     private String getWoodTime() {
@@ -450,6 +459,32 @@ public class Run extends HashMap<String, Object> {
             Tracker.log(Level.ERROR, "Something went wrong while trying to fetch the last run");
         }
         return 1;
+    }
+
+
+    public boolean save(Path folderPath) {
+        if (!this.hasData) {
+            Tracker.log(Level.ERROR,"Run data not gathered, will not save run");
+            return false;
+        }
+
+        if (!Files.exists(folderPath)) {
+            folderPath.toFile().mkdirs();
+        }
+
+        String data = JSONUtil.prettify(APIUtil.getRunJson(this));
+        Path jsonPath = folderPath.resolve(this.get("world_name").toString() + ".json");
+
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(jsonPath.toFile()));
+            writer.write(data);
+            writer.close();
+
+        } catch (IOException e) {
+            return false;
+        }
+
+        return true;
     }
 
 }
