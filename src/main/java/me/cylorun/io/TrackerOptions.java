@@ -26,6 +26,7 @@ public class TrackerOptions {
     public Integer last_win_y = 0;
     public boolean gen_labels = true;
     public boolean detect_ssg = true;
+    public boolean only_track_completions = true;
     public boolean show_debug = false;
     public boolean generate_chunkmap = true;
     public int max_respawn_to_hr_time = 30; // seconds

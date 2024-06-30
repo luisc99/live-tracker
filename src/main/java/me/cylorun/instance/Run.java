@@ -415,8 +415,16 @@ public class Run extends HashMap<String, Object> {
         return res;
     }
 
+    public boolean hasFinished() {
+        return JSONUtil.getOptionalBool(this.recordFile.getJson(), "is_completed").orElse(false);
+    }
+
     public boolean shouldPush() {
         TrackerOptions options = TrackerOptions.getInstance();
+        if (options.only_track_completions) {
+            return this.hasFinished();
+        }
+
         Assert.isNotNull(this.stats, "Stats is null");
         String runType = this.recordFile.getJson().get("run_type").getAsString();
         if ((options.detect_ssg && runType.equals("set_seed")) || recordFile.getJson().get("category").getAsString().equals("pratice_world")) { // yes its pratice not practice

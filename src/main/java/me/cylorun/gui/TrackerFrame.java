@@ -85,6 +85,11 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
+        generalPanel.add(new BooleanOptionField("Only Track Completions", options.only_track_completions, (val) -> {
+            options.only_track_completions = val;
+            TrackerOptions.save();
+        }));
+
         generalPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         generalPanel.add(new JSeparator(JSeparator.HORIZONTAL));
         generalPanel.add(new ActionButton("Open Tracker Folder", (e) -> {

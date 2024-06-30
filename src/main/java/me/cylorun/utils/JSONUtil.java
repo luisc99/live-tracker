@@ -57,6 +57,11 @@ public class JSONUtil {
                 .map(JsonElement::getAsInt);
     }
 
+    public static Optional<Boolean> getOptionalBool(JsonObject obj, String member) {
+        return Optional.ofNullable(obj.get(member))
+                .map(JsonElement::getAsBoolean);
+    }
+
     public static Optional<JsonObject> getOptionalJsonObj(JsonObject obj, String member) {
         return Optional.ofNullable(obj.get(member))
                 .map(JsonElement::getAsJsonObject);
