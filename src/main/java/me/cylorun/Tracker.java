@@ -1,7 +1,6 @@
 package me.cylorun;
 
 import me.cylorun.gui.TrackerFrame;
-import me.cylorun.instance.RecordFile;
 import me.cylorun.instance.Run;
 import me.cylorun.instance.world.WorldCreationEventHandler;
 import me.cylorun.instance.WorldFile;
@@ -15,11 +14,9 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,11 +27,12 @@ public class Tracker {
     private static final Logger LOGGER = LogManager.getLogger(Tracker.class);
 
     public static void run() {
+        Tracker.log(Level.INFO, "Running Live-Tracker-" + VERSION);
+
         java.util.logging.Logger.getLogger(OkHttpClient.class.getName()).setLevel(java.util.logging.Level.FINE);
         List<WorldFile> worlds = new ArrayList<>();
         TrackerFrame.getInstance().open();
-        GoogleSheetsClient.setup();
-        Tracker.log(Level.INFO, "Running Live-Tracker-" + VERSION);
+//        GoogleSheetsClient.setup();
 
         WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object is created per world path
         worldHandler.addListener(world -> {
@@ -55,9 +53,7 @@ public class Tracker {
 
     public static void handleWorld(WorldFile world) {
         world.setCompletionHandler(() -> {
-
-            RecordFile record = new RecordFile(world.getRecordPath().toFile());
-            Run run = new Run(world, record);
+            Run run = new Run(world);
             run.gatherAll();
 
             if (run.shouldPush()) {

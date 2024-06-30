@@ -125,7 +125,7 @@ public class ChunkMap {
             return;
         }
 
-        for (Pair<Pair<String, Vec2i>, Dimension> p : this.world.playerLocations) {
+        for (Pair<Pair<String, Vec2i>, Dimension> p : this.world.playerEvents) {
             if (!p.getRight().equals(this.dim)) continue;
             Graphics2D g = i.createGraphics();
             Image img = this.getResourceImage(p.getLeft().getLeft());

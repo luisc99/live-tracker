@@ -19,10 +19,7 @@ import me.cylorun.utils.Vec2i;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -40,7 +37,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     public final HungerResetHandler hungerResetHandler;
     public final DistanceTracker strongholdTracker;
     public final List<Pair<Pair<Vec2i, Vec2i>, Dimension>> playerPath; // just the path the player takes
-    public final List<Pair<Pair<String, Vec2i>, Dimension>> playerLocations; // locations of deaths and other special events
+    public final List<Pair<Pair<String, Vec2i>, Dimension>> playerEvents; // locations of deaths and other special events
     public final Inventory inv;
     public final LogHandler logHandler;
     public boolean track = true;
@@ -48,9 +45,9 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
 
     public WorldFile(String path) {
         super(path);
-        Assert.isTrue(Files.exists(this.toPath()), "Worldfile doesnt exist: " + this.getAbsolutePath());
+
         this.playerPath = new ArrayList<>();
-        this.playerLocations = new ArrayList<>();
+        this.playerEvents = new ArrayList<>();
 
         this.inv = new Inventory(this);
         this.eventHandler = new WorldEventHandler(this);
@@ -172,7 +169,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
                 if (e.type.equals(LogEventType.DEATH)) {
                     Vec2i loc = this.getPlayerLocation();
                     Dimension dim = this.getPlayerDimension();
-                    this.playerLocations.add(Pair.of(Pair.of("icons/map/death.png", loc), dim));
+                    this.playerEvents.add(Pair.of(Pair.of("icons/map/death.png", loc), dim));
                 }
             }
         }

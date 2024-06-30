@@ -23,18 +23,18 @@ import java.util.*;
 
 public class Run extends HashMap<String, Object> {
     public final WorldFile worldFile;
-    public final RecordFile recordFile;
+    public final JsonObject recordFile;
     public JsonObject stats;
     public JsonObject adv;
     private List<SpeedrunEvent> eventLog;
     private boolean hasData = false;
 
 
-    public Run(WorldFile worldFile, RecordFile recordFile) {
+    public Run(WorldFile worldFile) {
         this.worldFile = worldFile;
-        this.recordFile = recordFile;
+        this.recordFile = JSONUtil.parseFile(worldFile.getRecordPath().toFile());
         this.eventLog = this.worldFile.eventHandler.events;
-        this.adv = recordFile.getJson().get("advancements").getAsJsonObject();
+        this.adv = recordFile.get("advancements").getAsJsonObject();
         this.stats = this.getStats();
     }
 
@@ -65,13 +65,13 @@ public class Run extends HashMap<String, Object> {
         this.put("enter_type", this.getEnterType());
         this.put("gold_source", this.getGoldSource());
         this.put("spawn_biome", this.getSpawnBiome());
-        this.put("rta", msToString(this.recordFile.getJson().get("final_rta").getAsLong()));
+        this.put("rta", msToString(this.recordFile.get("final_rta").getAsLong()));
         this.put("wood", this.getWoodTime());
 
         for (int i = 0; i < majorSplits.length; i++) {
             this.put(splitNames[i], this.getSplitTime(majorSplits[i]));
         }
-        this.put("igt", msToString(this.recordFile.getJson().get("final_igt").getAsLong()));
+        this.put("igt", msToString(this.recordFile.get("final_igt").getAsLong()));
         this.put("sh_dist", this.worldFile.strongholdTracker.getFinalData());
         this.put("sh_ring", getStrongholdRing(this.worldFile.strongholdTracker.endPoint));
         this.put("explosives_used", String.valueOf(this.getExplosivesUsed()));
@@ -89,15 +89,16 @@ public class Run extends HashMap<String, Object> {
     }
 
     private JsonObject getStats() {
-        Set<String> uuids = this.recordFile.getJson().get("stats").getAsJsonObject().keySet();
+        Set<String> uuids = this.recordFile.get("stats").getAsJsonObject().keySet();
         if (!uuids.isEmpty()) {
-            return this.recordFile.getJson().get("stats").getAsJsonObject().get(uuids.toArray()[0].toString()).getAsJsonObject().get("stats").getAsJsonObject();
+            return this.recordFile.get("stats").getAsJsonObject().get(uuids.toArray()[0].toString()).getAsJsonObject().get("stats").getAsJsonObject();
         }
         return null;
     }
 
+
     private String getDate() {
-        Date date = new Date(this.recordFile.getJson().get("date").getAsLong());
+        Date date = new Date(this.recordFile.get("date").getAsLong());
         return new SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(date);
     }
 
@@ -416,7 +417,7 @@ public class Run extends HashMap<String, Object> {
     }
 
     public boolean hasFinished() {
-        return JSONUtil.getOptionalBool(this.recordFile.getJson(), "is_completed").orElse(false);
+        return JSONUtil.getOptionalBool(this.recordFile, "is_completed").orElse(false);
     }
 
     public boolean shouldPush() {
@@ -426,8 +427,8 @@ public class Run extends HashMap<String, Object> {
         }
 
         Assert.isNotNull(this.stats, "Stats is null");
-        String runType = this.recordFile.getJson().get("run_type").getAsString();
-        if ((options.detect_ssg && runType.equals("set_seed")) || recordFile.getJson().get("category").getAsString().equals("pratice_world")) { // yes its pratice not practice
+        String runType = this.recordFile.get("run_type").getAsString();
+        if ((options.detect_ssg && runType.equals("set_seed")) || recordFile.get("category").getAsString().equals("pratice_world")) { // yes its pratice not practice
             return false;
         }
 
@@ -460,7 +461,7 @@ public class Run extends HashMap<String, Object> {
                 Tracker.log(Level.DEBUG, "This run id " + (runIdElement.getAsInt() + 1));
                 return runIdElement.getAsInt() + 1;
             }
-        } catch (IOException e) {
+        } catch (IOException | NullPointerException e) {
             Tracker.log(Level.ERROR, "Something went wrong while trying to fetch the last run");
         }
         return 1;
@@ -469,7 +470,7 @@ public class Run extends HashMap<String, Object> {
 
     public boolean save(Path folderPath) {
         if (!this.hasData) {
-            Tracker.log(Level.ERROR,"Run data not gathered, will not save run");
+            Tracker.log(Level.ERROR, "Run data not gathered, will not save run");
             return false;
         }
 
