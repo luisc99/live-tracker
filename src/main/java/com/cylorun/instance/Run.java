@@ -331,14 +331,14 @@ public class Run extends HashMap<String, Object> {
             pickedUp = this.stats.get("minecraft:picked_up").getAsJsonObject();
         } else {
             for (JsonElement e : barters) {
-                String itemName = "barter_" + e.getAsString().split(":")[1];
+                String itemName = "trade_" + e.getAsString().split(":")[1];
                 res.put(itemName, "0");
             }
             return res;
         }
 
         for (JsonElement barterItem : barters) {
-            String itemName = "barter_" + barterItem.getAsString().split(":")[1];
+            String itemName = "trade_" + barterItem.getAsString().split(":")[1];
             if (pickedUp.has(barterItem.getAsString())) {
                 int diff = 0;
                 if (this.worldFile.hungerResetHandler.itemDiffs.containsKey(barterItem.getAsString())) {
