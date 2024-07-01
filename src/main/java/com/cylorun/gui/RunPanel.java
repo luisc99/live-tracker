@@ -107,6 +107,8 @@ public class RunPanel extends JPanel {
                     if (runs == null) {
                         runRecordPanel.add(new JLabel("Something went wrong"));
                         runRecordPanel.add(new ActionButton("Try again", e -> fetchData()));
+                    }  else if(runs.equals(new JsonArray())) {
+                        runRecordPanel.add(new JLabel("There are no runs to display"));
                     } else {
                         for (JsonElement run : runs) {
                             RunRecordEntry entry = new RunRecordEntry(run.getAsJsonObject());
