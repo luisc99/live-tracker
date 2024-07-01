@@ -56,7 +56,7 @@ public class APIUtil {
             if (retries++ > 5) {
                 Tracker.log(Level.ERROR, "Failed to upload run, saving locally...");
                 Path savePath = TrackerOptions.getTrackerDir().resolve("local");
-                if (!run.save(savePath)) {
+                if (!run.save(savePath, true)) {
                     Tracker.log(Level.ERROR, "Failed to save run locally");
                 } else {
                     Tracker.log(Level.INFO, "Saved run locally");

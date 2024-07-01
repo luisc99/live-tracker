@@ -469,6 +469,10 @@ public class Run extends HashMap<String, Object> {
 
 
     public boolean save(Path folderPath) {
+        return this.save(folderPath, false);
+    }
+
+    public boolean save(Path folderPath, boolean isFailed) {
         if (!this.hasData) {
             Tracker.log(Level.ERROR, "Run data not gathered, will not save run");
             return false;
@@ -480,6 +484,9 @@ public class Run extends HashMap<String, Object> {
 
         String data = JSONUtil.prettify(APIUtil.getRunJson(this));
         Path jsonPath = folderPath.resolve(this.get("world_name").toString() + ".json");
+        if (isFailed) {
+            jsonPath = folderPath.resolve("failed_"+this.get("world_name").toString() + ".json");
+        }
 
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(jsonPath.toFile()));
