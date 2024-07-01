@@ -410,11 +410,12 @@ public class Run extends HashMap<String, Object> {
         URL url = Tracker.class.getClassLoader().getResource("tracked.json");
         JsonArray methods = ResourceUtil.loadJsonResource(url).getAsJsonArray("TRAVEL_METHODS");
         for (JsonElement method : methods) {
+            String itemName = "travel_" + method.getAsString().split(":")[1].replace("_one_cm","");
             try {
                 String val = this.stats.getAsJsonObject("minecraft:custom").get(method.getAsString()).getAsString();
-                res.put("travel_" + method.getAsString().split(":")[1], val);
+                res.put(itemName, val);
             } catch (Exception e) {
-                res.put("travel_" + method.getAsString().split(":")[1], "0");
+                res.put(itemName, "0");
             }
         }
         return res;
