@@ -1,23 +1,26 @@
 package com.cylorun.instance;
 
 import com.cylorun.Tracker;
-import com.cylorun.instance.logs.LogEventListener;
-import com.cylorun.instance.logs.LogHandler;
-import com.cylorun.instance.world.CompletionHandler;
-import com.cylorun.instance.world.WorldEventHandler;
-import com.cylorun.instance.world.WorldEventListener;
-import com.cylorun.utils.Assert;
-import kaptainwutax.mcutils.state.Dimension;
 import com.cylorun.instance.live.DistanceTracker;
 import com.cylorun.instance.live.EventTracker;
 import com.cylorun.instance.live.HungerResetHandler;
 import com.cylorun.instance.live.PathTracker;
+import com.cylorun.instance.logs.LogEventListener;
+import com.cylorun.instance.logs.LogHandler;
 import com.cylorun.instance.player.Inventory;
+import com.cylorun.instance.world.CompletionHandler;
+import com.cylorun.instance.world.WorldEventHandler;
+import com.cylorun.instance.world.WorldEventListener;
+import com.cylorun.utils.Assert;
 import com.cylorun.utils.Vec2i;
+import kaptainwutax.mcutils.state.Dimension;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.Level;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -75,7 +78,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     public long getSeed() {
         try {
             return Long.parseLong(NBTReader.from(this).get(NBTReader.SEED_PATH));
-        } catch (NumberFormatException e) {
+        } catch (NumberFormatException | NullPointerException e) {
             Tracker.log(Level.WARN, "Failed to get the seed");
             return -1;
         }
@@ -98,8 +101,12 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     }
 
     public Dimension getPlayerDimension() {
-        String data = this.reader.get(NBTReader.PLAYER_DIMENSION).replace("\"", "");
-        String[] split = data.split(":");
+        String data = this.reader.get(NBTReader.PLAYER_DIMENSION);
+        if (data == null) {
+            return null;
+        }
+
+        String[] split = data.replace("\"", "").split(":");
         Assert.isTrue(split.length == 2);
 
         return Dimension.fromString(split[1]);
@@ -169,6 +176,9 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
                 if (e.type.equals(LogEvent.LogEventType.DEATH)) {
                     Vec2i loc = this.getPlayerLocation();
                     Dimension dim = this.getPlayerDimension();
+                    if (loc == null || dim == null) {
+                        return;
+                    }
                     this.playerEvents.add(Pair.of(Pair.of("icons/map/death.png", loc), dim));
                 }
             }

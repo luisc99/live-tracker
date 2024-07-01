@@ -27,6 +27,10 @@ public class PathTracker implements LogEventListener {
     private void tick() {
         Dimension dim = this.world.getPlayerDimension();
         Vec2i currCoord = this.world.getPlayerLocation();
+        if (currCoord == null || dim == null) {
+            return;
+        }
+
         Pair<Pair<Vec2i, Vec2i>, Dimension> p = Pair.of(Pair.of(this.lastCoord, currCoord), dim);
 
         this.world.playerPath.add(p);

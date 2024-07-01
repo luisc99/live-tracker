@@ -21,6 +21,10 @@ public class EventTracker implements WorldEventListener, LogEventListener {
     private void addEvent(String asset) {
         Vec2i loc = this.world.getPlayerLocation();
         Dimension dim = this.world.getPlayerDimension();
+        if (dim == null || loc == null) {
+            return;
+        }
+
         Pair<Pair<String, Vec2i>, Dimension> p = Pair.of(Pair.of(asset, loc), dim);
 
         this.world.playerEvents.add(p);

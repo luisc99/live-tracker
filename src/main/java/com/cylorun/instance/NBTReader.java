@@ -78,11 +78,12 @@ public class NBTReader {
             if (i == tags.length - 1) {
                 return curr.get(tag).toString();
             }
-            if (curr.get(tag) == null) {
-                break;
-            }
-            curr = curr.get(tag).getAsJsonObject();
 
+            if (curr.get(tag) == null) {
+                return null;
+            }
+
+            curr = curr.get(tag).getAsJsonObject();
         }
         return curr.toString();
     }
