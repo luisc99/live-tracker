@@ -88,6 +88,9 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         }
 
         String[] s = stringData.replaceAll("[\\[\\]]", "").split(",");
+        if (s.length != 3) {
+            return null;
+        }
         Integer[] loc = Arrays.stream(s)
                 .map((l) -> (int) Double.parseDouble(l))
                 .toArray(Integer[]::new);
