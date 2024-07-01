@@ -50,9 +50,9 @@ public class APIUtil {
         }
 
         int retries = 0;
-        int a;
-        while ((a = uploadRun(run)) != 200) {
-            Tracker.log(Level.ERROR, "Failed to upload run, trying again. code: " + a);
+        int code;
+        while ((code = uploadRun(run)) != 200) {
+            Tracker.log(Level.ERROR, "Failed to upload run, trying again. code: " + code);
             if (retries++ > 5) {
                 Tracker.log(Level.ERROR, "Failed to upload run, saving locally...");
                 Path savePath = TrackerOptions.getTrackerDir().resolve("local");
@@ -63,6 +63,10 @@ public class APIUtil {
                 }
                 break;
             }
+        }
+
+        if (code == 200) {
+            Tracker.log(Level.INFO, "Successfully uploaded run");
         }
     }
 
