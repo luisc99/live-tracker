@@ -71,10 +71,11 @@ public class Run extends HashMap<String, Object> {
         for (int i = 0; i < majorSplits.length; i++) {
             this.put(splitNames[i], this.getSplitTime(majorSplits[i]));
         }
+
         this.put("igt", msToString(this.recordFile.get("final_igt").getAsLong()));
         this.put("sh_dist", this.worldFile.strongholdTracker.getFinalData());
         this.put("sh_ring", getStrongholdRing(this.worldFile.strongholdTracker.endPoint));
-        this.put("explosives_used", String.valueOf(this.getExplosivesUsed()));
+        this.put("explosives_used", this.getExplosivesUsed());
         this.put("gold_dropped", this.getGoldDropped());
         this.putAll(this.getMiscStats());
         this.put("world_name", worldFile.getName());

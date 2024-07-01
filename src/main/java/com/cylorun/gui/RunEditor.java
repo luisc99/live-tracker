@@ -72,10 +72,10 @@ public class RunEditor extends JPanel {
             this.valueField.setVisible(false);
             this.textEditorField.setVisible(false);
             if (val.equals("notes")) {
-                this.textEditorField.setValue(this.runData.get(val).getAsString());
+                this.textEditorField.setValue(JSONUtil.getOptionalString(this.runData, val).orElse(""));
                 this.textEditorField.setVisible(true);
             } else {
-                this.valueField.setValue(this.runData.get(val).getAsString());
+                this.valueField.setValue(JSONUtil.getOptionalString(this.runData, val).orElse(""));
                 this.valueField.setVisible(true);
             }
             this.checkForChanges();
@@ -108,7 +108,7 @@ public class RunEditor extends JPanel {
 
     private void checkForChanges() {
         boolean hasColorChanged = !this.prevColor.equals(this.colorChooser.getCurrentColor());
-        boolean hasValueChanged = !this.valueField.getValue().equals(this.runData.get(this.columnField.getValue()).getAsString());
+        boolean hasValueChanged = !this.valueField.getValue().equals(JSONUtil.getOptionalString(this.runData,this.columnField.getValue()).orElse(""));
         this.saveButton.setEnabled(hasColorChanged || hasValueChanged);
     }
 
@@ -129,8 +129,8 @@ public class RunEditor extends JPanel {
                     null,
                     String.format("Change %s from %s to %s for run %s?",
                             this.columnField.getValue(),
-                            this.runData.get(this.columnField.getValue()).getAsString(),
-                            this.valueField.getValue(),
+                            JSONUtil.getOptionalString(this.runData, this.columnField.getValue()).orElse("\" \""),
+                            this.columnField.getValue().equals("notes") ? this.textEditorField.getText() : this.valueField.getValue(),
                             this.record.get("run_id").getAsString()),
                     "Confirmation",
                     JOptionPane.YES_NO_OPTION);
@@ -155,7 +155,7 @@ public class RunEditor extends JPanel {
 
     private void extractKeys(JsonObject jsonObject, List<String> keys) {
         for (Map.Entry<String, JsonElement> entry : jsonObject.entrySet()) {
-            if (entry.getValue().isJsonPrimitive()) {
+            if (entry.getValue().isJsonPrimitive() || entry.getValue().isJsonNull()) {
                 keys.add(entry.getKey());
             }
             if (entry.getValue().isJsonObject()) {
@@ -229,6 +229,7 @@ public class RunEditor extends JPanel {
                     }
 
                     runData = JSONUtil.flatten(r);
+                    System.out.println(runData);
                     String[] values = getAllValueKeys().toArray(new String[0]);
                     columnField.setOptions(values);
                     Color color = getColorFromRun(runData);

@@ -26,12 +26,12 @@ public class DistanceTracker implements WorldEventListener {
         this.world.eventHandler.addListener(this);
     }
 
-    public String getFinalData() {
+    public Integer getFinalData() {
         if (this.startPoint == null || this.endPoint == null) {
-            return "";
+            return null;
         }
 
-        return String.valueOf(this.startPoint.distanceTo(this.endPoint));
+        return this.startPoint.distanceTo(this.endPoint);
     }
 
 

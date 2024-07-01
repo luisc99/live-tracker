@@ -64,7 +64,7 @@ public class Tracker {
                     }
                 }
 
-                APIUtil.tryUploadRun(run);
+//                APIUtil.tryUploadRun(run);
             }
 
             if (options.generate_chunkmap) {

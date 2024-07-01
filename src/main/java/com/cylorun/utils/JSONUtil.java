@@ -49,6 +49,7 @@ public class JSONUtil {
 
     public static Optional<String> getOptionalString(JsonObject obj, String member) {
         return Optional.ofNullable(obj.get(member))
+                .filter(element -> !(element instanceof JsonNull))
                 .map(JsonElement::getAsString);
     }
 
