@@ -331,20 +331,22 @@ public class Run extends HashMap<String, Object> {
             pickedUp = this.stats.get("minecraft:picked_up").getAsJsonObject();
         } else {
             for (JsonElement e : barters) {
-                res.put(e.getAsString().split(":")[1], "0");
+                String itemName = "barter_" + e.getAsString().split(":")[1];
+                res.put(itemName, "0");
             }
             return res;
         }
 
         for (JsonElement barterItem : barters) {
+            String itemName = "barter_" + barterItem.getAsString().split(":")[1];
             if (pickedUp.has(barterItem.getAsString())) {
                 int diff = 0;
                 if (this.worldFile.hungerResetHandler.itemDiffs.containsKey(barterItem.getAsString())) {
                     diff = this.worldFile.hungerResetHandler.itemDiffs.get(barterItem.getAsString());
                 }
-                res.put(barterItem.getAsString().split(":")[1], String.valueOf(pickedUp.get(barterItem.getAsString()).getAsInt() - diff));
+                res.put(itemName, String.valueOf(pickedUp.get(barterItem.getAsString()).getAsInt() - diff));
             } else {
-                res.put(barterItem.getAsString().split(":")[1], "0");
+                res.put(itemName, "0");
             }
         }
 
@@ -484,10 +486,8 @@ public class Run extends HashMap<String, Object> {
         }
 
         String data = JSONUtil.prettify(APIUtil.getRunJson(this));
-        Path jsonPath = folderPath.resolve(this.get("world_name").toString() + ".json");
-        if (isFailed) {
-            jsonPath = folderPath.resolve("failed_"+this.get("world_name").toString() + ".json");
-        }
+        Path jsonPath = folderPath.resolve((isFailed ? "failed_" : "" ) + this.get("world_name").toString() + ".json");
+        System.out.println(jsonPath);
 
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(jsonPath.toFile()));
