@@ -31,7 +31,6 @@ public class Tracker {
         java.util.logging.Logger.getLogger(OkHttpClient.class.getName()).setLevel(java.util.logging.Level.FINE);
         List<WorldFile> worlds = new ArrayList<>();
         TrackerFrame.getInstance().open();
-//        GoogleSheetsClient.setup();
 
         WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object is created per world path
         worldHandler.addListener(world -> {
@@ -58,7 +57,11 @@ public class Tracker {
 
             if (run.shouldPush()) {
                 if (options.always_save_locally) {
-                    run.save(TrackerOptions.getTrackerDir().resolve("local"));
+                    if (run.save(TrackerOptions.getTrackerDir().resolve("local"))) {
+                        Tracker.log(Level.INFO, "Saved run locally");
+                    } else {
+                        Tracker.log(Level.ERROR, "Failed to save run locally");
+                    }
                 }
 
                 APIUtil.tryUploadRun(run);

@@ -461,7 +461,6 @@ public class Run extends HashMap<String, Object> {
             JsonObject jsonData = JsonParser.parseString(bodyJson).getAsJsonObject();
             JsonElement runIdElement = jsonData.get("run_id");
             if (runIdElement != null) {
-                Tracker.log(Level.DEBUG, "This run id " + (runIdElement.getAsInt() + 1));
                 return runIdElement.getAsInt() + 1;
             }
         } catch (IOException | NullPointerException e) {
@@ -487,13 +486,11 @@ public class Run extends HashMap<String, Object> {
 
         String data = JSONUtil.prettify(APIUtil.getRunJson(this));
         Path jsonPath = folderPath.resolve((isFailed ? "failed_" : "" ) + this.get("world_name").toString() + ".json");
-        System.out.println(jsonPath);
 
         try {
             BufferedWriter writer = new BufferedWriter(new FileWriter(jsonPath.toFile()));
             writer.write(data);
             writer.close();
-
         } catch (IOException e) {
             return false;
         }
