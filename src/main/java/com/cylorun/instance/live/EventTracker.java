@@ -6,8 +6,6 @@ import com.cylorun.instance.WorldFile;
 import com.cylorun.instance.logs.LogEventListener;
 import com.cylorun.instance.world.WorldEventListener;
 import kaptainwutax.mcutils.state.Dimension;
-import com.cylorun.enums.LogEventType;
-import com.cylorun.enums.SpeedrunEventType;
 import com.cylorun.utils.Vec2i;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -45,10 +43,10 @@ public class EventTracker implements WorldEventListener, LogEventListener {
     @Override
     public void onLogEvent(LogEvent e) {
         if (this.world.track && !this.world.finished) {
-            if (e.type.equals(LogEventType.DEATH)) {
+            if (e.type.equals(LogEvent.LogEventType.DEATH)) {
                 this.addEvent("icons/map/death.png");
             }
-            if (e.type.equals(LogEventType.HUNGER_RESET)) {
+            if (e.type.equals(LogEvent.LogEventType.HUNGER_RESET)) {
                 this.addEvent("icons/map/hunger_reset.png");
             }
         }
@@ -57,17 +55,17 @@ public class EventTracker implements WorldEventListener, LogEventListener {
     @Override
     public void onSpeedrunEvent(SpeedrunEvent e) {
         if (this.world.track && !this.world.finished) {
-            if (e.type.equals(SpeedrunEventType.ENTER_NETHER)) {
+            if (e.type.equals(SpeedrunEvent.SpeedrunEventType.ENTER_NETHER)) {
                 Vec2i loc = this.getPrevLoc();
                 Dimension dim = this.world.getPlayerDimension();
                 this.addEvent(loc, dim, "icons/map/enter_portal.png");
             }
-            if (e.type.equals(SpeedrunEventType.FIRST_PORTAL)) {
+            if (e.type.equals(SpeedrunEvent.SpeedrunEventType.FIRST_PORTAL)) {
                 Vec2i loc = this.getPrevLoc();
                 Dimension dim = this.world.getPlayerDimension();
                 this.addEvent(loc, dim, "icons/map/first_portal.png");
             }
-            if (e.type.equals(SpeedrunEventType.SECOND_PORTAL)) {
+            if (e.type.equals(SpeedrunEvent.SpeedrunEventType.SECOND_PORTAL)) {
                 Vec2i loc = this.getPrevLoc();
                 Dimension dim = this.world.getPlayerDimension();
                 this.addEvent(loc, dim, "icons/map/second_portal.png");

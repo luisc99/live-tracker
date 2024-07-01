@@ -4,7 +4,6 @@ import com.cylorun.instance.SpeedrunEvent;
 import com.cylorun.instance.WorldFile;
 import com.cylorun.instance.world.WorldEventListener;
 import com.cylorun.io.TrackerOptions;
-import com.cylorun.enums.SpeedrunEventType;
 import com.cylorun.utils.Vec2i;
 
 import java.util.concurrent.Executors;
@@ -13,13 +12,13 @@ import java.util.concurrent.TimeUnit;
 
 
 public class DistanceTracker implements WorldEventListener {
-    private final SpeedrunEventType startEvent;
-    private final SpeedrunEventType endEvent;
+    private final SpeedrunEvent.SpeedrunEventType startEvent;
+    private final SpeedrunEvent.SpeedrunEventType endEvent;
     private final WorldFile world;
     public Vec2i startPoint;
     public Vec2i endPoint;
 
-    public DistanceTracker(WorldFile world, SpeedrunEventType startEvent, SpeedrunEventType endEvent) {
+    public DistanceTracker(WorldFile world, SpeedrunEvent.SpeedrunEventType startEvent, SpeedrunEvent.SpeedrunEventType endEvent) {
         this.endEvent = endEvent;
         this.startEvent = startEvent;
         this.world = world;

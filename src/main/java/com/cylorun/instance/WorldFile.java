@@ -8,8 +8,6 @@ import com.cylorun.instance.world.WorldEventHandler;
 import com.cylorun.instance.world.WorldEventListener;
 import com.cylorun.utils.Assert;
 import kaptainwutax.mcutils.state.Dimension;
-import com.cylorun.enums.LogEventType;
-import com.cylorun.enums.SpeedrunEventType;
 import com.cylorun.instance.live.DistanceTracker;
 import com.cylorun.instance.live.EventTracker;
 import com.cylorun.instance.live.HungerResetHandler;
@@ -52,7 +50,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         this.eventHandler = new WorldEventHandler(this);
         this.logHandler = new LogHandler(this);
         this.hungerResetHandler = new HungerResetHandler(this);
-        this.strongholdTracker = new DistanceTracker(this, SpeedrunEventType.FIRST_PORTAL, SpeedrunEventType.ENTER_STRONGHOLD);
+        this.strongholdTracker = new DistanceTracker(this, SpeedrunEvent.SpeedrunEventType.FIRST_PORTAL, SpeedrunEvent.SpeedrunEventType.ENTER_STRONGHOLD);
         this.reader = NBTReader.from(this);
 
         this.pathTracker = new PathTracker(this);
@@ -145,16 +143,16 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     @Override
     public void onSpeedrunEvent(SpeedrunEvent e) {
         if (!this.finished) {
-            if (e.type.equals(SpeedrunEventType.REJOIN_WORLD)) {
+            if (e.type.equals(SpeedrunEvent.SpeedrunEventType.REJOIN_WORLD)) {
                 this.track = true;
             }
 
             if (this.track) {
-                if (e.type.equals(SpeedrunEventType.LEAVE_WORLD)) {
+                if (e.type.equals(SpeedrunEvent.SpeedrunEventType.LEAVE_WORLD)) {
                     this.track = false;
                 }
 
-                if (e.type.equals(SpeedrunEventType.CREDITS)) {
+                if (e.type.equals(SpeedrunEvent.SpeedrunEventType.CREDITS)) {
                     this.onCompletion();
                 }
             }
@@ -165,7 +163,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     public void onLogEvent(LogEvent e) {
         if (!this.finished) {
             if (this.track) {
-                if (e.type.equals(LogEventType.DEATH)) {
+                if (e.type.equals(LogEvent.LogEventType.DEATH)) {
                     Vec2i loc = this.getPlayerLocation();
                     Dimension dim = this.getPlayerDimension();
                     this.playerEvents.add(Pair.of(Pair.of("icons/map/death.png", loc), dim));

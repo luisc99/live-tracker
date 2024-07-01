@@ -5,7 +5,6 @@ import com.cylorun.instance.WorldFile;
 import com.cylorun.instance.logs.LogEventListener;
 import com.cylorun.io.TrackerOptions;
 import kaptainwutax.mcutils.state.Dimension;
-import com.cylorun.enums.LogEventType;
 import com.cylorun.utils.Vec2i;
 import org.apache.commons.lang3.tuple.Pair;
 
@@ -36,7 +35,7 @@ public class PathTracker implements LogEventListener {
 
     @Override
     public void onLogEvent(LogEvent e) {
-        if (e.type.equals(LogEventType.DEATH)) {
+        if (e.type.equals(LogEvent.LogEventType.DEATH)) {
             executor.schedule(() -> {
                 this.lastCoord = world.getPlayerLocation();
             }, 10L, TimeUnit.SECONDS);

@@ -1,6 +1,5 @@
 package com.cylorun.instance;
 
-import com.cylorun.enums.LogEventType;
 import com.cylorun.instance.logs.LogParser;
 
 public class LogEvent {
@@ -15,5 +14,22 @@ public class LogEvent {
     @Override
     public String toString() {
         return this.type.toString();
+    }
+
+    public enum LogEventType {
+        DEATH("death"),
+        HUNGER_RESET("hunger_reset"),
+        RESPAWN_SET("respawn_set");
+
+        private String label;
+
+        private LogEventType(String label) {
+            this.label = label;
+        }
+
+        @Override
+        public String toString() {
+            return this.label;
+        }
     }
 }

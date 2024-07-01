@@ -120,6 +120,7 @@ public class Run extends HashMap<String, Object> {
             if (e.getKey().contains("_bed") || e.getKey().equals("minecraft:respawn_anchor"))
                 explUsed += e.getValue().getAsInt();
         }
+
         return explUsed - this.worldFile.hungerResetHandler.respawnPointsSet;
     }
 
@@ -128,24 +129,24 @@ public class Run extends HashMap<String, Object> {
             int pickedup = this.stats.getAsJsonObject("minecraft:picked_up").has("minecraft:gold_ingot") ? this.stats.getAsJsonObject("minecraft:picked_up").get("minecraft:gold_ingot").getAsInt() : 0;
             return this.stats.getAsJsonObject("minecraft:dropped").get("minecraft:gold_ingot").getAsInt() - pickedup;
         }
-        return -1;
+        return 0;
     }
 
-    public static String getStrongholdRing(Vec2i strongholdLoc) {
+    public static Integer getStrongholdRing(Vec2i strongholdLoc) {
         // -1 if not found
         if (strongholdLoc == null) {
-            return "-1";
+            return null;
         }
 
         int dist = strongholdLoc.distanceTo(Vec2i.ZERO);
-        if (dist <= 2816) return "1";
-        if (dist <= 5888) return "2";
-        if (dist <= 8960) return "3";
-        if (dist <= 12032) return "4";
-        if (dist <= 15104) return "5";
-        if (dist <= 18146) return "6";
-        if (dist <= 21248) return "7";
-        return "8";
+        if (dist <= 2816) return 1;
+        if (dist <= 5888) return 2;
+        if (dist <= 8960) return 3;
+        if (dist <= 12032) return 4;
+        if (dist <= 15104) return 5;
+        if (dist <= 18146) return 6;
+        if (dist <= 21248) return 7;
+        return 8;
     }
 
     private String getSplitTime(String splitName) {
@@ -163,7 +164,7 @@ public class Run extends HashMap<String, Object> {
         return Run.msToString(time);
     }
 
-    private String getSpawnBiome() {
+    private String getSpawnBiome() { // copied from pncakespoon tracker
         String spawnBiome = "None";
         if (adv.has("minecraft:adventure/adventuring_time")) {
             JsonObject adventuringTime = adv.getAsJsonObject("minecraft:adventure/adventuring_time");
@@ -181,7 +182,7 @@ public class Run extends HashMap<String, Object> {
         return spawnBiome;
     }
 
-    private String getEnterType() {
+    private String getEnterType() { // copied from pncakespoon tracker
         String enterType = "None";
         if (this.adv.has("minecraft:story/enter_the_nether")) {
             enterType = "Obsidian";
@@ -199,7 +200,7 @@ public class Run extends HashMap<String, Object> {
         return enterType;
     }
 
-    private String getGoldSource() {
+    private String getGoldSource() { // copied from pncakespoon tracker
         String goldSource = "None";
 
         // Check if "gold_ingot" is either dropped or picked up
@@ -218,7 +219,7 @@ public class Run extends HashMap<String, Object> {
         return goldSource;
     }
 
-    private String getIronSource() {
+    private String getIronSource() { // copied from pncakespoon tracker
         String ironSource = "None";
 
         if (this.adv.has("minecraft:story/smelt_iron") || this.adv.has("minecraft:story/iron_tools") ||

@@ -2,7 +2,6 @@ package com.cylorun.instance.logs;
 
 import com.cylorun.instance.LogEvent;
 import com.google.gson.JsonObject;
-import com.cylorun.enums.LogEventType;
 import com.cylorun.instance.WorldFile;
 import com.cylorun.io.TrackerOptions;
 import com.cylorun.utils.I18n;
@@ -34,15 +33,15 @@ public class LogParser {
                 if (l.contains(I18n.get("chat.respawn_set"))) {
                     this.lastRespawnSet = getTime(l);
                     this.respawnSet = true;
-                    res.add(new LogEvent(LogEventType.RESPAWN_SET, l));
+                    res.add(new LogEvent(LogEvent.LogEventType.RESPAWN_SET, l));
                 }
 
                 if (containsDeath(l, file.getUsername())) {
                     if (this.respawnSet) {
-                        res.add(new LogEvent(LogEventType.HUNGER_RESET, l));
+                        res.add(new LogEvent(LogEvent.LogEventType.HUNGER_RESET, l));
                         this.respawnSet = false;
                     } else {
-                        res.add(new LogEvent(LogEventType.DEATH, l));
+                        res.add(new LogEvent(LogEvent.LogEventType.DEATH, l));
                     }
                 }
             }
