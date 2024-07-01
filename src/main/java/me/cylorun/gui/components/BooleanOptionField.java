@@ -10,4 +10,11 @@ public class BooleanOptionField extends JCheckBox {
         this.setSelected(value);
         this.addChangeListener((e)-> consumer.accept(this.isSelected()));
     }
+
+    public BooleanOptionField(String label, String tooltipText, boolean value, Consumer<Boolean> consumer) {
+        super(label);
+        this.setSelected(value);
+        this.setToolTipText(tooltipText);
+        this.addChangeListener((e)-> consumer.accept(this.isSelected()));
+    }
 }

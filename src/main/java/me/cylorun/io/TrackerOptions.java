@@ -29,6 +29,7 @@ public class TrackerOptions {
     public boolean only_track_completions = true;
     public boolean show_debug = false;
     public boolean generate_chunkmap = true;
+    public boolean always_save_locally = false;
     public int max_respawn_to_hr_time = 30; // seconds
     public int game_save_interval = 5; // seconds
     public int path_interval = 5; //secs

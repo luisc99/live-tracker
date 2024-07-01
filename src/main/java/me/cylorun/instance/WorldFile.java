@@ -85,7 +85,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     }
 
     public Vec2i getPlayerLocation() {
-        String stringData = this.reader.get(NBTReader.PLAYER_POS);
+        String stringData = this.reader.get(NBTReader.PLAYER_POS); // TODO reader.has func that checks nested values
         if (stringData == null) {
             return null;
         }

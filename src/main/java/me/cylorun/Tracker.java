@@ -52,21 +52,20 @@ public class Tracker {
     }
 
     public static void handleWorld(WorldFile world) {
+        TrackerOptions options = TrackerOptions.getInstance();
         world.setCompletionHandler(() -> {
             Run run = new Run(world);
             run.gatherAll();
 
             if (run.shouldPush()) {
-//                try {
-//                    GoogleSheetsClient.appendRowTop(run);
-//                    Tracker.log(Level.INFO, "Run Tracked");
-//                } catch (IOException | GeneralSecurityException e) {
-//                    Tracker.log(Level.ERROR, "Failed to upload run to google sheets\n" + e);
-//                }
+                if (options.always_save_locally) {
+                    run.save(TrackerOptions.getTrackerDir().resolve("local"));
+                }
+
                 APIUtil.tryUploadRun(run);
             }
 
-            if (TrackerOptions.getInstance().generate_chunkmap) {
+            if (options.generate_chunkmap) {
                 new Thread(()->{
                     ChunkMap cm = new ChunkMap(world.getSeed(), 500, kaptainwutax.mcutils.state.Dimension.OVERWORLD, world);
                     cm.generate();

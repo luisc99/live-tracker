@@ -90,6 +90,11 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
+        generalPanel.add(new BooleanOptionField("Save Runs Locally", "Saves runs to .LiveTracker/local in a JSON format", options.always_save_locally, (val) -> {
+            options.always_save_locally = val;
+            TrackerOptions.save();
+        }));
+
         generalPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         generalPanel.add(new JSeparator(JSeparator.HORIZONTAL));
         generalPanel.add(new ActionButton("Open Tracker Folder", (e) -> {
