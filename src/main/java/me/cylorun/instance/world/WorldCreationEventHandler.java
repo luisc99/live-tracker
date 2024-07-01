@@ -1,8 +1,12 @@
 package me.cylorun.instance.world;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import me.cylorun.Tracker;
 import me.cylorun.instance.WorldFile;
+import me.cylorun.utils.JSONUtil;
+import org.apache.logging.log4j.Level;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -56,10 +60,11 @@ public class WorldCreationEventHandler extends Thread {
             if (!Objects.equals(newPath, this.lastPath) && !this.previousWorlds.contains(newPath)) { // makes sure that a world wont be tracked multiple times
                 this.lastPath = newPath;
 
-//                JsonObject recordJson = JSONUtil.parseFile(Paths.get(newPath).resolve("speedrunigt").resolve("record.json").toFile());
-//                if (recordJson != null && recordJson.get("category").getAsString().equals("pratice_world")) { // yes i spelled it right
-//                    continue;
-//                }
+                JsonObject recordJson = JSONUtil.parseFile(Paths.get(newPath).resolve("speedrunigt").resolve("record.json").toFile());
+                if (recordJson != null && recordJson.get("category").getAsString().equals("pratice_world")) { // yes i spelled it right
+                    Tracker.log(Level.INFO, String.format("Practice world %s detected, will not track", new File(newPath).getName()));
+                    continue;
+                }
 
                 this.previousWorlds.add(newPath);
                 this.notifyListeners(new WorldFile(this.lastPath));
