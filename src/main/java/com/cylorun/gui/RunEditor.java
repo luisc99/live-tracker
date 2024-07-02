@@ -120,7 +120,6 @@ public class RunEditor extends JPanel {
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION
         ) {
             this.prevColor = this.colorChooser.getCurrentColor();
-            System.out.println(this.prevColor);
             this.editRun("color", this.colorChooser.getColorString());
             Tracker.log(Level.INFO, "Successfully edited color for run " + this.record.get("run_id").getAsString());
             this.checkForChanges();
@@ -229,7 +228,6 @@ public class RunEditor extends JPanel {
                     }
 
                     runData = JSONUtil.flatten(r);
-                    System.out.println(runData);
                     String[] values = getAllValueKeys().toArray(new String[0]);
                     columnField.setOptions(values);
                     Color color = getColorFromRun(runData);
