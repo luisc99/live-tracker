@@ -49,25 +49,25 @@ public class JSONUtil {
 
     public static Optional<String> getOptionalString(JsonObject obj, String member) {
         return Optional.ofNullable(obj.get(member))
-                .filter(element -> !(element instanceof JsonNull))
+                .filter(JsonElement::isJsonPrimitive)
                 .map(JsonElement::getAsString);
     }
 
     public static Optional<Integer> getOptionalInt(JsonObject obj, String member) {
         return Optional.ofNullable(obj.get(member))
-                .filter(element -> !(element instanceof JsonNull))
+                .filter(JsonElement::isJsonPrimitive)
                 .map(JsonElement::getAsInt);
     }
 
     public static Optional<Boolean> getOptionalBool(JsonObject obj, String member) {
         return Optional.ofNullable(obj.get(member))
-                .filter(element -> !(element instanceof JsonNull))
+                .filter(JsonElement::isJsonPrimitive)
                 .map(JsonElement::getAsBoolean);
     }
 
     public static Optional<JsonObject> getOptionalJsonObj(JsonObject obj, String member) {
         return Optional.ofNullable(obj.get(member))
-                .filter(element -> !(element instanceof JsonNull))
+                .filter(JsonElement::isJsonObject)
                 .map(JsonElement::getAsJsonObject);
     }
 }
