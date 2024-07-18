@@ -22,7 +22,7 @@ public class APIUtil {
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), bodyJson);
         Request request = new Request.Builder()
-                .url(TrackerOptions.getInstance().api_url+ "/upload")
+                .url(TrackerOptions.getInstance().api_url+ "/runs")
                 .post(requestBody)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("authorization", options.api_key)

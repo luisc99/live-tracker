@@ -166,12 +166,13 @@ public class RunEditor extends JPanel {
     private boolean editRun(String column, String value) {
         OkHttpClient client = new OkHttpClient();
         JsonObject o = new JsonObject();
+        String id = this.record.get("run_id").getAsString();
         o.addProperty("column", column);
         o.addProperty("value", value);
-        o.addProperty("id", this.record.get("run_id").getAsString());
+        o.addProperty("id", id);
 
         RequestBody body = RequestBody.create(o.toString(), MediaType.get("application/json; charset=utf-8"));
-        Request req = new Request.Builder().url(TrackerOptions.getInstance().api_url + "/edit").post(body).addHeader("authorization", TrackerOptions.getInstance().api_key).build();
+        Request req = new Request.Builder().url(TrackerOptions.getInstance().api_url + "/runs/" + id).put(body).addHeader("authorization", TrackerOptions.getInstance().api_key).build();
 
         try (Response res = client.newCall(req).execute()) {
             return res.code() == 200;
@@ -206,7 +207,7 @@ public class RunEditor extends JPanel {
             @Override
             protected JsonObject doInBackground() {
                 OkHttpClient client = new OkHttpClient();
-                Request req = new Request.Builder().url(TrackerOptions.getInstance().api_url + "/runs?id=" + record.get("run_id").getAsString()).get().build();
+                Request req = new Request.Builder().url(TrackerOptions.getInstance().api_url + "/runs/" + record.get("run_id").getAsString()).get().build();
 
                 try (Response res = client.newCall(req).execute()) {
                     String jsonData = res.body().string();
