@@ -1,9 +1,9 @@
 package com.cylorun.utils;
 
 import com.cylorun.Tracker;
-import com.google.gson.Gson;
 import com.cylorun.instance.Run;
 import com.cylorun.io.TrackerOptions;
+import com.google.gson.Gson;
 import okhttp3.*;
 import org.apache.logging.log4j.Level;
 
@@ -22,7 +22,7 @@ public class APIUtil {
 
         RequestBody requestBody = RequestBody.create(MediaType.parse("application/json"), bodyJson);
         Request request = new Request.Builder()
-                .url(TrackerOptions.getInstance().api_url+ "/runs")
+                .url(TrackerOptions.getInstance().api_url + "/runs")
                 .post(requestBody)
                 .addHeader("Content-Type", "application/json")
                 .addHeader("authorization", options.api_key)
@@ -43,7 +43,11 @@ public class APIUtil {
         String runJson = new Gson().toJson(run);
         return String.format("{\"run\":%s}", runJson);
     }
+
     public static void tryUploadRun(Run run) {
+        if (!TrackerOptions.getInstance().upload_remote_server) {
+            return;
+        }
         if (!APIUtil.isValidKey(TrackerOptions.getInstance().api_key)) {
             Tracker.log(Level.WARN, "Invalid API key or none provided, will not upload run");
             return;
@@ -53,6 +57,7 @@ public class APIUtil {
         int code;
         while ((code = uploadRun(run)) != 200) {
             Tracker.log(Level.ERROR, "Failed to upload run, trying again. code: " + code);
+
             if (retries++ > 5) {
                 Tracker.log(Level.ERROR, "Failed to upload run, saving locally...");
                 Path savePath = TrackerOptions.getTrackerDir().resolve("local");
@@ -61,6 +66,7 @@ public class APIUtil {
                 } else {
                     Tracker.log(Level.INFO, "Saved run locally");
                 }
+
                 break;
             }
         }

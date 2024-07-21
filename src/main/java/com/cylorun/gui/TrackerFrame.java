@@ -162,6 +162,11 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
+        advancedPanel.add(new BooleanOptionField("Upload to a remote server", options.upload_remote_server, (val) -> {
+            options.upload_remote_server = val;
+            TrackerOptions.save();
+        }));
+
         this.tabbedPane.add("General", generalPanel);
         this.tabbedPane.add("Advanced", advancedPanel);
         this.onApiKeyChange(TrackerOptions.getInstance().api_key);
