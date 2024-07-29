@@ -11,6 +11,7 @@ import com.cylorun.instance.player.Inventory;
 import com.cylorun.instance.world.CompletionHandler;
 import com.cylorun.instance.world.WorldEventHandler;
 import com.cylorun.instance.world.WorldEventListener;
+import com.cylorun.io.TrackerOptions;
 import com.cylorun.utils.Assert;
 import com.cylorun.utils.Vec2i;
 import kaptainwutax.mcutils.state.Dimension;
@@ -34,8 +35,8 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     private final EventTracker eventTracker;
     public final NBTReader reader;
     public final WorldEventHandler eventHandler;
-    public final HungerResetHandler hungerResetHandler;
-    public final DistanceTracker strongholdTracker;
+    public HungerResetHandler hungerResetHandler;
+    public DistanceTracker strongholdTracker;
     public final List<Pair<Pair<Vec2i, Vec2i>, Dimension>> playerPath; // just the path the player takes
     public final List<Pair<Pair<String, Vec2i>, Dimension>> playerEvents; // locations of deaths and other special events
     public final Inventory inv;
@@ -52,8 +53,7 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         this.inv = new Inventory(this);
         this.eventHandler = new WorldEventHandler(this);
         this.logHandler = new LogHandler(this);
-        this.hungerResetHandler = new HungerResetHandler(this);
-        this.strongholdTracker = new DistanceTracker(this, SpeedrunEvent.SpeedrunEventType.FIRST_PORTAL, SpeedrunEvent.SpeedrunEventType.ENTER_STRONGHOLD);
+
         this.reader = NBTReader.from(this);
 
         this.pathTracker = new PathTracker(this);
@@ -61,6 +61,11 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
 
         this.logHandler.addListener(this);
         this.eventHandler.addListener(this);
+
+        if (TrackerOptions.getInstance().use_experimental_tracking) {
+            this.hungerResetHandler = new HungerResetHandler(this);
+            this.strongholdTracker = new DistanceTracker(this, SpeedrunEvent.SpeedrunEventType.FIRST_PORTAL, SpeedrunEvent.SpeedrunEventType.ENTER_STRONGHOLD);
+        }
     }
 
     public Path getRecordPath() {

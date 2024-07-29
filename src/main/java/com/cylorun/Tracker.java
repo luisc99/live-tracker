@@ -5,6 +5,7 @@ import com.cylorun.gui.TrackerFrame;
 import com.cylorun.instance.Run;
 import com.cylorun.instance.WorldFile;
 import com.cylorun.io.TrackerOptions;
+import com.cylorun.io.sheets.GoogleSheetsClient;
 import com.cylorun.map.ChunkMap;
 import com.cylorun.utils.APIUtil;
 import com.cylorun.utils.LogReceiver;
@@ -13,9 +14,11 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,6 +68,12 @@ public class Tracker {
                 }
 
                 APIUtil.tryUploadRun(run);
+                try {
+                    GoogleSheetsClient.appendRowTop(run);
+                } catch (IOException | GeneralSecurityException e) {
+                    e.printStackTrace();
+                    Tracker.log(Level.ERROR, "Failed to upload run to google sheets: "+ e.getMessage());
+                }
             }
 
             if (options.generate_chunkmap) {

@@ -66,23 +66,25 @@ public class Run extends HashMap<String, Object> {
         this.put("gold_source", this.getGoldSource());
         this.put("spawn_biome", this.getSpawnBiome());
         this.put("rta", msToString(this.recordFile.get("final_rta").getAsLong()));
-        this.put("wood", this.getWoodTime());
+        this.put("time_wood", this.getWoodTime());
 
         for (int i = 0; i < majorSplits.length; i++) {
             this.put(splitNames[i], this.getSplitTime(majorSplits[i]));
         }
 
         this.put("igt", msToString(this.recordFile.get("final_igt").getAsLong()));
-        this.put("sh_dist", this.worldFile.strongholdTracker.getFinalData());
-        this.put("sh_ring", getStrongholdRing(this.worldFile.strongholdTracker.endPoint));
-        this.put("explosives_used", this.getExplosivesUsed());
         this.put("gold_dropped", this.getGoldDropped());
         this.putAll(this.getMiscStats());
         this.put("world_name", worldFile.getName());
-        this.putAll(this.getFinalBarters());
-        this.putAll(this.getMobKills());
-        this.putAll(this.getFoods());
-        this.putAll(this.getTravelled());
+        if (TrackerOptions.getInstance().use_experimental_tracking) {
+            this.putAll(this.getFinalBarters());
+            this.putAll(this.getMobKills());
+            this.putAll(this.getFoods());
+            this.putAll(this.getTravelled());
+            this.put("sh_dist", this.worldFile.strongholdTracker.getFinalData());
+            this.put("sh_ring", getStrongholdRing(this.worldFile.strongholdTracker.endPoint));
+            this.put("explosives_used", this.getExplosivesUsed());
+        }
         this.put("seed", this.worldFile.getSeed());
 
         this.hasData = true;
@@ -133,10 +135,9 @@ public class Run extends HashMap<String, Object> {
         return 0;
     }
 
-    public static Integer getStrongholdRing(Vec2i strongholdLoc) {
-        // -1 if not found
+    public static int getStrongholdRing(Vec2i strongholdLoc) {
         if (strongholdLoc == null) {
-            return null;
+            return 0;
         }
 
         int dist = strongholdLoc.distanceTo(Vec2i.ZERO);
