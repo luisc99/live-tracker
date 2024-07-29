@@ -31,6 +31,7 @@ public class TrackerOptions {
     public boolean generate_chunkmap = true;
     public boolean always_save_locally = false;
     public boolean upload_remote_server = false;
+    public boolean use_experimental_tracking = false; // use new stats like barters, map and shit
     public int max_respawn_to_hr_time = 30; // seconds
     public int game_save_interval = 5; // seconds
     public int path_interval = 5; //secs

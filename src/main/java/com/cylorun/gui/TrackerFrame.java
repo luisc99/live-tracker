@@ -126,6 +126,9 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
             this.onApiKeyChange(val);
         }, (e) -> new Thread(() -> {
+            if (!options.upload_remote_server) {
+                return;
+            }
             boolean res = APIUtil.isValidKey(options.api_key);
             if (res) {
                 JOptionPane.showMessageDialog(this, "Valid Key", "Verification", JOptionPane.INFORMATION_MESSAGE);
@@ -140,6 +143,9 @@ public class TrackerFrame extends JFrame implements WindowListener {
             options.api_url = val;
             TrackerOptions.save();
         }, (e) -> new Thread(() -> {
+            if (!options.upload_remote_server) {
+                return;
+            }
             boolean res = APIUtil.isValidApiUrl(options.api_url);
             if (res) {
                 JOptionPane.showMessageDialog(this, "Valid URL", "Verification", JOptionPane.INFORMATION_MESSAGE);
@@ -157,8 +163,13 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
-        advancedPanel.add(new BooleanOptionField("Generate Map", options.generate_chunkmap, (val) -> {
+        advancedPanel.add(new BooleanOptionField("Generate World Map", options.generate_chunkmap, (val) -> {
             options.generate_chunkmap = val;
+            TrackerOptions.save();
+        }));
+
+        advancedPanel.add(new BooleanOptionField("Experimental Tracking" , options.use_experimental_tracking, (val) -> {
+            options.use_experimental_tracking = val;
             TrackerOptions.save();
         }));
 
@@ -191,6 +202,9 @@ public class TrackerFrame extends JFrame implements WindowListener {
     }
 
     private void onApiKeyChange(String newKey) {
+        if (!TrackerOptions.getInstance().upload_remote_server) {
+            return;
+        }
         SwingUtilities.invokeLater(() -> {
             if (APIUtil.isValidKey(newKey)) {
                 this.tabbedPane.add("Runs", editorPanel);
