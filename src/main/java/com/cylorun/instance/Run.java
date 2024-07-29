@@ -76,11 +76,11 @@ public class Run extends HashMap<String, Object> {
         this.put("gold_dropped", this.getGoldDropped());
         this.putAll(this.getMiscStats());
         this.put("world_name", worldFile.getName());
+        this.putAll(this.getMobKills());
+        this.putAll(this.getFoods());
+        this.putAll(this.getTravelled());
         if (TrackerOptions.getInstance().use_experimental_tracking) {
             this.putAll(this.getFinalBarters());
-            this.putAll(this.getMobKills());
-            this.putAll(this.getFoods());
-            this.putAll(this.getTravelled());
             this.put("sh_dist", this.worldFile.strongholdTracker.getFinalData());
             this.put("sh_ring", getStrongholdRing(this.worldFile.strongholdTracker.endPoint));
             this.put("explosives_used", this.getExplosivesUsed());
