@@ -68,7 +68,7 @@ public class GoogleSheetsClient {
         List<Object> rowList = new ArrayList<>(Arrays.asList(new Object[headers.size()]));
         for (int i = 0; i < headers.size(); i++) {
             String header = (String) headers.get(i);
-            rowList.set(i, map.getOrDefault(header, null));
+            rowList.set(i, map.getOrDefault(header, ""));
         }
         return rowList;
     }
