@@ -2,6 +2,7 @@ package com.cylorun.instance;
 
 import com.cylorun.Tracker;
 import com.cylorun.utils.Assert;
+import com.cylorun.utils.ExceptionUtil;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.querz.nbt.io.NBTUtil;
@@ -9,6 +10,7 @@ import net.querz.nbt.io.NamedTag;
 import org.apache.logging.log4j.Level;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class NBTReader {
@@ -43,7 +45,7 @@ public class NBTReader {
         try {
             tag = NBTUtil.read(this.path.toFile());
         } catch (IOException e) {
-            Tracker.log(Level.ERROR, "Failed to read a nbt file");
+            Tracker.log(Level.ERROR, "Failed to read a nbt file: " + this.path.toFile().getAbsolutePath() + "\nStack trace: " + ExceptionUtil.toDetailedString(e));
             return null;
         }
         return JsonParser.parseString(tag.getTag().toString()).getAsJsonObject();
