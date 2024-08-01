@@ -48,7 +48,9 @@ public class RunPanel extends JPanel {
             this.fetchData();
         }));
 
-        this.fetchData();
+        if (TrackerOptions.getInstance().upload_remote_server) {
+            this.fetchData();
+        }
     }
 
     private void toggleButtonLoading() {
