@@ -13,6 +13,7 @@ import okhttp3.Response;
 import org.apache.logging.log4j.Level;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URL;
@@ -452,7 +453,27 @@ public class Run extends HashMap<String, Object> {
         return String.format("%02d:%02d:%02d", hours, minutes, seconds);
     }
 
-    public int getNextRunID() {
+    public static int getNextRunID() {
+        if (TrackerOptions.getInstance().upload_remote_server) {
+            return getNextRunIDFromServer();
+        }
+        return getNextRunIDLocal();
+    }
+    private static int getNextRunIDLocal() {
+        File localFolder = TrackerOptions.getTrackerDir().resolve("local").toFile();
+        if (!localFolder.exists()) {
+            return 1;
+        }
+
+        File latest = FileUtil.getLastModified(localFolder);
+        JsonObject o = JSONUtil.parseFile(latest);
+        if (o == null) {
+            return 1;
+        }
+
+        return JSONUtil.getOptionalInt(o, "run_id").orElse(1);
+    }
+    private static int getNextRunIDFromServer() {
         OkHttpClient client = new OkHttpClient();
         Request req = new Request.Builder()
                 .get()
