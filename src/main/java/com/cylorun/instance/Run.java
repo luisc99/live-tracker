@@ -471,7 +471,7 @@ public class Run extends HashMap<String, Object> {
             return 1;
         }
 
-        return JSONUtil.getOptionalInt(o, "run_id").orElse(1);
+        return JSONUtil.getOptionalInt(o, "run_id").orElse(1) + 1;
     }
     private static int getNextRunIDFromServer() {
         OkHttpClient client = new OkHttpClient();
