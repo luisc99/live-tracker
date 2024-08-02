@@ -13,6 +13,7 @@ import com.cylorun.instance.world.WorldEventHandler;
 import com.cylorun.instance.world.WorldEventListener;
 import com.cylorun.io.TrackerOptions;
 import com.cylorun.utils.Assert;
+import com.cylorun.utils.ExceptionUtil;
 import com.cylorun.utils.Vec2i;
 import kaptainwutax.mcutils.state.Dimension;
 import org.apache.commons.lang3.tuple.Pair;
@@ -31,8 +32,8 @@ import java.util.regex.Pattern;
 
 public class WorldFile extends File implements WorldEventListener, LogEventListener {
     private CompletionHandler completionHandler;
-    private final PathTracker pathTracker;
-    private final EventTracker eventTracker;
+    private PathTracker pathTracker;
+    private EventTracker eventTracker;
     public final NBTReader reader;
     public final WorldEventHandler eventHandler;
     public HungerResetHandler hungerResetHandler;
@@ -56,8 +57,6 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
 
         this.reader = NBTReader.from(this);
 
-        this.pathTracker = new PathTracker(this);
-        this.eventTracker = new EventTracker(this);
 
         this.logHandler.addListener(this);
         this.eventHandler.addListener(this);
@@ -65,6 +64,9 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         if (TrackerOptions.getInstance().use_experimental_tracking) {
             this.hungerResetHandler = new HungerResetHandler(this);
             this.strongholdTracker = new DistanceTracker(this, SpeedrunEvent.SpeedrunEventType.FIRST_PORTAL, SpeedrunEvent.SpeedrunEventType.ENTER_STRONGHOLD);
+
+            this.pathTracker = new PathTracker(this);
+            this.eventTracker = new EventTracker(this);
         }
     }
 
@@ -99,9 +101,16 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         if (s.length != 3) {
             return null;
         }
-        Integer[] loc = Arrays.stream(s)
-                .map((l) -> (int) Double.parseDouble(l))
-                .toArray(Integer[]::new);
+        Integer[] loc;
+
+        try {
+            loc = Arrays.stream(s)
+                    .map((l) -> (int) Double.parseDouble(l))
+                    .toArray(Integer[]::new);
+        } catch (NumberFormatException e) {
+            Tracker.log(Level.ERROR, "Failed to parse player location: " + ExceptionUtil.toDetailedString(e));
+            return null;
+        }
         return new Vec2i(loc[0], loc[2]);
     }
 
