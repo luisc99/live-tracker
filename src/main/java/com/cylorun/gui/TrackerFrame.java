@@ -75,7 +75,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
 
         generalPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         generalPanel.add(new JSeparator(JSeparator.HORIZONTAL));
-        generalPanel.add(new BooleanOptionField("Generate Headers","Generates headers for google sheets", options.gen_labels, (val) -> {
+        generalPanel.add(new BooleanOptionField("Generate Headers", "Generates headers for google sheets", options.gen_labels, (val) -> {
             options.gen_labels = val;
             TrackerOptions.save();
         }));
@@ -126,6 +126,8 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
+        advancedPanel.add(new JSeparator(JSeparator.HORIZONTAL));
+
         advancedPanel.add(new TextOptionField("API key", options.api_key, true, (val) -> {
             options.api_key = val;
             TrackerOptions.save();
@@ -158,11 +160,12 @@ public class TrackerFrame extends JFrame implements WindowListener {
                 Tracker.log(Level.INFO, "Valid API Url");
                 JOptionPane.showMessageDialog(this, "Invalid URL", "Verification", JOptionPane.ERROR_MESSAGE);
             }
-        },"ApiUrlVerification").start()
+        }, "ApiUrlVerification").start()
         ));
 
         advancedPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         advancedPanel.add(new JSeparator(JSeparator.HORIZONTAL));
+
         advancedPanel.add(new BooleanOptionField("Debug messages", options.show_debug, (val) -> {
             options.show_debug = val;
             TrackerOptions.save();
@@ -173,7 +176,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
-        advancedPanel.add(new BooleanOptionField("Experimental Tracking" , options.use_experimental_tracking, (val) -> {
+        advancedPanel.add(new BooleanOptionField("Experimental Tracking", options.use_experimental_tracking, (val) -> {
             options.use_experimental_tracking = val;
             TrackerOptions.save();
         }));

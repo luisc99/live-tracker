@@ -15,6 +15,6 @@ public class BooleanOptionField extends JCheckBox {
         super(label);
         this.setSelected(value);
         this.setToolTipText(tooltipText);
-        this.addChangeListener((e)-> consumer.accept(this.isSelected()));
+        this.addActionListener((e)-> consumer.accept(this.isSelected()));
     }
 }
