@@ -75,8 +75,13 @@ public class TrackerFrame extends JFrame implements WindowListener {
 
         generalPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         generalPanel.add(new JSeparator(JSeparator.HORIZONTAL));
-        generalPanel.add(new BooleanOptionField("Generate Headers", options.gen_labels, (val) -> {
+        generalPanel.add(new BooleanOptionField("Generate Headers","Generates headers for google sheets", options.gen_labels, (val) -> {
             options.gen_labels = val;
+            TrackerOptions.save();
+        }));
+
+        generalPanel.add(new BooleanOptionField("Upload to sheets", options.upload_sheets, (val) -> {
+            options.upload_sheets = val;
             TrackerOptions.save();
         }));
 

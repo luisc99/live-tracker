@@ -1,9 +1,9 @@
 package com.cylorun;
 
-import com.cylorun.instance.world.WorldCreationEventHandler;
 import com.cylorun.gui.TrackerFrame;
 import com.cylorun.instance.Run;
 import com.cylorun.instance.WorldFile;
+import com.cylorun.instance.world.WorldCreationEventHandler;
 import com.cylorun.io.TrackerOptions;
 import com.cylorun.io.sheets.GoogleSheetsClient;
 import com.cylorun.map.ChunkMap;
@@ -34,8 +34,9 @@ public class Tracker {
         java.util.logging.Logger.getLogger(OkHttpClient.class.getName()).setLevel(java.util.logging.Level.FINE);
         List<WorldFile> worlds = new ArrayList<>();
         TrackerFrame.getInstance().open();
+        new Thread(GoogleSheetsClient::setup,"google-sheets-setup").start();
 
-        WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object is created per world path
+        WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object should be created per world path
         worldHandler.addListener(world -> {
             Tracker.log(Level.DEBUG, "New world detected: " + world);
             if (!worlds.contains(world)) {
@@ -68,16 +69,18 @@ public class Tracker {
                 }
 
                 APIUtil.tryUploadRun(run);
-                try {
-                    GoogleSheetsClient.appendRowTop(run);
-                } catch (IOException | GeneralSecurityException e) {
-                    e.printStackTrace();
-                    Tracker.log(Level.ERROR, "Failed to upload run to google sheets: "+ e.getMessage());
+                if (options.upload_sheets) {
+                    try {
+                        GoogleSheetsClient.appendRowTop(run);
+                    } catch (IOException | GeneralSecurityException e) {
+                        e.printStackTrace();
+                        Tracker.log(Level.ERROR, "Failed to upload run to google sheets: " + e.getMessage());
+                    }
                 }
             }
 
             if (options.generate_chunkmap) {
-                new Thread(()->{
+                new Thread(() -> {
                     ChunkMap cm = new ChunkMap(world.getSeed(), 500, kaptainwutax.mcutils.state.Dimension.OVERWORLD, world);
                     cm.generate();
                     cm.setDimension(kaptainwutax.mcutils.state.Dimension.NETHER).generate();
