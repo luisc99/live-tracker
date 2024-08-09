@@ -2,6 +2,7 @@ package com.cylorun.instance.world;
 
 import com.cylorun.Tracker;
 import com.cylorun.instance.WorldFile;
+import com.cylorun.utils.ExceptionUtil;
 import com.cylorun.utils.JSONUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -16,19 +17,22 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 public class WorldCreationEventHandler extends Thread {
     public List<String> previousWorlds;
     private String lastPath = "";
-    private File lwjson = Paths.get(System.getProperty("user.home")).resolve("speedrunigt").resolve("latest_world.json").toFile();
+    private final List<Consumer<WorldFile>> listeners;
+
+    private final File LAST_WORlD_JSON = Paths.get(System.getProperty("user.home")).resolve("speedrunigt").resolve("latest_world.json").toFile();
 
     public WorldCreationEventHandler() {
         super("WorldCreationEventHandler");
         this.previousWorlds = new ArrayList<>();
+        this.listeners = new ArrayList<>();
         this.start();
     }
 
-    private List<Consumer<WorldFile>> listeners = new ArrayList<>();
 
     public void addListener(Consumer<WorldFile> listener) {
         listeners.add(listener);
@@ -37,9 +41,10 @@ public class WorldCreationEventHandler extends Thread {
     private String getLastWorldPath() {
         FileReader reader = null;
         try {
-            reader = new FileReader(lwjson);
+            reader = new FileReader(LAST_WORlD_JSON);
         } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
+            ExceptionUtil.showDialogAndExit("LAST WORLD JSON FILE NOT FOUND, MAKE SURE UR USING SPEEDRUN IGT 14.2+ (i think that's the version)");
+            return this.lastPath;
         }
 
         JsonElement element = JsonParser.parseReader(reader);
@@ -54,10 +59,10 @@ public class WorldCreationEventHandler extends Thread {
 
     @Override
     public void run() {
-        this.lastPath = getLastWorldPath(); // so that it wont detect old worlds
+        this.lastPath = this.getLastWorldPath(); // so that it wont detect old worlds
 
         while (true) {
-            String newPath = getLastWorldPath();
+            String newPath = this.getLastWorldPath();
             if (!Objects.equals(newPath, this.lastPath) && !this.previousWorlds.contains(newPath)) { // makes sure that a world wont be tracked multiple times
                 this.lastPath = newPath;
 

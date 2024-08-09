@@ -466,6 +466,10 @@ public class Run extends HashMap<String, Object> {
         }
 
         File latest = FileUtil.getLastModified(localFolder);
+        if (latest == null) {
+            return 1;
+        }
+
         JsonObject o = JSONUtil.parseFile(latest);
         if (o == null) {
             return 1;

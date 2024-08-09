@@ -17,7 +17,10 @@ public class JSONUtil {
         try {
             reader = new FileReader(file);
         } catch (FileNotFoundException e) {
-            Tracker.log(Level.ERROR, "Json file non existent: " + file.getAbsolutePath());
+            Tracker.log(Level.DEBUG, "Trying to read a non existent json file: " + file.getAbsolutePath());
+            return null;
+        } catch (NullPointerException e) {
+            Tracker.log(Level.ERROR, "Trying to read a null File");
             return null;
         }
 

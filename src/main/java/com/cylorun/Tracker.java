@@ -53,6 +53,10 @@ public class Tracker {
         });
     }
 
+    public static void stop() {
+        System.exit(0);
+    }
+
     public static void handleWorld(WorldFile world) {
         TrackerOptions options = TrackerOptions.getInstance();
         world.setCompletionHandler(() -> {
