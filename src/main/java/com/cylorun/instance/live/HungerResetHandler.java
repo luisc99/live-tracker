@@ -4,7 +4,7 @@ import com.cylorun.instance.LogEvent;
 import com.cylorun.instance.SpeedrunEvent;
 import com.cylorun.instance.WorldFile;
 import com.cylorun.instance.logs.LogEventListener;
-import com.cylorun.instance.player.InventoryItem;
+import com.cylorun.instance.Inventory;
 import com.cylorun.instance.world.WorldEventListener;
 import com.cylorun.io.TrackerOptions;
 
@@ -18,7 +18,7 @@ public class HungerResetHandler implements WorldEventListener, LogEventListener 
     public Map<String, Integer> itemDiffs;
     public int respawnPointsSet;
     private WorldFile world;
-    private List<InventoryItem> tmpInv;
+    private List<Inventory.Item> tmpInv;
     private long lastRespawnSet = 0;
 
     public HungerResetHandler(WorldFile world) {
@@ -33,7 +33,7 @@ public class HungerResetHandler implements WorldEventListener, LogEventListener 
 
 
     private void updateDiff() {
-        for (InventoryItem item : this.tmpInv) {
+        for (Inventory.Item item : this.tmpInv) {
             int prev = 0;
             if (this.itemDiffs.containsKey(item.name)) {
                 prev = this.itemDiffs.get(item.name);

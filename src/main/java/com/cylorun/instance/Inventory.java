@@ -1,8 +1,6 @@
-package com.cylorun.instance.player;
+package com.cylorun.instance;
 
 import com.cylorun.Tracker;
-import com.cylorun.instance.NBTReader;
-import com.cylorun.instance.WorldFile;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -11,7 +9,7 @@ import org.apache.logging.log4j.Level;
 
 import java.util.ArrayList;
 
-public class Inventory extends ArrayList<InventoryItem> {
+public class Inventory extends ArrayList<Inventory.Item> {
 
     private final WorldFile file;
 
@@ -34,13 +32,28 @@ public class Inventory extends ArrayList<InventoryItem> {
             JsonObject item = e.getAsJsonObject();
             String name = item.get("id").getAsJsonObject().get("value").getAsString();
             int count = item.get("Count").getAsJsonObject().get("value").getAsInt();
-            InventoryItem invItem = new InventoryItem(name, count);
+            Inventory.Item invItem = new Inventory.Item(name, count);
 
             this.add(invItem);
         }
 
 
         return this;
+    }
+
+    public static class Item {
+
+        public String name;
+        public int count;
+        public Item(String name, int count) {
+            this.name = name;
+            this.count = count;
+        }
+
+        @Override
+        public String toString() {
+            return String.format("{\"name\": %s, \"count\": %s}", this.name, this.count);
+        }
     }
 
 }

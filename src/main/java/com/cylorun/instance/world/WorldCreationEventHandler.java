@@ -1,11 +1,11 @@
 package com.cylorun.instance.world;
 
+import com.cylorun.Tracker;
+import com.cylorun.instance.WorldFile;
 import com.cylorun.utils.JSONUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.cylorun.Tracker;
-import com.cylorun.instance.WorldFile;
 import org.apache.logging.log4j.Level;
 
 import java.io.File;
@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 public class WorldCreationEventHandler extends Thread {
     public List<String> previousWorlds;
@@ -27,9 +28,9 @@ public class WorldCreationEventHandler extends Thread {
         this.start();
     }
 
-    private List<WorldCreationListener> listeners = new ArrayList<>();
+    private List<Consumer<WorldFile>> listeners = new ArrayList<>();
 
-    public void addListener(WorldCreationListener listener) {
+    public void addListener(Consumer<WorldFile> listener) {
         listeners.add(listener);
     }
 
@@ -46,8 +47,8 @@ public class WorldCreationEventHandler extends Thread {
     }
 
     public void notifyListeners(WorldFile world) {
-        for (WorldCreationListener listener : listeners) {
-            listener.onNewWorld(world);
+        for (Consumer<WorldFile> listener : listeners) {
+            listener.accept(world);
         }
     }
 

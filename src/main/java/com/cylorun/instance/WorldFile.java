@@ -7,8 +7,6 @@ import com.cylorun.instance.live.HungerResetHandler;
 import com.cylorun.instance.live.PathTracker;
 import com.cylorun.instance.logs.LogEventListener;
 import com.cylorun.instance.logs.LogHandler;
-import com.cylorun.instance.player.Inventory;
-import com.cylorun.instance.world.CompletionHandler;
 import com.cylorun.instance.world.WorldEventHandler;
 import com.cylorun.instance.world.WorldEventListener;
 import com.cylorun.io.TrackerOptions;
@@ -31,7 +29,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class WorldFile extends File implements WorldEventListener, LogEventListener {
-    private CompletionHandler completionHandler;
+    private Runnable completionHandler;
     private PathTracker pathTracker;
     private EventTracker eventTracker;
     public final NBTReader reader;
@@ -152,13 +150,13 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     }
 
 
-    public void setCompletionHandler(CompletionHandler completionHandler) {
+    public void setCompletionHandler(Runnable completionHandler) {
         this.completionHandler = completionHandler;
     }
 
     public void onCompletion() { // not necessarily on credits, just whenever the run is over
         if (this.completionHandler != null && !this.finished) {
-            this.completionHandler.handleCompletion();
+            this.completionHandler.run();
             this.finished = true;
         }
     }
