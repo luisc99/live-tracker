@@ -24,11 +24,11 @@ public class TrackerOptions {
     public String lang = "en_us";
     public Integer last_win_x = 0;
     public Integer last_win_y = 0;
-    public boolean gen_labels = true;
+    public boolean gen_labels = false;
     public boolean detect_ssg = true;
     public boolean only_track_completions = true;
     public boolean show_debug = false;
-    public boolean generate_chunkmap = true;
+    public boolean generate_chunkmap = false;
     public boolean always_save_locally = false;
     public boolean upload_remote_server = false;
     public boolean upload_sheets = true;
