@@ -86,7 +86,7 @@ public class Run extends HashMap<String, Object> {
             this.put("sh_ring", getStrongholdRing(this.worldFile.strongholdTracker.endPoint));
             this.put("explosives_used", this.getExplosivesUsed());
         }
-        this.put("seed", this.worldFile.getSeed());
+        this.put("seed", String.valueOf(this.worldFile.getSeed()));
 
         this.hasData = true;
         return this;
