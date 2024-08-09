@@ -26,6 +26,6 @@ public class GoogleSheetsService {
                 GoogleNetHttpTransport.newTrustedTransport(),
                 JacksonFactory.getDefaultInstance(),
                 credential
-        ).setApplicationName("LiveTracker").build();
+        ).setApplicationName("LiveTrackerService").build();
     }
 }

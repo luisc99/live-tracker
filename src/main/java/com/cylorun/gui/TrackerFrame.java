@@ -30,11 +30,11 @@ public class TrackerFrame extends JFrame implements WindowListener {
         this.setLayout(new GridLayout(1, 2));
 
         this.initialView = this.getContentPane();
-
+        this.tabbedPane = new JTabbedPane();
         this.add(this.getTextArea());
-        this.add(this.getTabbedPane());
 
         this.editorPanel = new RunPanel();
+        this.reload();
         this.setVisible(true);
     }
 
@@ -46,8 +46,16 @@ public class TrackerFrame extends JFrame implements WindowListener {
         return new JScrollPane(this.logArea);
     }
 
-    private JTabbedPane getTabbedPane() {
+    private synchronized void reload() {
+        int idx = this.tabbedPane.getSelectedIndex();
+        this.reloadTabbedPane();
+        this.tabbedPane.setSelectedIndex(idx == -1 ? 0 : idx);
+    }
+
+    private void reloadTabbedPane() {
+        this.remove(this.tabbedPane);
         this.tabbedPane = new JTabbedPane();
+
         JPanel generalPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         generalPanel.setLayout(new BoxLayout(generalPanel, BoxLayout.Y_AXIS));
         generalPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
@@ -95,7 +103,7 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
-        generalPanel.add(new BooleanOptionField("Save Runs Locally", "Saves runs to .LiveTracker/local in a JSON format", options.always_save_locally, (val) -> {
+        generalPanel.add(new BooleanOptionField("Save Runs Locally", "Saves runs to ./local", options.always_save_locally, (val) -> {
             options.always_save_locally = val;
             TrackerOptions.save();
         }));
@@ -126,42 +134,44 @@ public class TrackerFrame extends JFrame implements WindowListener {
             TrackerOptions.save();
         }));
 
-        advancedPanel.add(new JSeparator(JSeparator.HORIZONTAL));
+        if (options.upload_remote_server) {
+            advancedPanel.add(new JSeparator(JSeparator.HORIZONTAL));
 
-        advancedPanel.add(new TextOptionField("API key", options.api_key, true, (val) -> {
-            options.api_key = val;
-            TrackerOptions.save();
-            this.onApiKeyChange(val);
-        }, (e) -> new Thread(() -> {
-            if (!options.upload_remote_server) {
-                return;
-            }
-            boolean res = APIUtil.isValidKey(options.api_key);
-            if (res) {
-                JOptionPane.showMessageDialog(this, "Valid Key", "Verification", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                Tracker.log(Level.INFO, "Valid API Key");
-                JOptionPane.showMessageDialog(this, "Invalid key", "Verification", JOptionPane.ERROR_MESSAGE);
-            }
-        }, "ApiKeyVerification").start()
-        ));
+            advancedPanel.add(new TextOptionField("API key", options.api_key, true, (val) -> {
+                options.api_key = val;
+                TrackerOptions.save();
+                this.onApiKeyChange(val);
+            }, (e) -> new Thread(() -> {
+                if (!options.upload_remote_server) {
+                    return;
+                }
+                boolean res = APIUtil.isValidKey(options.api_key);
+                if (res) {
+                    JOptionPane.showMessageDialog(this, "Valid Key", "Verification", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    Tracker.log(Level.INFO, "Valid API Key");
+                    JOptionPane.showMessageDialog(this, "Invalid key", "Verification", JOptionPane.ERROR_MESSAGE);
+                }
+            }, "ApiKeyVerification").start()
+            ));
 
-        advancedPanel.add(new TextOptionField("API URL", options.api_url, false, (val) -> {
-            options.api_url = val;
-            TrackerOptions.save();
-        }, (e) -> new Thread(() -> {
-            if (!options.upload_remote_server) {
-                return;
-            }
-            boolean res = APIUtil.isValidApiUrl(options.api_url);
-            if (res) {
-                JOptionPane.showMessageDialog(this, "Valid URL", "Verification", JOptionPane.INFORMATION_MESSAGE);
-            } else {
-                Tracker.log(Level.INFO, "Valid API Url");
-                JOptionPane.showMessageDialog(this, "Invalid URL", "Verification", JOptionPane.ERROR_MESSAGE);
-            }
-        }, "ApiUrlVerification").start()
-        ));
+            advancedPanel.add(new TextOptionField("API URL", options.api_url, false, (val) -> {
+                options.api_url = val;
+                TrackerOptions.save();
+            }, (e) -> new Thread(() -> {
+                if (!options.upload_remote_server) {
+                    return;
+                }
+                boolean res = APIUtil.isValidApiUrl(options.api_url);
+                if (res) {
+                    JOptionPane.showMessageDialog(this, "Valid URL", "Verification", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    Tracker.log(Level.INFO, "Valid API Url");
+                    JOptionPane.showMessageDialog(this, "Invalid URL", "Verification", JOptionPane.ERROR_MESSAGE);
+                }
+            }, "ApiUrlVerification").start()
+            ));
+        }
 
         advancedPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         advancedPanel.add(new JSeparator(JSeparator.HORIZONTAL));
@@ -182,14 +192,25 @@ public class TrackerFrame extends JFrame implements WindowListener {
         }));
 
         advancedPanel.add(new BooleanOptionField("Upload to a remote server", options.upload_remote_server, (val) -> {
+            boolean b = val != options.upload_remote_server;
             options.upload_remote_server = val;
             TrackerOptions.save();
+
+            if (b) { // shit trips out otherwise
+                SwingUtilities.invokeLater(this::reload);
+            }
         }));
 
         this.tabbedPane.add("General", generalPanel);
         this.tabbedPane.add("Advanced", advancedPanel);
+
         this.onApiKeyChange(TrackerOptions.getInstance().api_key);
-        return this.tabbedPane;
+        this.add(this.tabbedPane);
+
+        this.tabbedPane.revalidate();
+        this.tabbedPane.repaint();
+        this.revalidate();
+        this.repaint();
     }
 
     public void appendLog(Object o) {

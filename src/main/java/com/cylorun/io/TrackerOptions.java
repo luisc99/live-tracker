@@ -44,7 +44,7 @@ public class TrackerOptions {
 
     }
 
-    public static TrackerOptions getInstance() {
+    public synchronized static TrackerOptions getInstance() {
         if (instance == null) {
             ensureTrackerDir();
             if (Files.exists(CONFIG_PATH)) {
