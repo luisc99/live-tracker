@@ -31,17 +31,19 @@ public class Run extends HashMap<String, Object> {
     private boolean hasData = false;
 
 
-    public Run(WorldFile worldFile) {
+    public Run(WorldFile worldFile) throws IOException{
         this.worldFile = worldFile;
         this.recordFile = JSONUtil.parseFile(worldFile.getRecordPath().toFile());
+        if (recordFile == null) {
+            throw new IOException("Failed to load record file: " + worldFile.getRecordPath().toString());
+        }
+
         this.eventLog = this.worldFile.eventHandler.events;
-        this.adv = recordFile.get("advancements").getAsJsonObject();
+        this.adv = JSONUtil.getOptionalJsonObj(this.recordFile, "advancements").orElseThrow(IOException::new);
         this.stats = this.getStats();
     }
 
     public Run gatherAll() {
-        this.stats = this.getStats();
-
         String[] majorSplits = {"rsg.obtain_iron_pickaxe",
                 "rsg.enter_nether",
                 "rsg.enter_bastion",
@@ -60,8 +62,9 @@ public class Run extends HashMap<String, Object> {
                 "time_stronghold",
                 "time_end"};
 
-        this.put("run_id", this.getNextRunID());
+        this.put("run_id", getNextRunID());
         this.put("date_played_est", this.getDate());
+        this.put("date_played_est_2", this.getDate());
         this.put("iron_source", this.getIronSource());
         this.put("enter_type", this.getEnterType());
         this.put("gold_source", this.getGoldSource());
@@ -74,6 +77,8 @@ public class Run extends HashMap<String, Object> {
         }
 
         this.put("igt", msToString(this.recordFile.get("final_igt").getAsLong()));
+        this.put("igt_2", msToString(this.recordFile.get("final_igt").getAsLong()));
+
         this.put("gold_dropped", this.getGoldDropped());
         this.putAll(this.getMiscStats());
         this.put("world_name", worldFile.getName());
@@ -92,13 +97,14 @@ public class Run extends HashMap<String, Object> {
         return this;
     }
 
-    private JsonObject getStats() {
+    private JsonObject getStats() throws IOException {
         Set<String> uuids = this.recordFile.get("stats").getAsJsonObject().keySet();
         if (!uuids.isEmpty()) {
             return this.recordFile.get("stats").getAsJsonObject().get(uuids.toArray()[0].toString()).getAsJsonObject().get("stats").getAsJsonObject();
         }
-        return null;
+        throw new IOException("Could not get game stats");
     }
+
 
 
     private String getDate() {

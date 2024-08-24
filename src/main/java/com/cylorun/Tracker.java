@@ -60,7 +60,13 @@ public class Tracker {
     public static void handleWorld(WorldFile world) {
         TrackerOptions options = TrackerOptions.getInstance();
         world.setCompletionHandler(() -> {
-            Run run = new Run(world);
+            Run run;
+            try {
+                  run = new Run(world);
+            } catch (IOException e) {
+                Tracker.log(Level.ERROR, "Failed to track run: "+ e.getMessage());
+                return;
+            }
             run.gatherAll();
 
             if (run.shouldPush()) {
