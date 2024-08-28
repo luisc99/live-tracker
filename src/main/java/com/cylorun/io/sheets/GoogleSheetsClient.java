@@ -56,7 +56,7 @@ public class GoogleSheetsClient {
         Sheets sheetsService = GoogleSheetsService.getSheetsService();
         String sheetId = TrackerOptions.getInstance().sheet_id.trim();
         String sheetName = TrackerOptions.getInstance().sheet_name;
-        String range = sheetName + "!A1:CM1";
+        String range = sheetName + "!A1:CZ1";
 
         ValueRange response = sheetsService.spreadsheets().values()
                 .get(sheetId, range)
@@ -77,7 +77,7 @@ public class GoogleSheetsClient {
         Sheets sheetsService = GoogleSheetsService.getSheetsService();
         String sheetName = TrackerOptions.getInstance().sheet_name;
         String sheetId = TrackerOptions.getInstance().sheet_id.strip();
-        String range = String.format("A%s:CM", row);
+        String range = String.format("A%s:CZ", row);
 
         if (overwrite) {
             ValueRange newRow = new ValueRange().setValues(Collections.singletonList(rowData));

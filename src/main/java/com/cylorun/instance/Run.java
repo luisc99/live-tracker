@@ -92,6 +92,7 @@ public class Run extends HashMap<String, Object> {
             this.put("explosives_used", this.getExplosivesUsed());
         }
         this.put("seed", String.valueOf(this.worldFile.getSeed()));
+        this.put("recent_version","false");
 
         this.hasData = true;
         return this;
@@ -480,8 +481,9 @@ public class Run extends HashMap<String, Object> {
         if (o == null) {
             return 1;
         }
+        JsonObject runObj = o.getAsJsonObject("run");
 
-        return JSONUtil.getOptionalInt(o, "run_id").orElse(1) + 1;
+        return JSONUtil.getOptionalInt(runObj, "run_id").orElse(0) + 1;
     }
     private static int getNextRunIDFromServer() {
         OkHttpClient client = new OkHttpClient();
