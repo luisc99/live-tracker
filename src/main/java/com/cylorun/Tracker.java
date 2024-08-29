@@ -8,6 +8,7 @@ import com.cylorun.io.TrackerOptions;
 import com.cylorun.io.sheets.GoogleSheetsClient;
 import com.cylorun.map.ChunkMap;
 import com.cylorun.utils.APIUtil;
+import com.cylorun.utils.ExceptionUtil;
 import com.cylorun.utils.LogReceiver;
 import okhttp3.OkHttpClient;
 import org.apache.logging.log4j.Level;
@@ -34,7 +35,7 @@ public class Tracker {
         java.util.logging.Logger.getLogger(OkHttpClient.class.getName()).setLevel(java.util.logging.Level.FINE);
         List<WorldFile> worlds = new ArrayList<>();
         TrackerFrame.getInstance().open();
-        new Thread(GoogleSheetsClient::setup,"google-sheets-setup").start();
+        new Thread(GoogleSheetsClient::setup, "google-sheets-setup").start();
 
         WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object should be created per world path
         worldHandler.addListener(world -> {
@@ -62,9 +63,9 @@ public class Tracker {
         world.setCompletionHandler(() -> {
             Run run;
             try {
-                  run = new Run(world);
+                run = new Run(world);
             } catch (IOException e) {
-                Tracker.log(Level.ERROR, "Failed to track run: "+ e.getMessage());
+                Tracker.log(Level.ERROR, "Failed to track run: " + e.getMessage());
                 return;
             }
             run.gatherAll();
@@ -85,6 +86,9 @@ public class Tracker {
                     } catch (IOException | GeneralSecurityException e) {
                         e.printStackTrace();
                         Tracker.log(Level.ERROR, "Failed to upload run to google sheets: " + e.getMessage());
+                        Tracker.log(Level.ERROR, "Stacktrace: " + ExceptionUtil.toDetailedString(e));
+                    } catch (NullPointerException e) {
+                        Tracker.log(Level.ERROR, "No provided sheet id or name");
                     }
                 }
             }

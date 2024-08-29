@@ -16,9 +16,9 @@ public class GoogleSheetsClient {
 
     public static void setup() {
         TrackerOptions options = TrackerOptions.getInstance();
-        if (options.gen_labels && !hasSetup && isValidSheet(options.sheet_id, options.sheet_name)) {
-            generateLabels();
-            hasSetup = true;
+        if (options.gen_labels && !GoogleSheetsClient.hasSetup && isValidSheet(options.sheet_id, options.sheet_name)) {
+            GoogleSheetsClient.generateLabels();
+            GoogleSheetsClient.hasSetup = true;
         }
     }
 
@@ -38,7 +38,7 @@ public class GoogleSheetsClient {
         List<Object> headers = ResourceUtil.getHeaderLabels();
 
         try {
-            insert(headers, 2, true);
+            GoogleSheetsClient.insert(headers, 2, true);
             Tracker.log(Level.INFO, "Generated header labels");
         } catch (GeneralSecurityException | IOException e) {
             Tracker.log(Level.ERROR, "Failed to generate google sheets headers: " + e.getMessage());
@@ -46,10 +46,10 @@ public class GoogleSheetsClient {
     }
 
     public static void appendRowTop(Map<String, Object> rowData) throws IOException, GeneralSecurityException {
-        List<Object> headers = getSheetHeaders();
+        List<Object> headers =  GoogleSheetsClient.getSheetHeaders();
 
-        List<Object> rowList = convertMapToList(rowData, headers);
-        insert(rowList, 4, false);
+        List<Object> rowList =  GoogleSheetsClient.convertMapToList(rowData, headers);
+        GoogleSheetsClient.insert(rowList, 4, false);
     }
 
     private static List<Object> getSheetHeaders() throws IOException, GeneralSecurityException {
