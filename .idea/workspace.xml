@@ -5,14 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="28fedaa9-aa75-4ef5-a28d-2ccf55f1e4e2" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/Tracker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/Tracker.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/TrackerAppLaunch.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/TrackerAppLaunch.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/io/TrackerOptions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/io/TrackerOptions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/io/sheets/GoogleSheetsClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/io/sheets/GoogleSheetsClient.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/io/sheets/GoogleSheetsService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/io/sheets/GoogleSheetsService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/log4j2.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/log4j2.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -90,7 +83,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Gradle.live-tracker [shadowJar]">
+  <component name="RunManager" selected="Application.Portable">
     <configuration name="Portable" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="17" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -193,7 +186,7 @@
       <workItem from="1724715179056" duration="37000" />
       <workItem from="1724881328937" duration="13000" />
       <workItem from="1724882622315" duration="366000" />
-      <workItem from="1724950901894" duration="4666000" />
+      <workItem from="1724950901894" duration="5648000" />
     </task>
     <servers />
   </component>
