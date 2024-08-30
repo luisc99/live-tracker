@@ -85,7 +85,9 @@ public class Run extends HashMap<String, Object> {
         this.putAll(this.getMobKills());
         this.putAll(this.getFoods());
         this.putAll(this.getTravelled());
-        if (TrackerOptions.getInstance().use_experimental_tracking) {
+        if (TrackerOptions.getInstance().use_experimental_tracking &&
+                (this.worldFile.strongholdTracker != null && this.worldFile.hungerResetHandler != null))
+        {
             this.putAll(this.getFinalBarters());
             this.put("sh_dist", this.worldFile.strongholdTracker.getFinalData());
             this.put("sh_ring", getStrongholdRing(this.worldFile.strongholdTracker.endPoint));

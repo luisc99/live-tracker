@@ -7,8 +7,6 @@
     <list default="true" id="28fedaa9-aa75-4ef5-a28d-2ccf55f1e4e2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/instance/Run.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/instance/Run.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/io/TrackerOptions.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/io/TrackerOptions.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/io/sheets/GoogleSheetsClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/io/sheets/GoogleSheetsClient.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -96,7 +94,7 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
-  <component name="RunManager" selected="Application.Portable">
+  <component name="RunManager" selected="Application.TrackerAppLaunch">
     <configuration name="Portable" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="17" />
       <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
@@ -180,8 +178,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Application.SpreadSheetRunUploadTest" />
         <item itemvalue="Gradle.live-tracker [shadowJar]" />
+        <item itemvalue="Application.SpreadSheetRunUploadTest" />
         <item itemvalue="Application.TrackerAppLaunch" />
         <item itemvalue="Gradle.live-tracker [dependencies]" />
       </list>
@@ -210,7 +208,7 @@
       <workItem from="1724882622315" duration="366000" />
       <workItem from="1724950901894" duration="5834000" />
       <workItem from="1724965494367" duration="1445000" />
-      <workItem from="1725036532436" duration="3954000" />
+      <workItem from="1725036532436" duration="5729000" />
     </task>
     <servers />
   </component>
