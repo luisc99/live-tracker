@@ -77,7 +77,21 @@ public class GoogleSheetsClient {
         Sheets sheetsService = GoogleSheetsService.getSheetsService();
         String sheetName = TrackerOptions.getInstance().sheet_name;
         String sheetId = TrackerOptions.getInstance().sheet_id.strip();
-        String range = String.format("A%s:CZ", row);
+
+        Spreadsheet spreadsheet = sheetsService.spreadsheets().get(sheetId).execute();
+        Integer sheetIdInt = null;
+        for (Sheet sheet : spreadsheet.getSheets()) {
+            if (sheet.getProperties().getTitle().equals(sheetName)) {
+                sheetIdInt = sheet.getProperties().getSheetId();
+                break;
+            }
+        }
+
+        if (sheetIdInt == null) {
+            throw new RuntimeException("Sheet with name '" + sheetName + "' not found.");
+        }
+
+        String range = String.format("%s!A%s:CZ", sheetName, row);
 
         if (overwrite) {
             ValueRange newRow = new ValueRange().setValues(Collections.singletonList(rowData));
@@ -88,20 +102,38 @@ public class GoogleSheetsClient {
             return;
         }
 
-        ValueRange response = sheetsService.spreadsheets().values()
-                .get(sheetId, sheetName + "!" + range)
-                .execute();
-        List<List<Object>> values = response.getValues();
+        Request insertRowRequest = new Request()
+                .setInsertDimension(new InsertDimensionRequest()
+                        .setRange(new DimensionRange()
+                                .setSheetId(sheetIdInt)
+                                .setDimension("ROWS")
+                                .setStartIndex(row - 1)
+                                .setEndIndex(row))
+                        .setInheritFromBefore(false));
 
-        List<List<Object>> newValues = new ArrayList<>();
-        newValues.add(rowData);
-        if (values != null) {
-            newValues.addAll(values);
-        }
+        Request copyPasteRequest = new Request()
+                .setCopyPaste(new CopyPasteRequest()
+                        .setSource(new GridRange()
+                                .setSheetId(sheetIdInt)
+                                .setStartRowIndex(row - 1)
+                                .setEndRowIndex(row)
+                                .setStartColumnIndex(0)
+                                .setEndColumnIndex(103)) //  CZ column
+                        .setDestination(new GridRange()
+                                .setSheetId(sheetIdInt)
+                                .setStartRowIndex(row)
+                                .setEndRowIndex(row + 1)
+                                .setStartColumnIndex(0)
+                                .setEndColumnIndex(103)) //  CZ column
+                        .setPasteType("PASTE_FORMAT"));
 
-        ValueRange body = new ValueRange().setValues(newValues);
+        BatchUpdateSpreadsheetRequest batchRequest = new BatchUpdateSpreadsheetRequest()
+                .setRequests(Arrays.asList(insertRowRequest, copyPasteRequest));
+        sheetsService.spreadsheets().batchUpdate(sheetId, batchRequest).execute();
+
+        ValueRange newRow = new ValueRange().setValues(Collections.singletonList(rowData));
         UpdateValuesResponse result = sheetsService.spreadsheets().values()
-                .update(sheetId, sheetName + "!" + range.split(":")[0], body)
+                .update(sheetId, range, newRow)
                 .setValueInputOption("RAW")
                 .execute();
     }

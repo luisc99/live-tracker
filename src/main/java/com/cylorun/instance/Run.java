@@ -91,6 +91,7 @@ public class Run extends HashMap<String, Object> {
             this.put("sh_ring", getStrongholdRing(this.worldFile.strongholdTracker.endPoint));
             this.put("explosives_used", this.getExplosivesUsed());
         }
+
         this.put("seed", String.valueOf(this.worldFile.getSeed()));
         this.put("recent_version","false");
 
@@ -422,7 +423,7 @@ public class Run extends HashMap<String, Object> {
             String itemName = "travel_" + method.getAsString().split(":")[1].replace("_one_cm","");
             try {
                 String val = this.stats.getAsJsonObject("minecraft:custom").get(method.getAsString()).getAsString();
-                res.put(itemName, val);
+                res.put(itemName,  String.valueOf((Integer.parseInt(val) / 100)));
             } catch (Exception e) {
                 res.put(itemName, "0");
             }

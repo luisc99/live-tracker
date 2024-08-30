@@ -69,7 +69,7 @@ public class TrackerOptions {
     }
 
     public static Path getTrackerDir() {
-        if (TrackerAppLaunch.args.contains("-portable")) {
+        if (TrackerAppLaunch.args != null && TrackerAppLaunch.args.contains("-portable")) {
             return Paths.get("data");
         }
         return Paths.get(System.getProperty("user.home"), ".LiveTracker");
