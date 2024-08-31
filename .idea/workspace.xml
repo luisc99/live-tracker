@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="28fedaa9-aa75-4ef5-a28d-2ccf55f1e4e2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/instance/Run.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/instance/Run.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -75,25 +74,25 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.live-tracker [:SheetUpload.main()].executor": "Run",
-    "Gradle.live-tracker [:SpreadSheetRunUploadTest.main()].executor": "Run",
-    "Gradle.live-tracker [:TrackerAppLaunch.main()].executor": "Run",
-    "Gradle.live-tracker [:tst2.main()].executor": "Run",
-    "Gradle.live-tracker [shadowJar].executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "/home/alfgrimur/IdeaProjects/live-tracker",
-    "node.js.detected.package.eslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.live-tracker [:SheetUpload.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.live-tracker [:SpreadSheetRunUploadTest.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.live-tracker [:TrackerAppLaunch.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.live-tracker [:tst2.main()].executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.live-tracker [shadowJar].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/home/alfgrimur/IdeaProjects/live-tracker&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Application.TrackerAppLaunch">
     <configuration name="Portable" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="17" />
@@ -208,7 +207,8 @@
       <workItem from="1724882622315" duration="366000" />
       <workItem from="1724950901894" duration="5834000" />
       <workItem from="1724965494367" duration="1445000" />
-      <workItem from="1725036532436" duration="5729000" />
+      <workItem from="1725036532436" duration="6548000" />
+      <workItem from="1725113611595" duration="534000" />
     </task>
     <servers />
   </component>

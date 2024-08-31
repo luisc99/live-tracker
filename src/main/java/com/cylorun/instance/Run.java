@@ -460,7 +460,7 @@ public class Run extends HashMap<String, Object> {
         long minutes = remainingSeconds / 60;
         long seconds = remainingSeconds % 60;
 
-        return String.format("%02d:%02d:%02d", hours, minutes, seconds);
+        return String.format("%01d:%02d:%02d", hours, minutes, seconds);
     }
 
     public static int getNextRunID() {
