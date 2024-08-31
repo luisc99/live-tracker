@@ -10,7 +10,6 @@ import com.cylorun.instance.logs.LogHandler;
 import com.cylorun.instance.world.WorldEventHandler;
 import com.cylorun.instance.world.WorldEventListener;
 import com.cylorun.io.TrackerOptions;
-import com.cylorun.utils.Assert;
 import com.cylorun.utils.ExceptionUtil;
 import com.cylorun.utils.Vec2i;
 import kaptainwutax.mcutils.state.Dimension;
@@ -119,7 +118,9 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         }
 
         String[] split = data.replace("\"", "").split(":");
-        Assert.isTrue(split.length == 2);
+        if(split.length != 2) {
+            return null;
+        }
 
         return Dimension.fromString(split[1]);
     }

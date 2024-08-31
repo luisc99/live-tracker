@@ -334,7 +334,10 @@ public class Run extends HashMap<String, Object> {
     public Map<String, String> getFinalBarters() {
         Map<String, String> res = new HashMap<>();
         URL url = Tracker.class.getClassLoader().getResource("tracked.json");
-        Assert.isNotNull(url, "Resource not found: events/tracked.json");
+        if (url == null) {
+            Tracker.log(Level.ERROR, "Resource not found: tracked.json");
+            return Map.of();
+        }
 
         JsonObject o = ResourceUtil.loadJsonResource(url);
         JsonArray barters = o.get("TRACKED_BARTERS").getAsJsonArray();
@@ -369,9 +372,12 @@ public class Run extends HashMap<String, Object> {
     public Map<String, String> getMiscStats() {
         Map<String, String> res = new HashMap<>();
         URL url = Tracker.class.getClassLoader().getResource("tracked.json");
+        if (url == null) {
+            Tracker.log(Level.ERROR, "Resource not found: tracked.json");
+            return Map.of();
+        }
 
         JsonObject checks = ResourceUtil.loadJsonResource(url).getAsJsonObject("MISC_CHECKS");
-        Assert.isNotNull(checks);
         Map<String, JsonElement> m = checks.asMap();
 
         for (Map.Entry<String, JsonElement> e : m.entrySet()) {
@@ -390,6 +396,11 @@ public class Run extends HashMap<String, Object> {
     public Map<String, String> getMobKills() {
         Map<String, String> res = new HashMap<>();
         URL url = Tracker.class.getClassLoader().getResource("tracked.json");
+        if (url == null) {
+            Tracker.log(Level.ERROR, "Resource not found: tracked.json");
+            return Map.of();
+        }
+
         JsonArray mobs = ResourceUtil.loadJsonResource(url).getAsJsonArray("TRACKED_MOBS");
         for (JsonElement mob : mobs) {
             try {
@@ -405,6 +416,11 @@ public class Run extends HashMap<String, Object> {
     public Map<String, String> getFoods() {
         Map<String, String> res = new HashMap<>();
         URL url = Tracker.class.getClassLoader().getResource("tracked.json");
+        if (url == null) {
+            Tracker.log(Level.ERROR, "Resource not found: events/tracked.json");
+            return Map.of();
+        }
+
         JsonArray foods = ResourceUtil.loadJsonResource(url).getAsJsonArray("TRACKED_FOODS");
         for (JsonElement food : foods) {
             try {
@@ -420,6 +436,11 @@ public class Run extends HashMap<String, Object> {
     public Map<String, String> getTravelled() {
         Map<String, String> res = new HashMap<>();
         URL url = Tracker.class.getClassLoader().getResource("tracked.json");
+        if (url == null) {
+            Tracker.log(Level.ERROR, "Resource not found: events/tracked.json");
+            return Map.of();
+        }
+
         JsonArray methods = ResourceUtil.loadJsonResource(url).getAsJsonArray("TRAVEL_METHODS");
         for (JsonElement method : methods) {
             String itemName = "travel_" + method.getAsString().split(":")[1].replace("_one_cm","");
@@ -443,7 +464,11 @@ public class Run extends HashMap<String, Object> {
             return this.hasFinished();
         }
 
-        Assert.isNotNull(this.stats, "Stats is null");
+        if (this.stats == null) {
+            Tracker.log(Level.ERROR, "Stats undefined, will not push");
+            return false;
+        }
+
         String runType = this.recordFile.get("run_type").getAsString();
         if ((options.detect_ssg && runType.equals("set_seed")) || recordFile.get("category").getAsString().equals("pratice_world")) { // yes its pratice not practice
             return false;
