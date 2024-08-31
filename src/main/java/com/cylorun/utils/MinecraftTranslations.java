@@ -13,7 +13,7 @@ import java.util.List;
 public class MinecraftTranslations {
 
     private static JsonObject langJson;
-    private static final JsonObject DEFAULT_LANG = ResourceUtil.loadJsonResource(MinecraftTranslations.class.getResource("translations/en_us.json"));
+    private static final JsonObject DEFAULT_LANG = ResourceUtil.loadJsonResource(MinecraftTranslations.class.getClassLoader().getResource("translations/en_us.json"));
 
     private static JsonObject getCurrLang() {
         if (langJson == null) {
