@@ -4,7 +4,7 @@ import com.cylorun.Tracker;
 import com.cylorun.TrackerAppLaunch;
 import com.cylorun.io.sheets.GoogleSheetsClient;
 import com.cylorun.io.sheets.GoogleSheetsService;
-import com.cylorun.utils.I18n;
+import com.cylorun.utils.MinecraftTranslations;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.logging.log4j.Level;
@@ -96,7 +96,7 @@ public class TrackerOptions {
             JOptionPane.showMessageDialog(null, "sheet_name is not defined");
         } else if (getInstance().lang == null || getInstance().lang.isEmpty()) {
             JOptionPane.showMessageDialog(null, "Language not set");
-        } else if (!I18n.isValidLanguage(getInstance().lang)) {
+        } else if (!MinecraftTranslations.isValidLanguage(getInstance().lang)) {
             JOptionPane.showMessageDialog(null, getInstance().lang + " is not a supported language");
         } else if (!GoogleSheetsClient.isValidSheet(getInstance().sheet_id, getInstance().sheet_name)) {
             JOptionPane.showMessageDialog(null, "Invalid sheet_id or sheet_name");
