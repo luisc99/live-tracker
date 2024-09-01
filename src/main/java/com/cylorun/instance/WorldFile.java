@@ -35,10 +35,10 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     public final WorldEventHandler eventHandler;
     public HungerResetHandler hungerResetHandler;
     public DistanceTracker strongholdTracker;
+    public LogHandler logHandler;
     public final List<Pair<Pair<Vec2i, Vec2i>, Dimension>> playerPath; // just the path the player takes
     public final List<Pair<Pair<String, Vec2i>, Dimension>> playerEvents; // locations of deaths and other special events
     public final Inventory inv;
-    public final LogHandler logHandler;
     public boolean track = true;
     public boolean finished = false;
 
@@ -50,13 +50,9 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
 
         this.inv = new Inventory(this);
         this.eventHandler = new WorldEventHandler(this);
-        this.logHandler = new LogHandler(this);
+        this.eventHandler.addListener(this);
 
         this.reader = NBTReader.from(this);
-
-
-        this.logHandler.addListener(this);
-        this.eventHandler.addListener(this);
 
         if (TrackerOptions.getInstance().use_experimental_tracking) {
             this.hungerResetHandler = new HungerResetHandler(this);
@@ -64,6 +60,9 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
 
             this.pathTracker = new PathTracker(this);
             this.eventTracker = new EventTracker(this);
+
+            this.logHandler = new LogHandler(this);
+            this.logHandler.addListener(this);
         }
     }
 
