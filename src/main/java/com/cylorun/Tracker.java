@@ -68,9 +68,10 @@ public class Tracker {
                 Tracker.log(Level.ERROR, "Failed to track run: " + e.getMessage());
                 return;
             }
-            run.gatherAll();
 
             if (run.shouldPush()) {
+                run.gatherAll();
+
                 if (options.always_save_locally) {
                     if (run.save(TrackerOptions.getTrackerDir().resolve("local"))) {
                         Tracker.log(Level.INFO, "Saved run locally");

@@ -460,18 +460,23 @@ public class Run extends HashMap<String, Object> {
 
     public boolean shouldPush() {
         TrackerOptions options = TrackerOptions.getInstance();
-        if (options.only_track_completions) {
-            return this.hasFinished();
-        }
 
         if (this.stats == null) {
             Tracker.log(Level.ERROR, "Stats undefined, will not push");
             return false;
         }
 
-        String runType = this.recordFile.get("run_type").getAsString();
-        if ((options.detect_ssg && runType.equals("set_seed")) || recordFile.get("category").getAsString().equals("pratice_world")) { // yes its pratice not practice
+        if (options.detect_ssg && this.recordFile.get("run_type").getAsString().equals("set_seed")) {
+            Tracker.log(Level.INFO, "Set seed detected, will not push");
             return false;
+        }
+
+        if (this.recordFile.get("category").getAsString().equals("pratice_world") || this.recordFile.get("category").getAsString().equals("practice_world")) {  // yes its pratice not practice
+            return false;
+        }
+
+        if (options.only_track_completions) {
+            return this.hasFinished();
         }
 
         return this.adv.has("minecraft:story/smelt_iron") || this.adv.has("minecraft:story/enter_the_nether");
