@@ -246,7 +246,9 @@ public class Run extends HashMap<String, Object> {
                 if (netherIgt < ironIgt) {
                     ironSource = "Nether";
                 }
-            } else if (stats.has("minecraft:crafted") && stats.getAsJsonObject("minecraft:crafted").has("minecraft:furnace") &&
+            }
+            // if furnace crafted and mined iron ore
+            if (stats.has("minecraft:crafted") && stats.getAsJsonObject("minecraft:crafted").has("minecraft:furnace") &&
                     stats.has("minecraft:mined") && stats.getAsJsonObject("minecraft:mined").has("minecraft:iron_ore")) {
                 ironSource = "Structureless";
             }
