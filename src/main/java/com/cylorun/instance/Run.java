@@ -43,7 +43,7 @@ public class Run extends HashMap<String, Object> {
         this.stats = this.getStats();
     }
 
-    public Run gatherAll() {
+    public Run gatherAllData() {
         String[] majorSplits = {"rsg.obtain_iron_pickaxe",
                 "rsg.enter_nether",
                 "rsg.enter_bastion",

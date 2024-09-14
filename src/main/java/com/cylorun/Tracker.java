@@ -10,7 +10,6 @@ import com.cylorun.map.ChunkMap;
 import com.cylorun.utils.APIUtil;
 import com.cylorun.utils.ExceptionUtil;
 import com.cylorun.utils.LogReceiver;
-import okhttp3.OkHttpClient;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -32,10 +31,14 @@ public class Tracker {
     public static void run() {
         Tracker.log(Level.INFO, "Running Live-Tracker-" + VERSION);
 
-        java.util.logging.Logger.getLogger(OkHttpClient.class.getName()).setLevel(java.util.logging.Level.FINE);
         List<WorldFile> worlds = new ArrayList<>();
         TrackerFrame.getInstance().open();
         new Thread(GoogleSheetsClient::setup, "google-sheets-setup").start();
+
+        Thread.setDefaultUncaughtExceptionHandler((thread, e) -> {
+            log(Level.ERROR, "Uncaught exception caught.");
+            onCrash(e);
+        });
 
         WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object should be created per world path
         worldHandler.addListener(world -> {
@@ -55,10 +58,11 @@ public class Tracker {
     }
 
     public static void stop() {
+        log(Level.INFO, "Stopping...");
         System.exit(0);
     }
 
-    public static void handleWorld(WorldFile world) {
+    private static void handleWorld(WorldFile world) {
         TrackerOptions options = TrackerOptions.getInstance();
         world.setCompletionHandler(() -> {
             Run run;
@@ -66,11 +70,12 @@ public class Tracker {
                 run = new Run(world);
             } catch (IOException e) {
                 Tracker.log(Level.ERROR, "Failed to track run: " + e.getMessage());
+                onCrash(e);
                 return;
             }
 
             if (run.shouldPush()) {
-                run.gatherAll();
+                run.gatherAllData();
 
                 if (options.always_save_locally) {
                     if (run.save(TrackerOptions.getTrackerDir().resolve("local"))) {
@@ -102,6 +107,13 @@ public class Tracker {
                 }, "ChunkMapGen").start();
             }
         });
+    }
+
+    public static void onCrash(Throwable t) {
+        log(Level.ERROR, "UNCAUGHT TRACKER ERROR!!!!!!!!!!!");
+        log(Level.ERROR, "MESSSAGE: " + t.getMessage());
+        log(Level.ERROR, "STACKTRACE: " + ExceptionUtil.toDetailedString(t));
+        log(Level.ERROR, "PLEASE REPORT THIS TO @cylorun AND RESTART THE TRACKER");
     }
 
 
