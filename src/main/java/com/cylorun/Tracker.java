@@ -19,7 +19,9 @@ import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.List;
 
 
@@ -31,13 +33,14 @@ public class Tracker {
     public static void run() {
         Tracker.log(Level.INFO, "Running Live-Tracker-" + VERSION);
 
-        List<WorldFile> worlds = new ArrayList<>();
+        Deque<WorldFile> worlds = new ArrayDeque<>();
+
         TrackerFrame.getInstance().open();
         new Thread(GoogleSheetsClient::setup, "google-sheets-setup").start();
 
         Thread.setDefaultUncaughtExceptionHandler((thread, e) -> {
-            log(Level.ERROR, "Uncaught exception caught.");
-            onCrash(e);
+            Tracker.log(Level.ERROR, "Uncaught exception caught.");
+            Tracker.onCrash(e);
         });
 
         WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object should be created per world path
@@ -48,8 +51,7 @@ public class Tracker {
             }
 
             if (worlds.size() > 1) {
-                WorldFile prev = worlds.get(worlds.size() - 2);
-                worlds.remove(prev);
+                WorldFile prev = worlds.pollLast();
                 prev.onCompletion(); // since a new world has been created this one can be abandoned
             }
 

@@ -63,7 +63,8 @@ public class WorldCreationEventHandler extends Thread {
 
         while (true) {
             String newPath = this.getLastWorldPath();
-            if (!Objects.equals(newPath, this.lastPath) && !this.previousWorlds.contains(newPath)) { // makes sure that a world wont be tracked multiple times
+            System.out.println(newPath);
+            if (!Objects.equals(newPath, this.lastPath)) { // makes sure that a world wont be tracked multiple times
                 this.lastPath = newPath;
 
                 JsonObject recordJson = JSONUtil.parseFile(Paths.get(newPath).resolve("speedrunigt").resolve("record.json").toFile(), true);
@@ -73,7 +74,6 @@ public class WorldCreationEventHandler extends Thread {
                     continue;
                 }
 
-                this.previousWorlds.add(newPath);
                 this.notifyListeners(new WorldFile(this.lastPath));
             }
             try {
