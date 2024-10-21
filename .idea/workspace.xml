@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="28fedaa9-aa75-4ef5-a28d-2ccf55f1e4e2" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/Tracker.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/Tracker.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/cylorun/instance/world/WorldCreationEventHandler.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/cylorun/instance/world/WorldCreationEventHandler.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -209,7 +208,8 @@
       <workItem from="1726680755785" duration="2066000" />
       <workItem from="1726878224351" duration="88000" />
       <workItem from="1727013170484" duration="12000" />
-      <workItem from="1729343113374" duration="3600000" />
+      <workItem from="1729343113374" duration="6017000" />
+      <workItem from="1729535504389" duration="1063000" />
     </task>
     <servers />
   </component>

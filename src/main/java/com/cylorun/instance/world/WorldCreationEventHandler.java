@@ -16,6 +16,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -38,17 +39,21 @@ public class WorldCreationEventHandler extends Thread {
         listeners.add(listener);
     }
 
-    private String getLastWorldPath() {
+    private Optional<String> getLastWorldPath() {
         FileReader reader = null;
         try {
             reader = new FileReader(LAST_WORlD_JSON);
         } catch (FileNotFoundException e) {
             ExceptionUtil.showDialogAndExit("LAST WORLD JSON FILE NOT FOUND, MAKE SURE UR USING SPEEDRUN IGT 14.2+ (i think that's the version)");
-            return this.lastPath;
+            return Optional.of(this.lastPath);
         }
 
         JsonElement element = JsonParser.parseReader(reader);
-        return element.getAsJsonObject().get("world_path").getAsString();
+        if (element == null || !element.isJsonObject()) {
+            return Optional.empty();
+        }
+
+        return JSONUtil.getOptionalString(element.getAsJsonObject(), "world_path");
     }
 
     public void notifyListeners(WorldFile world) {
@@ -59,11 +64,14 @@ public class WorldCreationEventHandler extends Thread {
 
     @Override
     public void run() {
-        this.lastPath = this.getLastWorldPath(); // so that it wont detect old worlds
+        this.lastPath = this.getLastWorldPath().orElse(""); // so that it wont detect old worlds
 
         while (true) {
-            String newPath = this.getLastWorldPath();
-            System.out.println(newPath);
+            if (this.getLastWorldPath().isEmpty()) {
+                continue;
+            }
+
+            String newPath = this.getLastWorldPath().get();
             if (!Objects.equals(newPath, this.lastPath)) { // makes sure that a world wont be tracked multiple times
                 this.lastPath = newPath;
 
