@@ -33,7 +33,7 @@ public class Tracker {
     public static void run() {
         Tracker.log(Level.INFO, "Running Live-Tracker-" + VERSION);
 
-        Deque<WorldFile> worlds = new ArrayDeque<>();
+        List<WorldFile> worlds = new ArrayList<>();
 
         TrackerFrame.getInstance().open();
         new Thread(GoogleSheetsClient::setup, "google-sheets-setup").start();
@@ -45,14 +45,18 @@ public class Tracker {
 
         WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object should be created per world path
         worldHandler.addListener(world -> {
-            Tracker.log(Level.DEBUG, "New world detected: " + world);
-            if (!worlds.contains(world)) {
-                worlds.add(world);
-            }
 
+            if (worlds.contains(world)) {
+                return;
+            };
+            Tracker.log(Level.DEBUG, "New world detected: " + world);
+            Tracker.log(Level.DEBUG, "Tracker#run worlds size" + worlds.size());
+
+            worlds.add(world);
             if (worlds.size() > 1) {
-                WorldFile prev = worlds.pollLast();
-                prev.onCompletion(); // since a new world has been created this one can be abandoned
+                // since a new world has made progress the oldest one can be abandoned
+                WorldFile prev = worlds.get(worlds.size() - 1);
+                prev.onCompletion();
             }
 
             handleWorld(world);

@@ -204,12 +204,12 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
             return false;
         }
 
-        return f.getAbsolutePath().equals(this.getAbsolutePath());
+        return f.getAbsolutePath().equals(this.getAbsolutePath())
+                && this.getSeed() == f.getSeed(); // terrible comparison ik
     }
 
     @Override
     public String toString() {
         return this.getName();
     }
-
 }
