@@ -155,9 +155,10 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
     }
 
     public void onCompletion() { // not necessarily on credits, just whenever the run is over
+        Tracker.log(Level.DEBUG, String.format("World \"%s\" has been completed", this.getName()));
         if (this.completionHandler != null && !this.finished) {
-            this.completionHandler.run();
             this.finished = true;
+            this.completionHandler.run();
         }
     }
 
