@@ -70,7 +70,7 @@ public class Tracker {
             Run run;
             try {
                 run = new Run(world);
-            } catch (IOException e) {
+            } catch (Exception e) {
                 Tracker.log(Level.ERROR, "Failed to track run: " + e.getMessage());
                 onCrash(e);
                 return;
