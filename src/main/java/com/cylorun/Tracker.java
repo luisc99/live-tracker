@@ -45,17 +45,16 @@ public class Tracker {
 
         WorldCreationEventHandler worldHandler = new WorldCreationEventHandler(); // only one WorldFile object should be created per world path
         worldHandler.addListener(world -> {
+            if (worlds.contains(world)) return;
 
-            if (worlds.contains(world)) {
-                return;
-            };
             Tracker.log(Level.DEBUG, "New world detected: " + world);
-            Tracker.log(Level.DEBUG, "Tracker#run worlds size" + worlds.size());
 
             worlds.add(world);
+
             if (worlds.size() > 1) {
                 // since a new world has made progress the oldest one can be abandoned
-                WorldFile prev = worlds.get(worlds.size() - 1);
+                WorldFile prev = worlds.remove(0);
+                Tracker.log(Level.DEBUG, String.format("World \"%s\" polled", prev));
                 prev.onCompletion();
             }
 
