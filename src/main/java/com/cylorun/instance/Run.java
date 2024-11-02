@@ -27,7 +27,7 @@ public class Run extends HashMap<String, Object> {
     public final JsonObject recordFile;
     public JsonObject stats;
     public JsonObject adv;
-    private List<SpeedrunEvent> eventLog;
+    private final List<SpeedrunEvent> eventLog;
     private boolean hasData = false;
 
 
@@ -51,7 +51,8 @@ public class Run extends HashMap<String, Object> {
                 "rsg.first_portal",
                 "rsg.second_portal",
                 "rsg.enter_stronghold",
-                "rsg.enter_end"};
+                "rsg.enter_end"
+        };
 
         String[] splitNames = {"time_iron_pick",
                 "time_nether",
@@ -60,7 +61,8 @@ public class Run extends HashMap<String, Object> {
                 "time_first_portal",
                 "time_second_portal",
                 "time_stronghold",
-                "time_end"};
+                "time_end"
+        };
 
         this.put("run_id", getNextRunID());
         this.put("date_played_est", this.getDate());
@@ -81,7 +83,7 @@ public class Run extends HashMap<String, Object> {
 
         this.put("gold_dropped", this.getGoldDropped());
         this.putAll(this.getMiscStats());
-        this.put("world_name", worldFile.getName());
+        this.put("world_name", this.worldFile.getName());
         this.putAll(this.getMobKills());
         this.putAll(this.getFoods());
         this.putAll(this.getTravelled());
@@ -89,7 +91,7 @@ public class Run extends HashMap<String, Object> {
                 (this.worldFile.strongholdTracker != null && this.worldFile.hungerResetHandler != null))
         {
             this.putAll(this.getFinalBarters());
-            this.put("sh_dist", this.worldFile.strongholdTracker.getFinalData());
+            this.put("sh_dist", this.worldFile.strongholdTracker.getFinalData().orElse(-1));
             this.put("sh_ring", getStrongholdRing(this.worldFile.strongholdTracker.endPoint));
             this.put("explosives_used", this.getExplosivesUsed());
         }
@@ -108,8 +110,6 @@ public class Run extends HashMap<String, Object> {
         }
         throw new IOException("Could not get game stats");
     }
-
-
 
     private String getDate() {
         Date date = new Date(this.recordFile.get("date").getAsLong());
@@ -143,12 +143,12 @@ public class Run extends HashMap<String, Object> {
             int pickedup = this.stats.getAsJsonObject("minecraft:picked_up").has("minecraft:gold_ingot") ? this.stats.getAsJsonObject("minecraft:picked_up").get("minecraft:gold_ingot").getAsInt() : 0;
             return this.stats.getAsJsonObject("minecraft:dropped").get("minecraft:gold_ingot").getAsInt() - pickedup;
         }
-        return 0;
+        return -1;
     }
 
     public static int getStrongholdRing(Vec2i strongholdLoc) {
         if (strongholdLoc == null) {
-            return 0;
+            return -1;
         }
 
         int dist = strongholdLoc.distanceTo(Vec2i.ZERO);
@@ -192,6 +192,7 @@ public class Run extends HashMap<String, Object> {
                 }
             }
         }
+
         return spawnBiome;
     }
 

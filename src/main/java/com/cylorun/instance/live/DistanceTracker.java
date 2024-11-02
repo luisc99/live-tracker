@@ -6,6 +6,7 @@ import com.cylorun.instance.world.WorldEventListener;
 import com.cylorun.io.TrackerOptions;
 import com.cylorun.utils.Vec2i;
 
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -26,12 +27,12 @@ public class DistanceTracker implements WorldEventListener {
         this.world.eventHandler.addListener(this);
     }
 
-    public Integer getFinalData() {
+    public Optional<Integer> getFinalData() {
         if (this.startPoint == null || this.endPoint == null) {
-            return null;
+            return Optional.empty();
         }
 
-        return this.startPoint.distanceTo(this.endPoint);
+        return Optional.of(this.startPoint.distanceTo(this.endPoint));
     }
 
 

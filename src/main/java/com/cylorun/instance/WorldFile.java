@@ -55,14 +55,14 @@ public class WorldFile extends File implements WorldEventListener, LogEventListe
         this.reader = NBTReader.from(this);
 
         if (TrackerOptions.getInstance().use_experimental_tracking) {
+            this.logHandler = new LogHandler(this);
+            this.logHandler.addListener(this);
+
             this.hungerResetHandler = new HungerResetHandler(this);
             this.strongholdTracker = new DistanceTracker(this, SpeedrunEvent.SpeedrunEventType.FIRST_PORTAL, SpeedrunEvent.SpeedrunEventType.ENTER_STRONGHOLD);
 
             this.pathTracker = new PathTracker(this);
             this.eventTracker = new EventTracker(this);
-
-            this.logHandler = new LogHandler(this);
-            this.logHandler.addListener(this);
         }
     }
 

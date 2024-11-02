@@ -36,7 +36,7 @@ public class TrackerOptions {
     public boolean use_experimental_tracking = false; // use new stats like barters, map and shit
     public int max_respawn_to_hr_time = 30; // seconds
     public int game_save_interval = 5; // seconds
-    public int path_interval = 5; //secs
+    public int path_interval = 5; // seconds
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
     public static final Path CONFIG_PATH = getTrackerDir().resolve("config.json");
     private static TrackerOptions instance;
@@ -88,7 +88,6 @@ public class TrackerOptions {
 
 
     public static void validateSettings() {
-        System.out.println(getTrackerDir().toFile().getAbsolutePath());
         Tracker.log(Level.INFO, "Verifying settings");
         if (!Files.exists(Paths.get(GoogleSheetsService.CREDENTIALS_FILE))) {
             JOptionPane.showMessageDialog(null, "credentials.json file not found");
