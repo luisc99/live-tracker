@@ -254,20 +254,22 @@ public class Run extends HashMap<String, Object> {
                 ironSource = "Structureless";
             }
             // If haybale mined or iron golem killed or iron pickaxe obtained from chest
-            else if ((stats.has("minecraft:mined") && stats.getAsJsonObject("minecraft:mined").has("minecraft:hay_block")) ||
+            if ((stats.has("minecraft:mined") && stats.getAsJsonObject("minecraft:mined").has("minecraft:hay_block")) ||
                     (stats.has("minecraft:killed") && stats.getAsJsonObject("minecraft:killed").has("minecraft:iron_golem")) ||
                     (!(stats.has("minecraft:crafted") && (stats.getAsJsonObject("minecraft:crafted").has("minecraft:iron_pickaxe") ||
                             stats.getAsJsonObject("minecraft:crafted").has("minecraft:diamond_pickaxe"))) &&
                             this.adv.has("minecraft:story/iron_tools"))) {
                 ironSource = "Village";
             }
+
             // If more than 7 tnt mined
-            else if (stats.has("minecraft:mined") && stats.getAsJsonObject("minecraft:mined").has("minecraft:tnt") &&
+            if (stats.has("minecraft:mined") && stats.getAsJsonObject("minecraft:mined").has("minecraft:tnt") &&
                     stats.getAsJsonObject("minecraft:mined").get("minecraft:tnt").getAsInt() > 7) {
                 ironSource = "Desert Temple";
             }
+
             // If stepped foot in ocean or beach under 3 minutes
-            else if (this.adv.has("minecraft:adventure/adventuring_time")) {
+            if (this.adv.has("minecraft:adventure/adventuring_time")) {
                 JsonObject adventuringTime = this.adv.getAsJsonObject("minecraft:adventure/adventuring_time");
                 for (String biome : adventuringTime.getAsJsonObject("criteria").keySet()) {
                     if ((biome.contains("beach") || biome.contains("ocean")) &&
