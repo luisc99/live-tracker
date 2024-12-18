@@ -32,7 +32,8 @@ public class JSONUtil {
             return null;
         }
 
-        return JsonParser.parseReader(reader).getAsJsonObject();
+        JsonElement e = JsonParser.parseReader(reader);
+        return  e.isJsonObject() ? e.getAsJsonObject() : null;
     }
 
     public static JsonObject flatten(JsonObject jsonObject) { // collapses all children objects
