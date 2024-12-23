@@ -1,7 +1,7 @@
 package com.cylorun.utils;
 
 import com.cylorun.gui.TrackerFrame;
-import com.cylorun.io.TrackerOptions;
+import com.cylorun.TrackerOptions;
 import org.apache.logging.log4j.Level;
 
 import javax.swing.*;

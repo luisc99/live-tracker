@@ -1,7 +1,7 @@
-package com.cylorun.instance.world;
+package com.cylorun.mcinstance.world;
 
 import com.cylorun.Tracker;
-import com.cylorun.instance.WorldFile;
+import com.cylorun.mcinstance.WorldFile;
 import com.cylorun.utils.ExceptionUtil;
 import com.cylorun.utils.JSONUtil;
 import com.google.gson.JsonElement;
@@ -18,7 +18,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 public class WorldCreationEventHandler extends Thread {
     public List<String> previousWorlds;

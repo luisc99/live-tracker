@@ -1,9 +1,8 @@
-package com.cylorun.utils;
+package com.cylorun;
 
-import com.cylorun.Tracker;
+import com.cylorun.utils.ResourceUtil;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.cylorun.io.TrackerOptions;
 import org.apache.logging.log4j.Level;
 
 import java.net.URL;

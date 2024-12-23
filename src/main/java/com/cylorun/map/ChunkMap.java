@@ -1,7 +1,7 @@
 package com.cylorun.map;
 
 import com.cylorun.Tracker;
-import com.cylorun.instance.WorldFile;
+import com.cylorun.mcinstance.WorldFile;
 import com.cylorun.utils.ResourceUtil;
 import kaptainwutax.biomeutils.biome.Biome;
 import kaptainwutax.biomeutils.source.BiomeSource;

@@ -1,10 +1,7 @@
-package com.cylorun.io;
+package com.cylorun;
 
-import com.cylorun.Tracker;
-import com.cylorun.TrackerAppLaunch;
-import com.cylorun.io.sheets.GoogleSheetsClient;
-import com.cylorun.io.sheets.GoogleSheetsService;
-import com.cylorun.utils.MinecraftTranslations;
+import com.cylorun.gsheets.GoogleSheetsClient;
+import com.cylorun.gsheets.GoogleSheetsService;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import org.apache.logging.log4j.Level;

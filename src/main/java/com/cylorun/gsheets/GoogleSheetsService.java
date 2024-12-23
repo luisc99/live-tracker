@@ -1,7 +1,7 @@
-package com.cylorun.io.sheets;
+package com.cylorun.gsheets;
 
 import com.cylorun.Tracker;
-import com.cylorun.io.TrackerOptions;
+import com.cylorun.TrackerOptions;
 import com.cylorun.utils.ExceptionUtil;
 import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
@@ -13,8 +13,6 @@ import org.apache.logging.log4j.Level;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
 

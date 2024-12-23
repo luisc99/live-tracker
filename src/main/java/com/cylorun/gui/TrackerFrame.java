@@ -2,9 +2,9 @@ package com.cylorun.gui;
 
 import com.cylorun.Tracker;
 import com.cylorun.gui.components.*;
-import com.cylorun.io.TrackerOptions;
+import com.cylorun.TrackerOptions;
 import com.cylorun.utils.APIUtil;
-import com.cylorun.utils.MinecraftTranslations;
+import com.cylorun.MinecraftTranslations;
 import org.apache.logging.log4j.Level;
 
 import javax.swing.*;

@@ -1,12 +1,12 @@
-package com.cylorun.instance.live;
+package com.cylorun.mcinstance.live;
 
-import com.cylorun.instance.LogEvent;
-import com.cylorun.instance.SpeedrunEvent;
-import com.cylorun.instance.WorldFile;
-import com.cylorun.instance.logs.LogEventListener;
-import com.cylorun.instance.Inventory;
-import com.cylorun.instance.world.WorldEventListener;
-import com.cylorun.io.TrackerOptions;
+import com.cylorun.mcinstance.LogEvent;
+import com.cylorun.mcinstance.SpeedrunEvent;
+import com.cylorun.mcinstance.WorldFile;
+import com.cylorun.mcinstance.logs.LogEventListener;
+import com.cylorun.mcinstance.Inventory;
+import com.cylorun.mcinstance.world.WorldEventListener;
+import com.cylorun.TrackerOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;

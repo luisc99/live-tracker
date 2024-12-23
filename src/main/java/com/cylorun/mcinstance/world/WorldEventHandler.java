@@ -1,8 +1,8 @@
-package com.cylorun.instance.world;
+package com.cylorun.mcinstance.world;
 
 import com.cylorun.Tracker;
-import com.cylorun.instance.SpeedrunEvent;
-import com.cylorun.instance.WorldFile;
+import com.cylorun.mcinstance.SpeedrunEvent;
+import com.cylorun.mcinstance.WorldFile;
 import org.apache.logging.log4j.Level;
 
 import java.io.BufferedReader;

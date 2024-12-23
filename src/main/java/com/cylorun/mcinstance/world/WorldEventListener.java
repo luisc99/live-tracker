@@ -1,6 +1,6 @@
-package com.cylorun.instance.world;
+package com.cylorun.mcinstance.world;
 
-import com.cylorun.instance.SpeedrunEvent;
+import com.cylorun.mcinstance.SpeedrunEvent;
 
 public interface WorldEventListener {
     void onSpeedrunEvent(SpeedrunEvent e);

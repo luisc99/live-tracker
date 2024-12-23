@@ -1,4 +1,4 @@
-package com.cylorun.instance;
+package com.cylorun.mcinstance;
 
 import com.cylorun.Tracker;
 import com.cylorun.utils.ExceptionUtil;

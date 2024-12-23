@@ -1,7 +1,7 @@
-package com.cylorun.instance.logs;
+package com.cylorun.mcinstance.logs;
 
-import com.cylorun.instance.LogEvent;
-import com.cylorun.instance.WorldFile;
+import com.cylorun.mcinstance.LogEvent;
+import com.cylorun.mcinstance.WorldFile;
 
 import java.io.BufferedReader;
 import java.io.File;

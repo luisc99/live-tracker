@@ -1,6 +1,6 @@
-package com.cylorun.instance;
+package com.cylorun.mcinstance;
 
-import com.cylorun.instance.logs.LogParser;
+import com.cylorun.mcinstance.logs.LogParser;
 
 public class LogEvent {
 

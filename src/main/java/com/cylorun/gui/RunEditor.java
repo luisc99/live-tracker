@@ -10,7 +10,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.cylorun.gui.components.ColorPicker;
-import com.cylorun.io.TrackerOptions;
+import com.cylorun.TrackerOptions;
 import okhttp3.*;
 import org.apache.logging.log4j.Level;
 

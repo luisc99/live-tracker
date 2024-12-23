@@ -1,7 +1,7 @@
-package com.cylorun.instance;
+package com.cylorun.mcinstance;
 
 import com.cylorun.Tracker;
-import com.cylorun.io.TrackerOptions;
+import com.cylorun.TrackerOptions;
 import com.cylorun.utils.*;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

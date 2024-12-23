@@ -1,4 +1,4 @@
-package com.cylorun.instance;
+package com.cylorun.mcinstance;
 
 public class SpeedrunEvent {
     public SpeedrunEventType type;

@@ -1,4 +1,4 @@
-import com.cylorun.io.sheets.GoogleSheetsClient;
+import com.cylorun.gsheets.GoogleSheetsClient;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;

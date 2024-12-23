@@ -1,15 +1,15 @@
-package com.cylorun.instance;
+package com.cylorun.mcinstance;
 
 import com.cylorun.Tracker;
-import com.cylorun.instance.live.DistanceTracker;
-import com.cylorun.instance.live.EventTracker;
-import com.cylorun.instance.live.HungerResetHandler;
-import com.cylorun.instance.live.PathTracker;
-import com.cylorun.instance.logs.LogEventListener;
-import com.cylorun.instance.logs.LogHandler;
-import com.cylorun.instance.world.WorldEventHandler;
-import com.cylorun.instance.world.WorldEventListener;
-import com.cylorun.io.TrackerOptions;
+import com.cylorun.mcinstance.live.DistanceTracker;
+import com.cylorun.mcinstance.live.EventTracker;
+import com.cylorun.mcinstance.live.HungerResetHandler;
+import com.cylorun.mcinstance.live.PathTracker;
+import com.cylorun.mcinstance.logs.LogEventListener;
+import com.cylorun.mcinstance.logs.LogHandler;
+import com.cylorun.mcinstance.world.WorldEventHandler;
+import com.cylorun.mcinstance.world.WorldEventListener;
+import com.cylorun.TrackerOptions;
 import com.cylorun.utils.ExceptionUtil;
 import com.cylorun.utils.Vec2i;
 import kaptainwutax.mcutils.state.Dimension;

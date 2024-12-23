@@ -1,8 +1,8 @@
 package com.cylorun.utils;
 
 import com.cylorun.Tracker;
-import com.cylorun.instance.Run;
-import com.cylorun.io.TrackerOptions;
+import com.cylorun.mcinstance.Run;
+import com.cylorun.TrackerOptions;
 import com.google.gson.Gson;
 import okhttp3.*;
 import org.apache.logging.log4j.Level;

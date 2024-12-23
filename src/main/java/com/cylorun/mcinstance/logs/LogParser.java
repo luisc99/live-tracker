@@ -1,10 +1,10 @@
-package com.cylorun.instance.logs;
+package com.cylorun.mcinstance.logs;
 
-import com.cylorun.instance.LogEvent;
+import com.cylorun.mcinstance.LogEvent;
 import com.google.gson.JsonObject;
-import com.cylorun.instance.WorldFile;
-import com.cylorun.io.TrackerOptions;
-import com.cylorun.utils.MinecraftTranslations;
+import com.cylorun.mcinstance.WorldFile;
+import com.cylorun.TrackerOptions;
+import com.cylorun.MinecraftTranslations;
 
 import java.util.ArrayList;
 import java.util.List;

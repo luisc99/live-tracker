@@ -8,7 +8,7 @@ import com.cylorun.utils.ResourceUtil;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
-import com.cylorun.io.TrackerOptions;
+import com.cylorun.TrackerOptions;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;

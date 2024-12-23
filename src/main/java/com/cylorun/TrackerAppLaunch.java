@@ -1,6 +1,5 @@
 package com.cylorun;
 
-import com.cylorun.io.TrackerOptions;
 import com.cylorun.utils.ThreadUtil;
 import com.cylorun.utils.UpdateUtil;
 import com.formdev.flatlaf.FlatDarculaLaf;

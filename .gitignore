@@ -3,7 +3,6 @@ config.json
 tst.java
 tst2.java
 data
-logs
 *.log
 *.log.gz
 overworld.png
