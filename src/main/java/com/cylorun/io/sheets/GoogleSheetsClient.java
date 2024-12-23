@@ -38,7 +38,7 @@ public class GoogleSheetsClient {
         List<Object> headers = ResourceUtil.getHeaderLabels();
 
         try {
-            GoogleSheetsClient.insert(headers, 2, true);
+            GoogleSheetsClient.insert(headers, 1, true);
             Tracker.log(Level.INFO, "Generated header labels");
         } catch (GeneralSecurityException | IOException e) {
             Tracker.log(Level.ERROR, "Failed to generate google sheets headers: " + e.getMessage());
