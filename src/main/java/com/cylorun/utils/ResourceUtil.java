@@ -48,8 +48,7 @@ public class ResourceUtil {
             }
         }
 
-        list.add("Session Marker");
-        list.add("Seed");
+        list.add("seed");
         return list;
     }
 
