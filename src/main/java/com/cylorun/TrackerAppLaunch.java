@@ -18,6 +18,7 @@ public class TrackerAppLaunch {
         TrackerAppLaunch.args = Arrays.asList(args);
         ToolTipManager.sharedInstance().setInitialDelay(0);
 
+        System.setProperty("LOG4J_DISABLE_JMX", "true");
         System.setProperty("tracker.dir", TrackerOptions.getTrackerDir().toString());
 
         try {
