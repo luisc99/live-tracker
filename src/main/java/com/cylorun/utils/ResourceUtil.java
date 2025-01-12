@@ -30,7 +30,7 @@ public class ResourceUtil {
         }
 
 
-        String[] keys = {"GENERAL_HEADERS", "TRACKED_BARTERS", "TRACKED_FOODS", "TRACKED_MOBS", "TRAVEL_METHODS"};
+        String[] keys = {"GENERAL_HEADERS", "TRACKED_BARTERS", "TRACKED_MOBS", "TRACKED_FOODS",  "TRAVEL_METHODS"};
         JsonObject jsonData = loadJsonResource(url);
 
         for (String k : keys) {
@@ -49,6 +49,7 @@ public class ResourceUtil {
         }
 
         list.add("seed");
+        list.add("world_name");
         return list;
     }
 

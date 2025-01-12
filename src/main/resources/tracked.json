@@ -199,7 +199,6 @@
     "obsidian_placed",
     "diamond_swords_crafted",
     "stone_mined",
-    "netherrack_mined",
-    "world_name"
+    "netherrack_mined"
   ]
 }
