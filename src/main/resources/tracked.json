@@ -48,7 +48,7 @@
       "minecraft:used",
       "minecraft:obsidian"
     ],
-    "diamond_sword_crafted": [
+    "diamond_swords_crafted": [
       "minecraft:crafted",
       "minecraft:diamond_sword"
     ],
@@ -191,7 +191,7 @@
     "blazes_killed",
     "flint_picked_up",
     "gravel_mined",
-    "real_deaths",
+    "deaths_total",
     "jumps",
     "eyes_used",
     "diamond_picks_crafted",

@@ -54,25 +54,25 @@ public class Run extends HashMap<String, Object> {
                 "rsg.enter_end"
         };
 
-        String[] splitNames = {"time_iron_pick",
-                "time_nether",
-                "time_bastion",
-                "time_fortress",
-                "time_first_portal",
-                "time_second_portal",
-                "time_stronghold",
-                "time_end"
+        String[] splitNames = {"iron_pick",
+                "nether",
+                "bastion",
+                "fortress",
+                "first_portal",
+                "second_portal",
+                "stronghold",
+                "end"
         };
 
         this.put("run_id", getNextRunID());
-        this.put("date_played_est", this.getDate());
-        this.put("date_played_est_2", this.getDate());
+        this.put("date_played", this.getDate());
+        this.put("date_played_2", this.getDate());
         this.put("iron_source", this.getIronSource());
         this.put("enter_type", this.getEnterType());
         this.put("gold_source", this.getGoldSource());
         this.put("spawn_biome", this.getSpawnBiome());
         this.put("rta", msToString(this.recordFile.get("final_rta").getAsLong()));
-        this.put("time_wood", this.getWoodTime());
+        this.put("wood", this.getWoodTime());
 
         for (int i = 0; i < majorSplits.length; i++) {
             this.put(splitNames[i], this.getSplitTime(majorSplits[i]));
